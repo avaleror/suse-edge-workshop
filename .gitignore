@@ -1,0 +1,5 @@
+.DS_Store
+CLAUDE.md
+secrets.yaml
+*.secrets
+.env

@@ -1,0 +1,81 @@
+# rodeo-plan.yaml — SUSE Edge 3.6 workshop deployment plan.
+#
+# Deploys on a bare metal Linux host with KVM.
+# Run: rodeo deploy --config-dir .
+#
+# What this deploys:
+#   rancher  192.168.122.9   Rancher Prime 2.14.1 + Elemental Operator 1.9.0 + Fleet
+#   eib      192.168.122.20  Edge Image Builder 1.3.3.1 + Hauler 1.2.2
+#   edge1    192.168.122.31  Blank disk + vTPM 2.0 (started as lab exercise)
+#   edge2    192.168.122.32  Blank disk + vTPM 2.0 (started as lab exercise)
+#   edge3    192.168.122.33  Blank disk + UEFI (started as lab exercise)
+#   edge4    192.168.122.34  Blank disk + UEFI (started as lab exercise)
+#
+# Requirements:
+#   ~40 GiB RAM, ~16 vCPU, ~250 GiB disk
+#   KVM + libvirt + qemu-img + swtpm + rodeo-cli v0.10.x
+#
+# Versions: SUSE Edge 3.6
+#   Rancher Prime 2.14.1 / K3s v1.35.3+k3s1 / cert-manager v1.20.1
+#   Elemental Operator 1.9.0 / EIB 1.3.3.1 / SL Micro 6.2
+
+name: suse-edge-rodeo
+type: suse-edge
+
+deployment_target: baremetal
+
+network:
+  mode: nat
+  rancher_ip: "192.168.122.9"
+  gateway: "192.168.122.1"
+  dns_domain: "aerogrid.com"
+
+resources:
+  rancher:
+    memory_mib: 8192
+    vcpu: 4
+    disk_gb: 60
+  eib:
+    memory_mib: 12288
+    vcpu: 4
+    disk_gb: 100
+  edge-node:
+    memory_mib: 4096
+    vcpu: 2
+    disk_gb: 20
+
+versions:
+  rancher: "2.14.1"
+  k3s: "v1.35.3+k3s1"
+  cert_manager: "v1.20.1"
+  elemental_operator_crds: "1.9.0"
+  elemental_operator: "1.9.0"
+  elemental_ui_extension: "3.0.2-rc.2"
+  eib: "1.3.3.1"
+
+storage:
+  image_dir: /var/lib/libvirt/images
+
+libvirt:
+  uri: qemu:///system
+
+ansible:
+  path: null
+  inventory: deployer/inventory.local
+
+# Rancher TLS.
+# source: secret  — Rancher self-signed cert, exposed on NodePort 30002.
+#                   Works on any host including home lab / private networks.
+# source: letsEncrypt — sslip.io hostname + Let's Encrypt. Requires port 80/443
+#                       reachable from the internet (use this on Instruqt or cloud hosts).
+rancher_tls:
+  source: secret
+
+credentials:
+  # ??placeholders resolved from ~/.rodeo/secrets.yaml at load time.
+  # Run: rodeo init --profile suse-edge  to generate the secrets file.
+  rancher_admin_password: "??rancher_admin_password"
+  rancher_vm_password: "??rancher_vm_password"
+
+elemental:
+  registrations: 1
