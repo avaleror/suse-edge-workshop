@@ -1,0 +1,80 @@
+site_name: SUSE Edge 3.6 Rodeo
+site_description: Hands-on workshop — Rancher Prime + Elemental + EIB + Fleet on bare metal KVM
+site_url: https://avaleror.github.io/suse-edge-workshop/
+repo_url: https://github.com/avaleror/suse-edge-workshop
+repo_name: avaleror/suse-edge-workshop
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: SUSE
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+    - search.suggest
+    - search.highlight
+
+extra_css:
+  - stylesheets/suse.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Exercises:
+    - "01 — Tour the environment": exercises/01-environment-tour.md
+    - "02 — Elemental setup": exercises/02-elemental-setup.md
+    - "03 — Build EIB images": exercises/03-eib-builds.md
+    - "04 — Seed and boot nodes": exercises/04-boot-nodes.md
+    - "05 — Provision a cluster": exercises/05-provision-cluster.md
+    - "06 — Fleet deploy": exercises/06-fleet-deploy.md
+  - Reference:
+    - Quick reference: reference/quick-reference.md
+    - Bonus exercises: reference/bonus-exercises.md
+    - Full lab guide (print): lab-guide.md
+  - Instructor:
+    - Host setup: instructor/host-setup.md
+    - Pre-lab checklist: instructor/pre-lab-checklist.md
