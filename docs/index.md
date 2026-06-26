@@ -123,6 +123,7 @@ Edge nodes boot with `registries.yaml` baked in, pointing `docker.io`, `registry
   <a href="reference/quick-reference/">📋 Quick reference</a>
   <a href="reference/disconnected-environment/">🔌 Disconnected environment</a>
   <a href="reference/bonus-exercises/">🎯 Bonus exercises</a>
+  <a href="reference/bonus-hauler/">📦 Bonus lab: Hauler</a>
   <a href="lab-guide/">📄 Full lab guide (print)</a>
   <a href="instructor/host-setup/">🔧 Instructor: host setup</a>
   <a href="instructor/pre-lab-checklist/">✅ Instructor: pre-lab checklist</a>

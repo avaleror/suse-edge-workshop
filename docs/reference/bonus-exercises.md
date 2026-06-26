@@ -2,6 +2,8 @@
 
 If you finish early or want to go deeper.
 
+Want to understand how Hauler works under the hood? There is a dedicated bonus lab: [Hauler — build and serve an air-gap bundle](bonus-hauler.md).
+
 ## Try a second Elemental cluster with RKE2
 
 Label edge2 with `site-role: hub` and create a second `Cluster` resource pointing at the same `aerogrid-hub-selector` template with `quantity: 1` targeting edge2. Rancher will provision RKE2 on edge2.

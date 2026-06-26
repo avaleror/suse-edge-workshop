@@ -74,6 +74,7 @@ nav:
     - Quick reference: reference/quick-reference.md
     - Disconnected environment: reference/disconnected-environment.md
     - Bonus exercises: reference/bonus-exercises.md
+    - "Bonus lab — Hauler": reference/bonus-hauler.md
     - Full lab guide (print): lab-guide.md
   - Instructor:
     - Host setup: instructor/host-setup.md
