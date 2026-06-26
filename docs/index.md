@@ -30,7 +30,7 @@ This workshop deploys the AeroGrid management stack and walks you through buildi
 KVM host (bare metal)
 │
 ├── rancher   192.168.122.9    Rancher Prime 2.14.1 + Elemental Operator 1.9.0 + Fleet
-├── eib       192.168.122.20   EIB 1.3.3.1 + Hauler 1.2.2
+├── eib       192.168.122.20   EIB 1.3.3.1 + Hauler 1.2.2 + Gitea 1.22
 │
 ├── edge1     192.168.122.31   vTPM 2.0  ──► Elemental onboarding  ──► K3s cluster
 ├── edge2     192.168.122.32   vTPM 2.0  ──► Elemental onboarding  ──► standalone
@@ -110,12 +110,12 @@ The full Kubernetes stack is baked into the disk image. Boot it, you have a runn
 
 `rodeo deploy` needs internet access once to pull everything (Rancher, K3s, Elemental, SL Micro images, Helm charts). After that, the lab runs completely offline.
 
-The EIB VM runs a [Hauler](https://docs.hauler.dev) artifact store that serves all content needed for the exercises:
+The EIB VM hosts two services that together make the lab self-contained:
 
-- **OCI registry** at `192.168.122.20:5000` — EIB container, `elemental-register`, Alien-Geeko app
-- **File server** at `192.168.122.20:8080` — SL Micro 6.2 SelfInstall ISO and Default RAW
+- **[Hauler](https://docs.hauler.dev)** — OCI registry at `:5000` (EIB container, `elemental-register`, Alien-Geeko app) and file server at `:8080` (SL Micro 6.2 ISO and RAW)
+- **[Gitea](https://gitea.io)** — local Git server at `:3000` serving the Alien-Geeko Fleet GitRepo, so Fleet never needs to reach GitHub during the exercises
 
-Edge nodes boot with `registries.yaml` baked in, pointing `docker.io`, `registry.suse.com`, and `ghcr.io` to the local Hauler registry. All container pulls stay on the lab network. See the [Disconnected environment reference](reference/disconnected-environment.md) for what this means at each exercise step.
+Edge nodes boot with `registries.yaml` baked in by EIB, routing all container pulls through Hauler. Fleet syncs from local Gitea. The management cluster itself runs entirely offline after deploy. See the [Disconnected environment reference](reference/disconnected-environment.md) for the full architecture.
 
 ## Resources
 
@@ -142,4 +142,5 @@ Edge nodes boot with `registries.yaml` baked in, pointing `docker.io`, `registry
 | Elemental Operator | 1.9.0 |
 | Edge Image Builder | 1.3.3.1 |
 | Hauler | 1.2.2 |
+| Gitea | 1.22 |
 | SUSE Linux Micro | 6.2 |

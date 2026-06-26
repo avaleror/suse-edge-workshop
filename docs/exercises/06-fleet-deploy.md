@@ -14,6 +14,16 @@ You now have four running nodes:
 
 Fleet is already watching for clusters with the right labels. A `GitRepo` called `alien-geeko` is pre-configured to target any cluster labeled `demo=true` and `edge-type=x86-cluster`.
 
+The `alien-geeko` GitRepo points at the local Gitea instance on the EIB VM — not GitHub. Fleet syncs from `http://192.168.122.20:3000/gitea/alien-geeko.git` every 15 seconds. No internet access is needed.
+
+```bash
+# Confirm the GitRepo source
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
+   get gitrepo alien-geeko -n fleet-default \
+   -o jsonpath='{.spec.repo}'"
+```
+
 ## 6.1 Trigger Fleet deployment on aerogrid-hub-01
 
 edge1 already has the `demo=true` and `edge-type=x86-cluster` labels from the labeling step in Exercise 5. Once the cluster is active and imported into Rancher's fleet-default workspace, Fleet picks it up automatically.

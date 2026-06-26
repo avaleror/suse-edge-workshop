@@ -30,11 +30,23 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "ls -lh /home/eib-config/base-images/"
 
-# 7. Edge VMs are defined but off
+# 7. Gitea is running and the alien-geeko repo is present
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+  "podman ps --filter name=gitea --format '{{.Status}}' && \
+   curl -s http://localhost:3000/api/v1/repos/gitea/alien-geeko \
+   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('repo:', r['full_name'])\""
+
+# 8. Fleet GitRepo points at local Gitea (not GitHub)
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
+   get gitrepo alien-geeko -n fleet-default \
+   -o jsonpath='{.spec.repo}'"
+
+# 9. Edge VMs are defined but off
 virsh list --all | grep edge
 ```
 
-The SL Micro SelfInstall ISO and Default RAW are now downloaded automatically by `rodeo deploy` during the `elemental` phase. No manual Hauler steps needed.
+Everything is automated by `rodeo deploy`. No manual post-deploy steps needed.
 
 ## Timing notes
 
