@@ -30,11 +30,13 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "ls -lh /home/eib-config/base-images/"
 
-# 7. Gitea is running and the alien-geeko repo is present
+# 7. Gitea is running and both repos are present
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "podman ps --filter name=gitea --format '{{.Status}}' && \
    curl -s http://localhost:3000/api/v1/repos/gitea/alien-geeko \
-   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('repo:', r['full_name'])\""
+   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('alien-geeko:', r['full_name'])\" && \
+   curl -s http://localhost:3000/api/v1/repos/gitea/eib-config \
+   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'])\""
 
 # 8. Fleet GitRepo points at local Gitea (not GitHub)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \

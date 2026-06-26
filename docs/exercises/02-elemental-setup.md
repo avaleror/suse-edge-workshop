@@ -1,6 +1,6 @@
 # Exercise 2 — Configure Elemental and the node network plan
 
-**Time:** 30 min  
+**Time:** 20 min  
 **Previous:** [Exercise 1 — Tour the environment](01-environment-tour.md)  
 **Next:** [Exercise 3 — Build EIB images](03-eib-builds.md)
 
@@ -51,7 +51,7 @@ Note the registration name, then get the URL you will embed in the EIB image:
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default"
 
-# Get the registration URL
+# Capture the registration URL
 REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get machineregistration suse-edge-reg-1 \
    -n fleet-default \
@@ -60,21 +60,48 @@ REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 echo "Registration URL: $REGURL"
 ```
 
-**Copy this URL.** You will embed it in the Elemental EIB image definition in the next exercise.
+**Keep this shell session open.** You need `$REGURL` in the next step.
 
-## 2.4 Download the registration config
+## 2.4 Clone the EIB workspace and configure it
 
-Fetching the registration URL returns a full YAML config blob that `elemental-register` uses at boot. Download it to the eib VM:
+The EIB image definitions, NMState network configs, and combustion scripts live in the `eib-config` Gitea repo on the EIB VM. Clone it to get a ready-made workspace, then replace the Elemental config placeholder with the live registration URL.
+
+SSH to the EIB VM:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 "
-  mkdir -p /home/eib-config/elemental
-  curl -k \"$REGURL\" -o /home/eib-config/elemental/elemental_config.yaml
-  cat /home/eib-config/elemental/elemental_config.yaml
-"
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it into the OS image so it is present at first boot — no network config required at the remote site.
+Clone the workspace:
+
+```bash
+git clone http://192.168.122.20:3000/gitea/eib-config /home/eib-workspace
+ls /home/eib-workspace/
+```
+
+You should see four definition files, `network-configs/`, `scripts/`, and `elemental/` directories.
+
+Now download the live registration config from the Elemental Operator and overwrite the placeholder:
+
+```bash
+# If REGURL is not in the current shell, re-capture it
+REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl get machineregistration suse-edge-reg-1 \
+   -n fleet-default \
+   -o jsonpath='{.status.registrationURL}'")
+
+curl -k "$REGURL" -o /home/eib-workspace/elemental/elemental_config.yaml
+
+cat /home/eib-workspace/elemental/elemental_config.yaml
+```
+
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it at `/oem/elemental.yaml` in the OS image — no network config required at the remote site.
+
+Exit back to the KVM host:
+
+```bash
+exit
+```
 
 ## 2.5 Verify the Elemental Operator is healthy
 
@@ -87,7 +114,14 @@ Both `elemental-operator` and `elemental-operator-webhook` should be `Running`. 
 
 ## 2.6 Node network plan
 
-Each node gets a static IP baked into its disk image by EIB. No DHCP dependency at the edge, and addresses you can put in monitoring config before the node ever boots.
+Each node gets a static IP baked into its disk image by EIB. The network configs are pre-populated in the workspace you just cloned from Gitea:
+
+```bash
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ls /home/eib-workspace/network-configs/
+cat /home/eib-workspace/network-configs/edge1.yaml
+exit
+```
 
 | Node | IP | Prefix | Gateway | DNS | MAC |
 |---|---|---|---|---|---|
@@ -96,104 +130,7 @@ Each node gets a static IP baked into its disk image by EIB. No DHCP dependency 
 | edge3 | 192.168.122.33 | /24 | 192.168.122.1 | 192.168.122.1 | 02:00:00:0E:62:A3 |
 | edge4 | 192.168.122.34 | /24 | 192.168.122.1 | 192.168.122.1 | 02:00:00:0E:62:A4 |
 
-EIB picks up any YAML files in the `network/` subdirectory of its config dir and processes them as NMState configs. Each build will use exactly one file — one node, one IP. Create all four files now so they are ready when you start the builds:
-
-```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
-
-mkdir -p /home/eib-config/network-configs
-
-cat > /home/eib-config/network-configs/edge1.yaml << 'EOF'
-interfaces:
-  - name: eth0
-    type: ethernet
-    state: up
-    ipv4:
-      address:
-        - ip: 192.168.122.31
-          prefix-length: 24
-      dhcp: false
-      enabled: true
-routes:
-  config:
-    - destination: 0.0.0.0/0
-      next-hop-address: 192.168.122.1
-      next-hop-interface: eth0
-dns-resolver:
-  config:
-    servers:
-      - 192.168.122.1
-EOF
-
-cat > /home/eib-config/network-configs/edge2.yaml << 'EOF'
-interfaces:
-  - name: eth0
-    type: ethernet
-    state: up
-    ipv4:
-      address:
-        - ip: 192.168.122.32
-          prefix-length: 24
-      dhcp: false
-      enabled: true
-routes:
-  config:
-    - destination: 0.0.0.0/0
-      next-hop-address: 192.168.122.1
-      next-hop-interface: eth0
-dns-resolver:
-  config:
-    servers:
-      - 192.168.122.1
-EOF
-
-cat > /home/eib-config/network-configs/edge3.yaml << 'EOF'
-interfaces:
-  - name: eth0
-    type: ethernet
-    state: up
-    ipv4:
-      address:
-        - ip: 192.168.122.33
-          prefix-length: 24
-      dhcp: false
-      enabled: true
-routes:
-  config:
-    - destination: 0.0.0.0/0
-      next-hop-address: 192.168.122.1
-      next-hop-interface: eth0
-dns-resolver:
-  config:
-    servers:
-      - 192.168.122.1
-EOF
-
-cat > /home/eib-config/network-configs/edge4.yaml << 'EOF'
-interfaces:
-  - name: eth0
-    type: ethernet
-    state: up
-    ipv4:
-      address:
-        - ip: 192.168.122.34
-          prefix-length: 24
-      dhcp: false
-      enabled: true
-routes:
-  config:
-    - destination: 0.0.0.0/0
-      next-hop-address: 192.168.122.1
-      next-hop-interface: eth0
-dns-resolver:
-  config:
-    servers:
-      - 192.168.122.1
-EOF
-
-ls -la /home/eib-config/network-configs/
-exit
-```
+EIB picks up any YAML file in the `network/` subdirectory of its config dir. Each build uses exactly one file — one node, one IP. In Exercise 3 you will copy the right file into `network/` before starting each build.
 
 The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `kernelArgs`. Without that kernel arg, SL Micro would name the first NIC something like `ens3` depending on PCI bus order. With the arg set, the old naming convention applies consistently across all four builds.
 

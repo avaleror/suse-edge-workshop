@@ -65,8 +65,9 @@ During the `elemental` phase, rodeo-cli automatically populates the Hauler store
 | SL Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3 — EIB Elemental ISO base |
 | SL Micro 6.2 Default RAW | Hauler fileserver `:8080` | Exercise 3 — EIB standalone RAW base |
 | `gitea/alien-geeko` repo | Gitea `:3000` | Exercise 6 — Fleet GitRepo source |
+| `gitea/eib-config` repo | Gitea `:3000` | Exercise 2 — students clone this for EIB definitions + scripts |
 
-Edge nodes boot with `registries.yaml` baked in by EIB, pointing all container pulls (`docker.io`, `registry.suse.com`, `ghcr.io`) to the local Hauler registry at `192.168.122.20:5000`. Fleet syncs from local Gitea at `192.168.122.20:3000` — no GitHub access needed.
+Edge nodes boot with `registries.yaml` baked in by EIB, pointing all container pulls (`docker.io`, `registry.suse.com`, `ghcr.io`) to the local Hauler registry at `192.168.122.20:5000`. Fleet syncs from local Gitea at `192.168.122.20:3000` — no GitHub access needed. EIB pulls image definitions and scripts from the `eib-config` Gitea repo.
 
 See the [Disconnected environment reference](../reference/disconnected-environment.md) for full details on what runs offline and why.
 
@@ -86,11 +87,13 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "ls -lh /home/eib-config/base-images/"
 
-# Gitea running and alien-geeko repo mirrored
+# Gitea running and both repos present
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "podman ps --filter name=gitea --format '{{.Status}}' && \
    curl -s http://localhost:3000/api/v1/repos/gitea/alien-geeko \
-   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('alien-geeko:', r['full_name'])\""
+   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('alien-geeko:', r['full_name'])\" && \
+   curl -s http://localhost:3000/api/v1/repos/gitea/eib-config \
+   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'])\""
 
 # MachineRegistration exists
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \

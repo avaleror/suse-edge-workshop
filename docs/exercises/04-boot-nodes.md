@@ -18,7 +18,7 @@ Pull each ISO from the eib VM and attach it as a virtual CDROM:
 # edge1 gets its specific ISO (192.168.122.31 baked in)
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
-  --image /home/eib-config/elemental-edge1.iso \
+  --image /home/eib-workspace/elemental-edge1.iso \
   --local-from-eib \
   --nodes edge1 \
   --yes
@@ -26,7 +26,7 @@ rodeo pull-edge-image \
 # edge2 gets its specific ISO (192.168.122.32 baked in)
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
-  --image /home/eib-config/elemental-edge2.iso \
+  --image /home/eib-workspace/elemental-edge2.iso \
   --local-from-eib \
   --nodes edge2 \
   --yes
@@ -84,7 +84,7 @@ Pull and thin-clone each image from the eib VM:
 # edge3 gets the RKE2 image
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
-  --image /home/eib-config/rke2-edge3.raw \
+  --image /home/eib-workspace/rke2-edge3.raw \
   --local-from-eib \
   --nodes edge3 \
   --yes
@@ -92,7 +92,7 @@ rodeo pull-edge-image \
 # edge4 gets the K3s image
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
-  --image /home/eib-config/k3s-edge4.raw \
+  --image /home/eib-workspace/k3s-edge4.raw \
   --local-from-eib \
   --nodes edge4 \
   --yes

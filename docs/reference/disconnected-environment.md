@@ -17,58 +17,53 @@ Once `rodeo deploy` completes, the lab network at `192.168.122.0/24` is self-suf
 
 ## Architecture
 
+```mermaid
+flowchart TB
+    Internet(["☁️  Internet"])
+
+    subgraph HOST["KVM Host  ·  192.168.122.1"]
+        subgraph RANCHER["rancher  ·  192.168.122.9"]
+            Fleet["Fleet controller\nK3s + Rancher Prime 2.14.1\nElemental Op 1.9.0"]
+        end
+
+        subgraph EIBVM["eib  ·  192.168.122.20"]
+            subgraph HAULER["Hauler"]
+                HaulerOCI["OCI registry  :5000\nedge-image-builder\nelemental-register\nalien-geeko"]
+                HaulerFS["File server  :8080\nSL Micro SelfInstall ISO\nSL Micro Default RAW"]
+            end
+            Gitea["Gitea  :3000\ngitea/alien-geeko\ngitea/eib-config"]
+            EIB["EIB\npodman run"]
+        end
+
+        subgraph EDGES["edge nodes  ·  192.168.122.31 – .34"]
+            direction LR
+            E1["edge1  .31\nvTPM · K3s\nElemental"]
+            E2["edge2  .32\nvTPM\nstandby"]
+            E3["edge3  .33\nUEFI · RKE2\nstandalone"]
+            E4["edge4  .34\nUEFI · K3s\nstandalone"]
+        end
+    end
+
+    Internet -. "rodeo deploy (one time)" .-> HOST
+
+    Fleet -->|"1 — polls GitRepo"| Gitea
+    Fleet -->|"2 — push bundles"| EDGES
+
+    EIB -->|"3 — pull images"| HaulerOCI
+    EIB -->|"4 — pull base OS"| HaulerFS
+    EIB -->|"5 — definitions & scripts"| Gitea
+
+    EDGES -->|"6 — registries.yaml"| HaulerOCI
 ```
- Internet ──────────── rodeo deploy (one time) ──────────────────────►
-                                                                        
- ════════════════════════════════════════════════════════════════════════
-  KVM Host  ·  192.168.122.1 (virbr0)
- ════════════════════════════════════════════════════════════════════════
 
-  ┌──────────────────────────────────┐   ┌──────────────────────────────────┐
-  │  rancher  ·  192.168.122.9       │   │  eib  ·  192.168.122.20          │
-  │                                  │   │                                  │
-  │  ┌────────────────────────────┐  │   │  ┌────────────────────────────┐  │
-  │  │  K3s cluster               │  │   │  │  Hauler                    │  │
-  │  │  ● Rancher Prime 2.14.1   │  │   │  │  ● OCI registry  :5000     │  │
-  │  │  ● Elemental Op 1.9.0     │  │   │  │    edge-image-builder       │  │
-  │  │  ● Fleet controller   ────┼──┼───┼─►│    elemental-register       │  │
-  │  └────────────────────────────┘  │ ①│  │    alien-geeko image        │  │
-  │              │ Fleet pushes      │   │  │  ● File server   :8080     │  │
-  │              │ bundles to       ─┼───┼─►│    SL Micro ISO + RAW      │  │
-  │              │ downstream      ②│   │  └────────────────────────────┘  │
-  │              │ cluster agents    │   │                                  │
-  └──────────────┼───────────────────┘   │  ┌────────────────────────────┐  │
-                 │                       │  │  Gitea  :3000              │  │
-                 │                       │  │  ● aerogrid/alien-geeko    │  │
-                 │           Fleet ──────┼──┼──────────────────────────◄─┼──┼─── ① Fleet polls
-                 │           syncs GitRepo   └────────────────────────────┘  │       (offline)
-                 │                       └──────────────────────────────────┘
-                 │
-  ┌──────────────▼──────────────────────────────────────────────────────────┐
-  │  edge nodes  ·  192.168.122.31 – .34                                    │
-  │                                                                          │
-  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐   │
-  │  │  edge1      │  │  edge2      │  │  edge3      │  │  edge4      │   │
-  │  │  .31        │  │  .32        │  │  .33        │  │  .34        │   │
-  │  │  vTPM       │  │  vTPM       │  │  UEFI       │  │  UEFI       │   │
-  │  │  K3s        │  │  SL Micro   │  │  RKE2       │  │  K3s        │   │
-  │  │  Elemental  │  │  (standby)  │  │  standalone │  │  standalone │   │
-  │  └──────┬──────┘  └─────────────┘  └──────┬──────┘  └──────┬──────┘   │
-  │         │ ②                               │ ②              │ ②        │
-  │         └─── Fleet bundle applied ─────────┴────────────────┘          │
-  │                                                                          │
-  │  All container pulls:  registries.yaml → Hauler :5000  ③               │
-  └──────────────────────────────────────────────────────────────────────────┘
-
- ① Fleet controller on rancher VM polls Gitea on eib VM for GitRepo changes.
-   All traffic stays on 192.168.122.0/24. No GitHub access after deploy.
-
- ② Fleet pushes workload bundles from management cluster to downstream cluster
-   agents. Edge clusters do not need to reach the management cluster's Git source.
-
- ③ K3s on every edge node has registries.yaml baked in by EIB, routing docker.io,
-   registry.suse.com, and ghcr.io through Hauler at 192.168.122.20:5000.
-```
+| Flow | What happens |
+|---|---|
+| 1 | Fleet controller on rancher VM polls Gitea on eib VM for `alien-geeko` GitRepo changes. All traffic on 192.168.122.0/24. No GitHub access after deploy. |
+| 2 | Fleet pushes workload bundles from management cluster to downstream cluster agents on the edge nodes. |
+| 3 | EIB pulls container images to embed in OS images from the Hauler OCI registry at :5000. |
+| 4 | EIB pulls the SL Micro base OS (ISO or RAW) from the Hauler file server at :8080. |
+| 5 | EIB clones the `eib-config` Gitea repo for definition files, NMState network configs, and combustion scripts. |
+| 6 | K3s on every edge node has `registries.yaml` baked in by EIB, routing docker.io, registry.suse.com, and ghcr.io through Hauler at :5000. |
 
 ---
 
@@ -76,13 +71,14 @@ Once `rodeo deploy` completes, the lab network at `192.168.122.0/24` is self-suf
 
 Gitea is a lightweight open source Git server (MIT license, community-maintained). It is **not** a SUSE Edge product — see the [Hauler bonus lab](bonus-hauler.md) for more background on community tools used in this lab.
 
-Gitea runs on the EIB VM at `http://192.168.122.20:3000`. It holds one repository:
+Gitea runs on the EIB VM at `http://192.168.122.20:3000`. It holds two repositories:
 
 | Repo | URL | Used by |
 |---|---|---|
 | `gitea/alien-geeko` | `http://192.168.122.20:3000/gitea/alien-geeko.git` | Fleet GitRepo `alien-geeko` |
+| `gitea/eib-config` | `http://192.168.122.20:3000/gitea/eib-config.git` | Students in Exercises 2 and 3 |
 
-The repo is mirrored from GitHub once at deploy time. After that, Fleet polls local Gitea every 15 seconds.
+`alien-geeko` is mirrored from GitHub once at deploy time. After that, Fleet polls it every 15 seconds. `eib-config` holds the EIB image definition templates, NMState network configs, and combustion scripts that students clone in Exercise 2 and use in Exercise 3.
 
 Verify it is running:
 
@@ -95,12 +91,12 @@ podman ps --filter name=gitea --format "table {{.Names}}\t{{.Status}}\t{{.Ports}
 # API check
 curl -s http://localhost:3000/api/v1/version | python3 -m json.tool
 
-# Repo exists
+# Both repos exist
 curl -s http://localhost:3000/api/v1/repos/gitea/alien-geeko \
-  | python3 -c "import sys,json; r=json.load(sys.stdin); print(r['full_name'], r['default_branch'])"
+  | python3 -c "import sys,json; r=json.load(sys.stdin); print('alien-geeko:', r['full_name'], r['default_branch'])"
 
-# Clone URL that Fleet uses
-echo "http://192.168.122.20:3000/gitea/alien-geeko.git"
+curl -s http://localhost:3000/api/v1/repos/gitea/eib-config \
+  | python3 -c "import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'], r['default_branch'])"
 ```
 
 ---
@@ -143,7 +139,10 @@ hauler store info --store /var/lib/hauler
 
 ## How EIB builds stay offline
 
-EIB runs inside Podman on the EIB VM. The `embeddedArtifacts.registries` section in every definition file tells EIB where to resolve image references at build time:
+EIB runs inside Podman on the EIB VM. It pulls from two local sources — one for binary content, one for configuration:
+
+**Hauler (images + base OS):**
+The `embeddedArtifacts.registries` section in every definition file points EIB at the local Hauler OCI registry:
 
 ```yaml
 embeddedArtifacts:
@@ -152,15 +151,32 @@ embeddedArtifacts:
       - 192.168.122.20:5000
 ```
 
-EIB queries Hauler's OCI registry for each image it needs to embed. As long as those images are in Hauler, the build never touches the internet.
-
-Base OS images come from the Hauler file server and are pre-staged in `/home/eib-config/base-images/`:
+EIB queries Hauler for each container image it needs to embed. The SL Micro base OS images (ISO for Elemental nodes, RAW for standalone cluster nodes) are served from the Hauler file server and pre-staged at `/home/eib-config/base-images/`:
 
 ```bash
 ls -lh /home/eib-config/base-images/
 # SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso  (~900 MB)
 # SL-Micro.x86_64-6.2-Default.raw                      (~2 GB)
 ```
+
+**Gitea (definitions + scripts):**
+Students clone the `eib-config` Gitea repo to get the EIB definition files, NMState network config templates, and combustion scripts:
+
+```bash
+git clone http://192.168.122.20:3000/gitea/eib-config /home/eib-workspace
+```
+
+The EIB Podman run uses two volume mounts to combine both sources:
+
+```bash
+podman run --rm --privileged \
+  -v /home/eib-workspace:/eib:z \              # definitions, scripts, elemental config, network
+  -v /home/eib-config/base-images:/eib/base-images:ro \   # base OS from Hauler (read-only)
+  registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \
+  build --definition-file elemental-edge1-definition.yaml
+```
+
+The result: EIB gets its definition files and scripts from Gitea (version-controlled, repeatable) and its binary content from Hauler (portable artifact store). Neither source requires internet access after deploy.
 
 ---
 
@@ -311,9 +327,9 @@ virsh net-list
 | Rancher Prime | Yes | `useBundledSystemChart=true`; system charts bundled |
 | cert-manager | Yes | Installed; no runtime image pulls |
 | Elemental Operator | Yes | Installed; no OS channel pull in these exercises |
-| Gitea | Yes | Runs on eib VM; alien-geeko repo mirrored at deploy time |
+| Gitea | Yes | Runs on eib VM; alien-geeko + eib-config repos initialised at deploy time |
 | Fleet GitRepo (alien-geeko) | **Yes** | Points at local Gitea — no GitHub access needed |
-| EIB (on eib VM) | Yes | Container image in Hauler; base images in Hauler |
+| EIB (on eib VM) | Yes | Container image in Hauler; base OS in Hauler; definitions + scripts from Gitea eib-config |
 | Hauler registry + fileserver | Yes | Self-contained on eib VM |
 | Edge node K3s | Yes | Images via Hauler mirror; `registries.yaml` baked in by EIB |
 | Alien-Geeko app (Fleet) | Yes | Image in Hauler; pulled via K3s mirror on edge nodes |
