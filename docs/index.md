@@ -106,10 +106,22 @@ The full Kubernetes stack is baked into the disk image. Boot it, you have a runn
 
 ---
 
+## Offline-first design
+
+`rodeo deploy` needs internet access once to pull everything (Rancher, K3s, Elemental, SL Micro images, Helm charts). After that, the lab runs completely offline.
+
+The EIB VM runs a [Hauler](https://docs.hauler.dev) artifact store that serves all content needed for the exercises:
+
+- **OCI registry** at `192.168.122.20:5000` — EIB container, `elemental-register`, Alien-Geeko app
+- **File server** at `192.168.122.20:8080` — SL Micro 6.2 SelfInstall ISO and Default RAW
+
+Edge nodes boot with `registries.yaml` baked in, pointing `docker.io`, `registry.suse.com`, and `ghcr.io` to the local Hauler registry. All container pulls stay on the lab network. See the [Disconnected environment reference](reference/disconnected-environment.md) for what this means at each exercise step.
+
 ## Resources
 
 <div class="link-row">
   <a href="reference/quick-reference/">📋 Quick reference</a>
+  <a href="reference/disconnected-environment/">🔌 Disconnected environment</a>
   <a href="reference/bonus-exercises/">🎯 Bonus exercises</a>
   <a href="lab-guide/">📄 Full lab guide (print)</a>
   <a href="instructor/host-setup/">🔧 Instructor: host setup</a>
@@ -124,7 +136,7 @@ The full Kubernetes stack is baked into the disk image. Boot it, you have a runn
 | Component | Version |
 |---|---|
 | Rancher Prime | 2.14.1 |
-| K3s (management cluster) | v1.35.3+k3s1 |
+| K3s (management cluster) | v1.35.5+k3s1 |
 | cert-manager | v1.20.1 |
 | Elemental Operator | 1.9.0 |
 | Edge Image Builder | 1.3.3.1 |

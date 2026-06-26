@@ -72,6 +72,7 @@ nav:
     - "06 — Fleet deploy": exercises/06-fleet-deploy.md
   - Reference:
     - Quick reference: reference/quick-reference.md
+    - Disconnected environment: reference/disconnected-environment.md
     - Bonus exercises: reference/bonus-exercises.md
     - Full lab guide (print): lab-guide.md
   - Instructor:

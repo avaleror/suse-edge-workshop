@@ -17,40 +17,24 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default"
 
-# 4. EIB VM is reachable and EIB container is pulled
+# 4. EIB VM is reachable and EIB container is in Hauler
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
-  "podman images | grep edge-image-builder"
+  "hauler store info --store /var/lib/hauler 2>/dev/null | grep edge-image-builder"
 
-# 5. Hauler is running
+# 5. Hauler is running and both SL Micro base images are served
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
-  "systemctl is-active hauler-registry hauler-fileserver"
+  "systemctl is-active hauler-registry hauler-fileserver && \
+   curl -s http://localhost:8080/ | grep -c 'SL-Micro'"
 
-# 6. Edge VMs are defined but off
+# 6. SL Micro files staged in eib-config/base-images (used by EIB exercise)
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+  "ls -lh /home/eib-config/base-images/"
+
+# 7. Edge VMs are defined but off
 virsh list --all | grep edge
 ```
 
-## Pre-stage SL Micro images in Hauler
-
-This step is NOT automated — do it manually after deploy:
-
-```bash
-ssh root@192.168.122.20
-
-# SL Micro 6.2 SelfInstall ISO (for Elemental nodes edge1/edge2)
-hauler store add file \
-  "https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso" \
-  --store /var/lib/hauler
-
-# SL Micro 6.2 Cloud RAW (for standalone cluster nodes edge3/edge4)
-hauler store add file \
-  "https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Default.raw" \
-  --store /var/lib/hauler
-
-systemctl restart hauler-fileserver
-
-# Verify both are served
-curl -s http://localhost:8080/ | grep -E "iso|raw"
-```
+The SL Micro SelfInstall ISO and Default RAW are now downloaded automatically by `rodeo deploy` during the `elemental` phase. No manual Hauler steps needed.
 
 ## Timing notes
 

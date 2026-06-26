@@ -10,7 +10,7 @@ This workshop deploys on a bare metal Linux host with KVM. These steps cover hos
 | RAM | 40 GiB |
 | vCPU | 16 |
 | Disk | 250 GiB (free in `/var/lib/libvirt/images`) |
-| Network | Internet access at deploy time (Hauler pulls images) |
+| Network | Internet access during deploy only — lab exercises run fully offline |
 
 ## Install rodeo-cli
 
@@ -51,31 +51,23 @@ When complete, the success screen shows:
 - Edge node MAC/IP reference table
 - Next steps for the lab guide
 
-## Pre-stage SL Micro images in Hauler
+## Lab runs offline after deploy
 
-The `elemental` phase pre-stages the EIB container and Elemental agent. You still need to add SL Micro images manually before running the lab:
+Once `rodeo deploy` completes, the lab is fully self-contained. No internet access is needed during the exercises.
 
-```bash
-ssh root@192.168.122.20
+During the `elemental` phase, rodeo-cli automatically populates the Hauler store on the EIB VM with everything students need:
 
-# SL Micro 6.2 SelfInstall ISO (for Elemental nodes)
-hauler store add file \
-  "https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso" \
-  --store /var/lib/hauler
+| Artifact | Served at | Used in |
+|---|---|---|
+| EIB container image (`edge-image-builder:1.3.3.1`) | Hauler OCI registry `:5000` | Exercise 3 — EIB builds |
+| `elemental-register` image | Hauler OCI registry `:5000` | Exercise 3 — Elemental ISO builds |
+| Alien-Geeko app image | Hauler OCI registry `:5000` | Exercise 6 — Fleet deploy |
+| SL Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3 — EIB Elemental ISO base |
+| SL Micro 6.2 Default RAW | Hauler fileserver `:8080` | Exercise 3 — EIB standalone RAW base |
 
-# SL Micro 6.2 Cloud RAW (for standalone cluster nodes)
-hauler store add file \
-  "https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Default.raw" \
-  --store /var/lib/hauler
+Edge nodes boot with `registries.yaml` baked in by EIB, pointing all container pulls (`docker.io`, `registry.suse.com`, `ghcr.io`) to the local Hauler registry at `192.168.122.20:5000`.
 
-systemctl restart hauler-fileserver
-```
-
-Verify both are available:
-
-```bash
-curl -s http://localhost:8080/ | grep -E "iso|raw"
-```
+See the [Disconnected environment reference](../reference/disconnected-environment.md) for full details on what runs offline and why.
 
 ## Verify before handing to students
 
@@ -84,10 +76,14 @@ curl -s http://localhost:8080/ | grep -E "iso|raw"
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -n cattle-elemental-system"
 
-# EIB VM + Hauler running
+# EIB VM + Hauler running, both SL Micro files in the store
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "systemctl is-active hauler-registry hauler-fileserver && \
-   hauler store info --store /var/lib/hauler | head -20"
+   curl -s http://localhost:8080/ | grep -E 'SL-Micro.*iso|SL-Micro.*raw'"
+
+# SL Micro base images staged for EIB
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+  "ls -lh /home/eib-config/base-images/"
 
 # MachineRegistration exists
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
