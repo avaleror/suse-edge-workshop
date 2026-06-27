@@ -75,6 +75,7 @@ nav:
     - "05 — Provision a cluster": exercises/05-provision-cluster.md
     - "06 — Fleet deploy": exercises/06-fleet-deploy.md
   - Reference:
+    - Lab overview: reference/lab-overview.md
     - Quick reference: reference/quick-reference.md
     - Disconnected environment: reference/disconnected-environment.md
     - Bonus exercises: reference/bonus-exercises.md

@@ -42,7 +42,7 @@ From the workshop directory:
 sudo rodeo deploy --config-dir .
 ```
 
-The deploy runs in phases: `kvm_host → vms → boot → rancher → elemental → finalise`. Total time is 30-60 minutes depending on internet speed (Hauler pulls several GB of images).
+The deploy runs in phases: `kvm_host → vms → boot → rancher → elemental → apply → finalise`. Total time is 30-60 minutes depending on internet speed (Hauler pulls several GB of images). See [Lab overview](../reference/lab-overview.md) for a detailed breakdown of what each phase does.
 
 When complete, the success screen shows:
 
