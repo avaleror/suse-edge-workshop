@@ -15,15 +15,15 @@ This workshop deploys on a bare metal Linux host with KVM. These steps cover hos
 ## Install rodeo-cli
 
 ```bash
-pip install git+https://github.com/avaleror/rodeo-cli.git@main
+curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
 ```
 
-Or clone and install in editable mode:
+This installs prerequisites (python3, pip, git), clones the repo to `/opt/rodeo-cli`, creates a venv with system-site-packages (needed for libvirt-python), and symlinks `rodeo` to `/usr/local/bin`.
+
+To pin a specific version:
 
 ```bash
-git clone https://github.com/avaleror/rodeo-cli.git
-cd rodeo-cli
-pip install -e .
+curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash -s -- --ref v0.10.0
 ```
 
 ## Generate secrets
