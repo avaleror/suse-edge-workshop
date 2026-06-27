@@ -1,0 +1,1898 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hands-on workshop — Rancher Prime + Elemental + EIB + Fleet on bare metal KVM">
+      
+      
+      
+        <link rel="canonical" href="https://avaleror.github.io/suse-edge-workshop/reference/lab-overview/">
+      
+      
+        <link rel="prev" href="../../exercises/06-fleet-deploy/">
+      
+      
+        <link rel="next" href="../quick-reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Lab overview - SUSE Edge 3.6 Rodeo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SUSE:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"SUSE";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/suse.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lab-overview-infrastructure-architecture-and-deploy-pipeline" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SUSE Edge 3.6 Rodeo" class="md-header__button md-logo" aria-label="SUSE Edge 3.6 Rodeo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SUSE Edge 3.6 Rodeo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Lab overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/avaleror/suse-edge-workshop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    avaleror/suse-edge-workshop
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../exercises/01-environment-tour/" class="md-tabs__link">
+          
+  
+  
+  Exercises
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../instructor/host-setup/" class="md-tabs__link">
+          
+  
+  
+  Instructor
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SUSE Edge 3.6 Rodeo" class="md-nav__button md-logo" aria-label="SUSE Edge 3.6 Rodeo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SUSE Edge 3.6 Rodeo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/avaleror/suse-edge-workshop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    avaleror/suse-edge-workshop
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exercises
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exercises
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/01-environment-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Tour the environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/02-elemental-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Elemental setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/03-eib-builds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 — Build EIB images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/04-boot-nodes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 — Seed and boot nodes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/05-provision-cluster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 — Provision a cluster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/06-fleet-deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 — Fleet deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lab-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#virtual-machines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Virtual machines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-provisioning-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two provisioning paths
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-deploy-pipeline-what-rodeo-cli-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The deploy pipeline — what rodeo-cli does
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The deploy pipeline — what rodeo-cli does">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-kvm_host-ansible-5-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 — kvm_host (Ansible, ~5 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-vms-ansible-10-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2 — vms (Ansible, ~10 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-boot-python-2-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3 — boot (Python, ~2 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-rancher-python-20-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4 — rancher (Python, ~20 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-elemental-python-30-min-total-hauler-pull-is-the-bottleneck" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5 — elemental (Python, ~30 min total — Hauler pull is the bottleneck)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-apply-python-instant-unless-manifests-are-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6 — apply (Python, instant unless manifests are present)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-finalise-python-1-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7 — finalise (Python, ~1 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-exists-when-deploy-finishes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What exists when deploy finishes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab credentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disconnected-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disconnected environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bonus-exercises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonus exercises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bonus-hauler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonus lab — Hauler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lab-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full lab guide (print)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instructor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Instructor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../instructor/host-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../instructor/pre-lab-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-lab checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lab-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#virtual-machines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Virtual machines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-provisioning-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two provisioning paths
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-deploy-pipeline-what-rodeo-cli-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The deploy pipeline — what rodeo-cli does
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The deploy pipeline — what rodeo-cli does">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-kvm_host-ansible-5-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 — kvm_host (Ansible, ~5 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-vms-ansible-10-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2 — vms (Ansible, ~10 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-boot-python-2-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3 — boot (Python, ~2 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-rancher-python-20-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4 — rancher (Python, ~20 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-elemental-python-30-min-total-hauler-pull-is-the-bottleneck" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5 — elemental (Python, ~30 min total — Hauler pull is the bottleneck)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-apply-python-instant-unless-manifests-are-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6 — apply (Python, instant unless manifests are present)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-finalise-python-1-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7 — finalise (Python, ~1 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-exists-when-deploy-finishes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What exists when deploy finishes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab credentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="lab-overview-infrastructure-architecture-and-deploy-pipeline">Lab overview — infrastructure, architecture and deploy pipeline<a class="headerlink" href="#lab-overview-infrastructure-architecture-and-deploy-pipeline" title="Permanent link">&para;</a></h1>
+<p>This page explains the full picture: what infrastructure rodeo-cli builds, what each piece is for, and exactly what happens during <code>rodeo deploy</code>. Read it before the exercises to build a mental model, or after if something felt like magic.</p>
+<hr />
+<h2 id="lab-topology">Lab topology<a class="headerlink" href="#lab-topology" title="Permanent link">&para;</a></h2>
+<p>The lab runs entirely inside a single bare metal Linux host using nested KVM. All VMs share one NAT network (<code>virbr0</code>, <code>192.168.122.0/24</code>). The host routes traffic and DNATs ports 80 and 443 to the management VM so Let's Encrypt and the Rancher UI are reachable from outside.</p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph HOST["  Bare metal KVM host  ·  192.168.122.1  "]
+        direction TB
+
+        subgraph RANCHER["  rancher  ·  192.168.122.9  ·  4 vCPU / 8 GiB / 60 GB  "]
+            R1["K3s v1.35.5+k3s1"]
+            R2["Rancher Prime 2.14.1"]
+            R3["cert-manager v1.20.1"]
+            R4["Elemental Operator 1.9.0"]
+            R5["Fleet (bundled with Rancher)"]
+        end
+
+        subgraph EIBVM["  eib  ·  192.168.122.20  ·  4 vCPU / 12 GiB / 100 GB  "]
+            E1["EIB 1.3.3.1  (podman container)"]
+            E2["Hauler 1.2.2  OCI :5000 / files :8080"]
+            E3["Gitea 1.22  :3000"]
+        end
+
+        subgraph EDGES["  edge nodes  ·  192.168.122.31 – .34  ·  2 vCPU / 4 GiB / 20 GB  "]
+            direction LR
+            N1["edge1  .31\nvTPM 2.0\nElemental path"]
+            N2["edge2  .32\nvTPM 2.0\nElemental path"]
+            N3["edge3  .33\nUEFI\nEIB standalone"]
+            N4["edge4  .34\nUEFI\nEIB standalone"]
+        end
+
+        DNAT["DNAT  :80 / :443  to  rancher"]
+    end
+
+    Internet(["☁️  Internet"]) -. "Let's Encrypt\nRancher UI" .-&gt; DNAT
+    DNAT --&gt; RANCHER</code></pre>
+<hr />
+<h2 id="virtual-machines">Virtual machines<a class="headerlink" href="#virtual-machines" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>IP</th>
+<th>vCPU</th>
+<th>RAM</th>
+<th>Disk</th>
+<th>Base OS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rancher</td>
+<td>192.168.122.9</td>
+<td>4</td>
+<td>8 GiB</td>
+<td>60 GB</td>
+<td>openSUSE Leap 15.6 (cloud)</td>
+</tr>
+<tr>
+<td>eib</td>
+<td>192.168.122.20</td>
+<td>4</td>
+<td>12 GiB</td>
+<td>100 GB</td>
+<td>openSUSE Leap Micro 6.2 (cloud)</td>
+</tr>
+<tr>
+<td>edge1</td>
+<td>192.168.122.31</td>
+<td>2</td>
+<td>4 GiB</td>
+<td>20 GB</td>
+<td>SL Micro 6.2 (built by students)</td>
+</tr>
+<tr>
+<td>edge2</td>
+<td>192.168.122.32</td>
+<td>2</td>
+<td>4 GiB</td>
+<td>20 GB</td>
+<td>SL Micro 6.2 (built by students)</td>
+</tr>
+<tr>
+<td>edge3</td>
+<td>192.168.122.33</td>
+<td>2</td>
+<td>4 GiB</td>
+<td>20 GB</td>
+<td>SL Micro 6.2 (built by students)</td>
+</tr>
+<tr>
+<td>edge4</td>
+<td>192.168.122.34</td>
+<td>2</td>
+<td>4 GiB</td>
+<td>20 GB</td>
+<td>SL Micro 6.2 (built by students)</td>
+</tr>
+</tbody>
+</table>
+<p>Edge nodes are defined and their UEFI firmware is prepared at deploy time, but they are <strong>not started</strong>. Students start them after building OS images in Exercise 3. The DHCP static lease is set so the node always gets its fixed IP once it does boot.</p>
+<p>MAC addresses all use the <code>0E</code> prefix (Edge profile convention):</p>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>MAC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rancher</td>
+<td><code>02:00:00:0E:62:E9</code></td>
+</tr>
+<tr>
+<td>eib</td>
+<td><code>02:00:00:0E:62:EB</code></td>
+</tr>
+<tr>
+<td>edge1–4</td>
+<td><code>02:00:00:0E:62:A1</code> – <code>A4</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="the-two-provisioning-paths">The two provisioning paths<a class="headerlink" href="#the-two-provisioning-paths" title="Permanent link">&para;</a></h2>
+<p>Two approaches run in parallel through the lab, both valid production choices:</p>
+<p><strong>Elemental path (edge1, edge2)</strong>
+EIB builds a minimal SL Micro ISO. The node boots from it, installs the OS to disk, and on first boot <code>elemental-register</code> contacts the Elemental Operator on the management cluster using its TPM identity. Rancher then provisions K3s remotely. The node never needs SSH access from an operator — it phones home and identifies itself.</p>
+<p><strong>EIB standalone path (edge3, edge4)</strong>
+EIB builds a RAW disk image with K3s or RKE2 and all required container images baked in. The node boots from the image and is a running Kubernetes cluster with no registration step. This model suits fixed-function sites where the node's role is known at build time.</p>
+<hr />
+<h2 id="the-deploy-pipeline-what-rodeo-cli-does">The deploy pipeline — what rodeo-cli does<a class="headerlink" href="#the-deploy-pipeline-what-rodeo-cli-does" title="Permanent link">&para;</a></h2>
+<p>Running <code>rodeo deploy</code> executes seven phases in order. Each phase is idempotent — if it has already completed it is skipped on retry, so a failed deploy can be resumed from where it stopped.</p>
+<pre class="mermaid"><code>flowchart LR
+    P1["1\nkvm_host\nAnsible"] --&gt; P2["2\nvms\nAnsible"] --&gt; P3["3\nboot\nPython"] --&gt; P4["4\nrancher\nPython"] --&gt; P5["5\nelemental\nPython"] --&gt; P6["6\napply\nPython"] --&gt; P7["7\nfinalise\nPython"]</code></pre>
+<hr />
+<h3 id="phase-1-kvm_host-ansible-5-min">Phase 1 — kvm_host (Ansible, ~5 min)<a class="headerlink" href="#phase-1-kvm_host-ansible-5-min" title="Permanent link">&para;</a></h3>
+<p>Runs against the host itself to install and configure everything KVM needs.</p>
+<p><strong>Packages installed:</strong>
+- KVM pattern: <code>qemu-kvm</code>, <code>libvirt</code>, <code>virt-manager</code>, <code>bridge-utils</code>
+- Supporting tools: <code>swtpm</code> (virtual TPM emulator for edge nodes), <code>kubectl</code>, <code>cockpit</code></p>
+<p><strong>Kernel and network settings applied:</strong>
+- Nested virtualisation confirmed active (<code>/sys/module/kvm_intel/parameters/nested = Y</code>)
+- IP forwarding enabled (<code>net.ipv4.ip_forward = 1</code>)
+- Bridge-netfilter disabled (<code>bridge-nf-call-iptables = 0</code>) so the host firewall does not interfere with VM-to-VM traffic on virbr0
+- ARP announcement restricted to each interface's own IPs (<code>arp_announce = 2</code>)</p>
+<p><strong>Libvirt configured:</strong>
+- Modular daemons enabled (<code>virtqemud</code>, <code>virtnetworkd</code>, <code>virtstoraged</code>)
+- Libvirt hook installed at <code>/etc/libvirt/hooks/qemu</code> to run DNAT rules when VMs start and stop
+- The hook adds DNAT entries for port 80 and 443 when the rancher VM starts, and removes them when it stops</p>
+<p><strong>Firewall:</strong>
+- firewalld installed but stopped and disabled until the boot phase. This avoids a race condition where firewalld interferes with cloud-init networking on the host before the libvirt network is ready.</p>
+<p><strong>Cockpit:</strong>
+- <code>cockpit.socket</code> enabled and started. Instructors can reach the web console at <code>https://&lt;host-ip&gt;:9090</code> for a quick graphical view of VMs and host resources.</p>
+<hr />
+<h3 id="phase-2-vms-ansible-10-min">Phase 2 — vms (Ansible, ~10 min)<a class="headerlink" href="#phase-2-vms-ansible-10-min" title="Permanent link">&para;</a></h3>
+<p>Creates all disk images, cloud-init seeds, and libvirt domain definitions. The VMs are not started yet.</p>
+<p><strong>SSH key:</strong>
+<code>/root/.ssh/id_ed25519</code> is generated if it does not exist. Its public key is baked into every VM's cloud-init user-data so all subsequent SSH steps work without passwords.</p>
+<p><strong>Libvirt network:</strong>
+The <code>default</code> NAT network (<code>virbr0</code>, <code>192.168.122.0/24</code>) is defined and set to autostart. Static DHCP leases are added for every VM using its fixed MAC, so IPs are predictable from the moment any VM boots.</p>
+<p><strong>rancher VM:</strong>
+1. Downloads the openSUSE Leap 15.6 cloud base image
+2. Resizes it to 60 GB with <code>qemu-img resize</code>
+3. Renders and packages a cloud-init seed ISO (NoCloud datasource) with:
+   - User-data: <code>root</code> account, SSH authorised key, hostname <code>rancher</code>
+   - Network-config: static IP <code>192.168.122.9</code> on the virbr0 bridge
+4. Defines the libvirt domain with cloud-init ISO as a second CDROM</p>
+<p><strong>eib VM:</strong>
+Same pattern but Leap Micro 6.2 base image, 100 GB disk, hostname <code>eib</code>, IP <code>192.168.122.20</code>. Cloud-init runs <code>podman pull</code> on the EIB container image at first boot.</p>
+<p><strong>edge nodes:</strong>
+No disk image is created here. Students build OS images in Exercise 3 and rodeo-cli thin-clones them with <code>rodeo pull-edge-image</code> before each node boots. What IS created now: a copy of the OVMF UEFI variable store (<code>ovmf-x86_64-4m-vars.fd</code>) per edge node, so UEFI state is isolated per VM.</p>
+<p><strong>All VMs</strong> are defined in libvirt (<code>virsh list --all</code> shows them as <code>shut off</code>). The XML includes MAC addresses, vCPU/RAM from the resource definitions, OVMF firmware paths, and the swtpm socket path for edge nodes that have <code>tpm.enabled = true</code>.</p>
+<hr />
+<h3 id="phase-3-boot-python-2-min">Phase 3 — boot (Python, ~2 min)<a class="headerlink" href="#phase-3-boot-python-2-min" title="Permanent link">&para;</a></h3>
+<p>Brings the non-Harvester VMs online.</p>
+<ol>
+<li>Starts firewalld and configures the <code>public</code> zone</li>
+<li>Ensures the <code>default</code> libvirt network (virbr0) is active and set to autostart</li>
+<li>Starts the <code>rancher</code> and <code>eib</code> VMs in order (edge nodes are intentionally left off)</li>
+</ol>
+<p>After this phase, both VMs are booting and cloud-init is running on each. The next phase waits for SSH, so timing is not critical here.</p>
+<hr />
+<h3 id="phase-4-rancher-python-20-min">Phase 4 — rancher (Python, ~20 min)<a class="headerlink" href="#phase-4-rancher-python-20-min" title="Permanent link">&para;</a></h3>
+<p>Installs the full management stack on the rancher VM over SSH.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SSH wait</td>
+<td>Polls until <code>root@192.168.122.9</code> is reachable (up to 5 min)</td>
+</tr>
+<tr>
+<td>K3s install</td>
+<td>Runs the K3s installer script for <code>v1.35.5+k3s1</code>; waits for the node to reach <code>Ready</code></td>
+</tr>
+<tr>
+<td>Helm install</td>
+<td>Downloads and installs Helm 3</td>
+</tr>
+<tr>
+<td>cert-manager</td>
+<td><code>helm install</code> from the Jetstack OCI chart, version <code>v1.20.1</code>; waits for webhook pod</td>
+</tr>
+<tr>
+<td>sslip.io hostname</td>
+<td>Detects the host's external IP, sets <code>RANCHER_HOSTNAME=rancher.&lt;ext-ip&gt;.sslip.io</code></td>
+</tr>
+<tr>
+<td>Rancher Prime</td>
+<td><code>helm install</code> from SUSE OCI registry, version <code>2.14.1</code>, with <code>useBundledSystemChart=true</code> (keeps Rancher offline after deploy) and <code>ingress.tls.source=letsEncrypt</code>; waits for all Rancher pods</td>
+</tr>
+<tr>
+<td>Rancher /ping wait</td>
+<td>Polls <code>https://rancher.&lt;ext-ip&gt;.sslip.io/ping</code> until HTTP 200 (up to 10 min)</td>
+</tr>
+<tr>
+<td>API config</td>
+<td>Sets admin password from <code>~/.rodeo/secrets.yaml</code>, sets <code>server-url</code>, clears must-change-password flag</td>
+</tr>
+</tbody>
+</table>
+<p>The TLS certificate is issued by Let's Encrypt via the HTTP-01 ACME challenge. Traefik (bundled with K3s) handles the ingress. This is why port 80 DNAT was configured in the kvm_host phase.</p>
+<hr />
+<h3 id="phase-5-elemental-python-30-min-total-hauler-pull-is-the-bottleneck">Phase 5 — elemental (Python, ~30 min total — Hauler pull is the bottleneck)<a class="headerlink" href="#phase-5-elemental-python-30-min-total-hauler-pull-is-the-bottleneck" title="Permanent link">&para;</a></h3>
+<p>Installs Elemental, sets up Fleet GitOps, and populates the offline artifact stores on the EIB VM.</p>
+<p><strong>5a. Elemental Operator</strong></p>
+<p>Two Helm charts installed on the management cluster:
+- <code>elemental-operator-crds-chart</code> v1.9.0 — the CRD definitions (<code>MachineRegistration</code>, <code>MachineInventory</code>, <code>ManagedOSImage</code>, etc.)
+- <code>elemental-operator-chart</code> v1.9.0 — the operator pod in <code>cattle-elemental-system</code></p>
+<p><strong>5b. UI extension repos</strong></p>
+<p>Two <code>ClusterRepo</code> resources added to Rancher so the Elemental UI extension and partner extensions appear in the Apps catalogue. This also dismisses the Rancher setup banner.</p>
+<p><strong>5c. MachineRegistration</strong></p>
+<p>Creates <code>suse-edge-reg-1</code> in <code>fleet-default</code> namespace. Key settings:
+- <code>auth: tpm</code> — registration token is derived from the node's TPM, so a cloned disk on a different machine cannot re-register
+- <code>powerOff: true</code> — node powers off after the OS install step, before the first-run reboot (prevents accidental double-registration)
+- <code>machineInventoryLabels</code> — captures manufacturer and product name from DMI at registration time</p>
+<p><strong>5d. Hauler store population</strong></p>
+<p>Runs on the eib VM over SSH. This is the only step that pulls significant data from the internet.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Source</th>
+<th>Size</th>
+<th>Served as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>edge-image-builder:1.3.3.1</code></td>
+<td><code>registry.suse.com</code></td>
+<td>~800 MB</td>
+<td>Hauler OCI :5000</td>
+</tr>
+<tr>
+<td><code>elemental-register:1.9.0</code></td>
+<td><code>registry.suse.com</code></td>
+<td>~50 MB</td>
+<td>Hauler OCI :5000</td>
+</tr>
+<tr>
+<td><code>alien-geeko:latest</code></td>
+<td><code>docker.io</code></td>
+<td>~150 MB</td>
+<td>Hauler OCI :5000</td>
+</tr>
+<tr>
+<td>SL Micro 6.2 SelfInstall ISO</td>
+<td><code>download.suse.com</code></td>
+<td>~900 MB</td>
+<td>Hauler files :8080 + <code>/home/eib-config/base-images/</code></td>
+</tr>
+<tr>
+<td>SL Micro 6.2 Default RAW</td>
+<td><code>download.suse.com</code></td>
+<td>~2 GB</td>
+<td>Hauler files :8080 + <code>/home/eib-config/base-images/</code></td>
+</tr>
+</tbody>
+</table>
+<p>After storing the artifacts, <code>hauler-registry.service</code> and <code>hauler-fileserver.service</code> are enabled and started. The <code>99-k3s-registries.sh</code> combustion script is written to <code>/home/eib-config/scripts/</code>. This script will later be baked into every edge node image by EIB — it configures K3s to route all container pulls through Hauler.</p>
+<p><strong>5e. Gitea deployment</strong></p>
+<p>A <code>gitea/gitea:1.22-rootless</code> Podman container is started on the eib VM at port 3000. After the API is ready, two repositories are created:</p>
+<ul>
+<li>
+<p><strong><code>gitea/alien-geeko</code></strong> — mirrored from GitHub once at deploy time. Fleet polls this repo every 15 seconds to check for workload changes. No GitHub access is needed after deploy.</p>
+</li>
+<li>
+<p><strong><code>gitea/eib-config</code></strong> — created locally and populated with git from templates generated by rodeo-cli. Contains:</p>
+</li>
+<li>Four node-specific EIB definition YAML files (one per edge node)</li>
+<li>NMState network config templates for each node (pre-filled with fixed lab IPs)</li>
+<li>Combustion scripts (<code>99-k3s-registries.sh</code>, hostname scripts for edge3/edge4)</li>
+<li>An <code>elemental_config.yaml</code> placeholder that students overwrite in Exercise 2</li>
+</ul>
+<p>Students clone this repo in Exercise 2 to get a ready-made EIB workspace at <code>/home/eib-workspace/</code>.</p>
+<p><strong>5f. Fleet GitRepo</strong></p>
+<p>Creates a <code>GitRepo</code> resource in <code>fleet-default</code> namespace pointing at <code>http://192.168.122.20:3000/gitea/alien-geeko.git</code>. The target selector matches any cluster with labels <code>demo=true</code> and <code>edge-type=x86-cluster</code>. When students label a cluster in Exercises 5 and 6, Fleet picks it up automatically.</p>
+<hr />
+<h3 id="phase-6-apply-python-instant-unless-manifests-are-present">Phase 6 — apply (Python, instant unless manifests are present)<a class="headerlink" href="#phase-6-apply-python-instant-unless-manifests-are-present" title="Permanent link">&para;</a></h3>
+<p>Walks subdirectories of the config dir for any <code>&lt;hostname&gt;/*.yaml</code> files and applies them to that VM with <code>kubectl apply -f -</code> over SSH. For the standard suse-edge workshop there are no such files, so this phase is a no-op. It exists for customisations — instructors can drop extra manifests here without modifying rodeo-cli.</p>
+<hr />
+<h3 id="phase-7-finalise-python-1-min">Phase 7 — finalise (Python, ~1 min)<a class="headerlink" href="#phase-7-finalise-python-1-min" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Enables <code>autostart</code> on all VMs in libvirt. If the host reboots, all VMs come back up automatically.</li>
+<li>Enables <code>libvirt-guests.service</code> so libvirt handles VM shutdown/resume on host power events.</li>
+<li>Prints the lab completion summary with the Rancher URL, SSH commands, and next steps.</li>
+</ul>
+<hr />
+<h2 id="what-exists-when-deploy-finishes">What exists when deploy finishes<a class="headerlink" href="#what-exists-when-deploy-finishes" title="Permanent link">&para;</a></h2>
+<p>By the time <code>rodeo deploy</code> returns, the host has:</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Location</th>
+<th>Created by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>libvirt <code>default</code> NAT network</td>
+<td>virbr0 / 192.168.122.0/24</td>
+<td>vms phase</td>
+</tr>
+<tr>
+<td>rancher VM (running)</td>
+<td>192.168.122.9</td>
+<td>vms / boot phases</td>
+</tr>
+<tr>
+<td>eib VM (running)</td>
+<td>192.168.122.20</td>
+<td>vms / boot phases</td>
+</tr>
+<tr>
+<td>edge1–4 VMs (off, defined)</td>
+<td>192.168.122.31–34</td>
+<td>vms phase</td>
+</tr>
+<tr>
+<td>OVMF UEFI variable store per VM</td>
+<td><code>/var/lib/libvirt/images/*.fd</code></td>
+<td>vms phase</td>
+</tr>
+<tr>
+<td>Host SSH key</td>
+<td><code>/root/.ssh/id_ed25519</code></td>
+<td>vms phase</td>
+</tr>
+<tr>
+<td>DNAT rules (:80/:443 to rancher)</td>
+<td>libvirt hook + firewalld</td>
+<td>kvm_host / boot phases</td>
+</tr>
+<tr>
+<td>K3s cluster</td>
+<td>rancher VM</td>
+<td>rancher phase</td>
+</tr>
+<tr>
+<td>Rancher Prime 2.14.1</td>
+<td>rancher VM</td>
+<td>rancher phase</td>
+</tr>
+<tr>
+<td>cert-manager v1.20.1</td>
+<td>rancher VM</td>
+<td>rancher phase</td>
+</tr>
+<tr>
+<td>Let's Encrypt TLS cert</td>
+<td>rancher VM</td>
+<td>rancher phase</td>
+</tr>
+<tr>
+<td>Elemental Operator 1.9.0</td>
+<td>rancher VM</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>MachineRegistration <code>suse-edge-reg-1</code></td>
+<td>rancher VM (<code>fleet-default</code> ns)</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>Fleet GitRepo <code>alien-geeko</code></td>
+<td>rancher VM (<code>fleet-default</code> ns)</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>Hauler store + services</td>
+<td>eib VM (<code>/var/lib/hauler</code>)</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>EIB container pre-pulled</td>
+<td>eib VM (Hauler OCI :5000)</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>SL Micro base images staged</td>
+<td>eib VM (<code>/home/eib-config/base-images/</code>)</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>Gitea container (running)</td>
+<td>eib VM (:3000)</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>Gitea repo <code>gitea/alien-geeko</code></td>
+<td>eib VM</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>Gitea repo <code>gitea/eib-config</code></td>
+<td>eib VM</td>
+<td>elemental phase</td>
+</tr>
+<tr>
+<td>Lab credentials</td>
+<td><code>~/.rodeo/secrets.yaml</code> on host</td>
+<td>rodeo init</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="lab-credentials">Lab credentials<a class="headerlink" href="#lab-credentials" title="Permanent link">&para;</a></h2>
+<p>All passwords are generated at <code>rodeo init</code> time and stored in <code>~/.rodeo/secrets.yaml</code> on the KVM host. Nothing is hardcoded anywhere.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cat<span class="w"> </span>~/.rodeo/secrets.yaml
+</span></code></pre></div>
+<p>The relevant keys for this lab:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rancher_admin_password</code></td>
+<td>Rancher UI and API</td>
+</tr>
+<tr>
+<td><code>gitea_admin_password</code></td>
+<td>Gitea admin user on eib VM</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="further-reading">Further reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../disconnected-environment/">Disconnected environment reference</a> — runtime data flows and offline design</li>
+<li><a href="../../instructor/host-setup/">Host setup</a> — install and deploy steps for instructors</li>
+<li><a href="../../instructor/pre-lab-checklist/">Pre-lab checklist</a> — verify everything before handing to students</li>
+<li><a href="https://github.com/avaleror/rodeo-cli">rodeo-cli source</a> — profiles, phases, and Ansible roles</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate", "toc.follow", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

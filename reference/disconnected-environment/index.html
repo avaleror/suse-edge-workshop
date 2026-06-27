@@ -1,0 +1,1743 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hands-on workshop — Rancher Prime + Elemental + EIB + Fleet on bare metal KVM">
+      
+      
+      
+        <link rel="canonical" href="https://avaleror.github.io/suse-edge-workshop/reference/disconnected-environment/">
+      
+      
+        <link rel="prev" href="../quick-reference/">
+      
+      
+        <link rel="next" href="../bonus-exercises/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Disconnected environment - SUSE Edge 3.6 Rodeo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SUSE:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"SUSE";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/suse.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#disconnected-environment-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SUSE Edge 3.6 Rodeo" class="md-header__button md-logo" aria-label="SUSE Edge 3.6 Rodeo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SUSE Edge 3.6 Rodeo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Disconnected environment
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/avaleror/suse-edge-workshop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    avaleror/suse-edge-workshop
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../exercises/01-environment-tour/" class="md-tabs__link">
+          
+  
+  
+  Exercises
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../lab-overview/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../instructor/host-setup/" class="md-tabs__link">
+          
+  
+  
+  Instructor
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SUSE Edge 3.6 Rodeo" class="md-nav__button md-logo" aria-label="SUSE Edge 3.6 Rodeo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SUSE Edge 3.6 Rodeo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/avaleror/suse-edge-workshop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    avaleror/suse-edge-workshop
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exercises
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exercises
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/01-environment-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Tour the environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/02-elemental-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Elemental setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/03-eib-builds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 — Build EIB images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/04-boot-nodes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 — Seed and boot nodes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/05-provision-cluster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 — Provision a cluster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exercises/06-fleet-deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 — Fleet deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lab-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disconnected environment
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disconnected environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two phases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-gitea-provides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gitea provides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-hauler-stores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Hauler stores
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-eib-builds-stay-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How EIB builds stay offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-edge-nodes-stay-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How edge nodes stay offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-fleet-stays-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Fleet stays offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-rancher-and-elemental-stay-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Rancher and Elemental stay offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-what-to-check-when-something-cant-pull" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting: what to check when something can't pull
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-level-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component-level summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bonus-exercises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonus exercises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bonus-hauler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonus lab — Hauler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lab-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full lab guide (print)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instructor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Instructor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../instructor/host-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../instructor/pre-lab-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-lab checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two phases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-gitea-provides" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gitea provides
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-hauler-stores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Hauler stores
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-eib-builds-stay-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How EIB builds stay offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-edge-nodes-stay-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How edge nodes stay offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-fleet-stays-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Fleet stays offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-rancher-and-elemental-stay-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Rancher and Elemental stay offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-what-to-check-when-something-cant-pull" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting: what to check when something can't pull
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-level-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component-level summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="disconnected-environment-reference">Disconnected environment reference<a class="headerlink" href="#disconnected-environment-reference" title="Permanent link">&para;</a></h1>
+<p>This lab is designed to run offline after the initial deploy. This page explains what that means in practice: what was pre-staged, what stays local during exercises, and what would break if internet access were cut.</p>
+<hr />
+<h2 id="the-two-phases">The two phases<a class="headerlink" href="#the-two-phases" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Internet needed?</th>
+<th>Who runs it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rodeo deploy</code></td>
+<td>Yes — pulls several GB</td>
+<td>Instructor, once</td>
+</tr>
+<tr>
+<td>Lab exercises (01 – 06)</td>
+<td>No</td>
+<td>Students</td>
+</tr>
+</tbody>
+</table>
+<p>Once <code>rodeo deploy</code> completes, the lab network at <code>192.168.122.0/24</code> is self-sufficient. Every image, binary, artifact, and Git repo needed for the exercises lives locally on the EIB VM.</p>
+<hr />
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>flowchart TB
+    Internet(["☁️  Internet"])
+
+    subgraph HOST["KVM Host  ·  192.168.122.1"]
+        subgraph RANCHER["rancher  ·  192.168.122.9"]
+            Fleet["Fleet controller\nK3s + Rancher Prime 2.14.1\nElemental Op 1.9.0"]
+        end
+
+        subgraph EIBVM["eib  ·  192.168.122.20"]
+            subgraph HAULER["Hauler"]
+                HaulerOCI["OCI registry  :5000\nedge-image-builder\nelemental-register\nalien-geeko"]
+                HaulerFS["File server  :8080\nSL Micro SelfInstall ISO\nSL Micro Default RAW"]
+            end
+            Gitea["Gitea  :3000\ngitea/alien-geeko\ngitea/eib-config"]
+            EIB["EIB\npodman run"]
+        end
+
+        subgraph EDGES["edge nodes  ·  192.168.122.31 – .34"]
+            direction LR
+            E1["edge1  .31\nvTPM · K3s\nElemental"]
+            E2["edge2  .32\nvTPM\nstandby"]
+            E3["edge3  .33\nUEFI · RKE2\nstandalone"]
+            E4["edge4  .34\nUEFI · K3s\nstandalone"]
+        end
+    end
+
+    Internet -. "rodeo deploy (one time)" .-&gt; HOST
+
+    Fleet --&gt;|"1 — polls GitRepo"| Gitea
+    Fleet --&gt;|"2 — push bundles"| EDGES
+
+    EIB --&gt;|"3 — pull images"| HaulerOCI
+    EIB --&gt;|"4 — pull base OS"| HaulerFS
+    EIB --&gt;|"5 — definitions &amp; scripts"| Gitea
+
+    EDGES --&gt;|"6 — registries.yaml"| HaulerOCI</code></pre>
+<table>
+<thead>
+<tr>
+<th>Flow</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Fleet controller on rancher VM polls Gitea on eib VM for <code>alien-geeko</code> GitRepo changes. All traffic on 192.168.122.0/24. No GitHub access after deploy.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Fleet pushes workload bundles from management cluster to downstream cluster agents on the edge nodes.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>EIB pulls container images to embed in OS images from the Hauler OCI registry at :5000.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>EIB pulls the SL Micro base OS (ISO or RAW) from the Hauler file server at :8080.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>EIB clones the <code>eib-config</code> Gitea repo for definition files, NMState network configs, and combustion scripts.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>K3s on every edge node has <code>registries.yaml</code> baked in by EIB, routing docker.io, registry.suse.com, and ghcr.io through Hauler at :5000.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-gitea-provides">What Gitea provides<a class="headerlink" href="#what-gitea-provides" title="Permanent link">&para;</a></h2>
+<p>Gitea is a lightweight open source Git server (MIT license, community-maintained). It is <strong>not</strong> a SUSE Edge product — see the <a href="../bonus-hauler/">Hauler bonus lab</a> for more background on community tools used in this lab.</p>
+<p>Gitea runs on the EIB VM at <code>http://192.168.122.20:3000</code>. It holds two repositories:</p>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>URL</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gitea/alien-geeko</code></td>
+<td><code>http://192.168.122.20:3000/gitea/alien-geeko.git</code></td>
+<td>Fleet GitRepo <code>alien-geeko</code></td>
+</tr>
+<tr>
+<td><code>gitea/eib-config</code></td>
+<td><code>http://192.168.122.20:3000/gitea/eib-config.git</code></td>
+<td>Students in Exercises 2 and 3</td>
+</tr>
+</tbody>
+</table>
+<p><code>alien-geeko</code> is mirrored from GitHub once at deploy time. After that, Fleet polls it every 15 seconds. <code>eib-config</code> holds the EIB image definition templates, NMState network configs, and combustion scripts that students clone in Exercise 2 and use in Exercise 3.</p>
+<p>Verify it is running:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Container status</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>podman<span class="w"> </span>ps<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>gitea<span class="w"> </span>--format<span class="w"> </span><span class="s2">&quot;table {{.Names}}\t{{.Status}}\t{{.Ports}}&quot;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># API check</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:3000/api/v1/version<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># Both repos exist</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:3000/api/v1/repos/gitea/alien-geeko<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys,json; r=json.load(sys.stdin); print(&#39;alien-geeko:&#39;, r[&#39;full_name&#39;], r[&#39;default_branch&#39;])&quot;</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:3000/api/v1/repos/gitea/eib-config<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys,json; r=json.load(sys.stdin); print(&#39;eib-config:&#39;, r[&#39;full_name&#39;], r[&#39;default_branch&#39;])&quot;</span>
+</span></code></pre></div>
+<hr />
+<h2 id="what-hauler-stores">What Hauler stores<a class="headerlink" href="#what-hauler-stores" title="Permanent link">&para;</a></h2>
+<p>Hauler runs on the EIB VM at two endpoints:</p>
+<p><strong>OCI registry — port 5000</strong></p>
+<table>
+<thead>
+<tr>
+<th>Image</th>
+<th>Source</th>
+<th>Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1</code></td>
+<td>SUSE registry</td>
+<td>Exercise 3 — all EIB builds</td>
+</tr>
+<tr>
+<td><code>registry.suse.com/rancher/elemental-register:1.9.0</code></td>
+<td>SUSE registry</td>
+<td>Exercise 3 — Elemental ISO builds</td>
+</tr>
+<tr>
+<td><code>docker.io/avaleror/alien-geeko:latest</code></td>
+<td>Docker Hub</td>
+<td>Exercise 6 — Fleet deploy to edge clusters</td>
+</tr>
+</tbody>
+</table>
+<p><strong>File server — port 8080</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Used in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso</code></td>
+<td>Exercise 3.1, 3.2 — EIB Elemental ISO base</td>
+</tr>
+<tr>
+<td><code>SL-Micro.x86_64-6.2-Default.raw</code></td>
+<td>Exercise 3.3, 3.4 — EIB standalone RAW base</td>
+</tr>
+</tbody>
+</table>
+<p>Verify everything is in place:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Registry catalog</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:5000/v2/_catalog<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1"># File server</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;SL-Micro|iso|raw&quot;</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># Hauler store summary</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>hauler<span class="w"> </span>store<span class="w"> </span>info<span class="w"> </span>--store<span class="w"> </span>/var/lib/hauler
+</span></code></pre></div>
+<hr />
+<h2 id="how-eib-builds-stay-offline">How EIB builds stay offline<a class="headerlink" href="#how-eib-builds-stay-offline" title="Permanent link">&para;</a></h2>
+<p>EIB runs inside Podman on the EIB VM. It pulls from two local sources — one for binary content, one for configuration:</p>
+<p><strong>Hauler (images + base OS):</strong>
+The <code>embeddedArtifacts.registries</code> section in every definition file points EIB at the local Hauler OCI registry:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">embeddedArtifacts</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">registries</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">urls</span><span class="p">:</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.122.20:5000</span>
+</span></code></pre></div>
+<p>EIB queries Hauler for each container image it needs to embed. The SL Micro base OS images (ISO for Elemental nodes, RAW for standalone cluster nodes) are served from the Hauler file server and pre-staged at <code>/home/eib-config/base-images/</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>ls<span class="w"> </span>-lh<span class="w"> </span>/home/eib-config/base-images/
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso  (~900 MB)</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># SL-Micro.x86_64-6.2-Default.raw                      (~2 GB)</span>
+</span></code></pre></div>
+<p><strong>Gitea (definitions + scripts):</strong>
+Students clone the <code>eib-config</code> Gitea repo to get the EIB definition files, NMState network config templates, and combustion scripts:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>clone<span class="w"> </span>http://192.168.122.20:3000/gitea/eib-config<span class="w"> </span>/home/eib-workspace
+</span></code></pre></div>
+<p>The EIB Podman run uses two volume mounts to combine both sources:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>podman<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>-v<span class="w"> </span>/home/eib-workspace:/eib:z<span class="w"> </span><span class="se">\ </span><span class="w">             </span><span class="c1"># definitions, scripts, elemental config, network</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>-v<span class="w"> </span>/home/eib-config/base-images:/eib/base-images:ro<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1"># base OS from Hauler (read-only)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span>registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span>build<span class="w"> </span>--definition-file<span class="w"> </span>elemental-edge1-definition.yaml
+</span></code></pre></div>
+<p>The result: EIB gets its definition files and scripts from Gitea (version-controlled, repeatable) and its binary content from Hauler (portable artifact store). Neither source requires internet access after deploy.</p>
+<hr />
+<h2 id="how-edge-nodes-stay-offline">How edge nodes stay offline<a class="headerlink" href="#how-edge-nodes-stay-offline" title="Permanent link">&para;</a></h2>
+<p>EIB bakes a <code>registries.yaml</code> into every edge node image via the <code>99-k3s-registries.sh</code> script. When K3s starts on the node, it reads this file and routes all container pulls through Hauler:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># /etc/rancher/k3s/registries.yaml (on every edge node)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nt">mirrors</span><span class="p">:</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="s">&quot;docker.io&quot;</span><span class="p p-Indicator">:</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;http://192.168.122.20:5000&quot;</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="s">&quot;registry.suse.com&quot;</span><span class="p p-Indicator">:</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;http://192.168.122.20:5000&quot;</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="s">&quot;ghcr.io&quot;</span><span class="p p-Indicator">:</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;http://192.168.122.20:5000&quot;</span>
+</span></code></pre></div>
+<p>Verify on a running edge node:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.31<span class="w">   </span><span class="c1"># edge1</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>cat<span class="w"> </span>/etc/rancher/k3s/registries.yaml
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>k3s<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;pulling image&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+</span></code></pre></div>
+<hr />
+<h2 id="how-fleet-stays-offline">How Fleet stays offline<a class="headerlink" href="#how-fleet-stays-offline" title="Permanent link">&para;</a></h2>
+<p>The <code>alien-geeko</code> GitRepo resource points at local Gitea, not GitHub:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">repo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://192.168.122.20:3000/gitea/alien-geeko.git</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="nt">branch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
+</span></code></pre></div>
+<p>Fleet's controller on the rancher VM polls this URL every 15 seconds. When students label a cluster (<code>demo=true edge-type=x86-cluster</code>), Fleet detects the match, bundles the Alien-Geeko manifests from the local Gitea repo, and pushes them to the downstream cluster agent. The agent applies the manifests locally without any outbound internet access.</p>
+<p>Verify the GitRepo is using local Gitea:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>kubectl<span class="w"> </span>--kubeconfig<span class="o">=</span>/etc/rancher/k3s/k3s.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span>get<span class="w"> </span>gitrepo<span class="w"> </span>alien-geeko<span class="w"> </span>-n<span class="w"> </span>fleet-default<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.spec.repo}&#39;</span>
+</span></code></pre></div>
+<p>Expected output: <code>http://192.168.122.20:3000/gitea/alien-geeko.git</code></p>
+<hr />
+<h2 id="how-rancher-and-elemental-stay-offline">How Rancher and Elemental stay offline<a class="headerlink" href="#how-rancher-and-elemental-stay-offline" title="Permanent link">&para;</a></h2>
+<p>Rancher was installed with <code>useBundledSystemChart=true</code>. Without this flag, Rancher fetches system charts from <code>github.com/rancher/system-charts</code> at runtime. With it, system charts are bundled inside the Rancher container image.</p>
+<p>Verify:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>kubectl<span class="w"> </span>--kubeconfig<span class="o">=</span>/etc/rancher/k3s/k3s.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span>get<span class="w"> </span>deployment<span class="w"> </span>rancher<span class="w"> </span>-n<span class="w"> </span>cattle-system<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.spec.template.spec.containers[0].args}&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>bundled
+</span></code></pre></div>
+<p>Elemental Operator images are pulled from <code>registry.suse.com</code> during the <code>elemental</code> deploy phase. After that the running operator pods need no external access. Edge nodes use EIB-built images with the Elemental agent pre-embedded — there is no OS channel pull during these exercises.</p>
+<hr />
+<h2 id="troubleshooting-what-to-check-when-something-cant-pull">Troubleshooting: what to check when something can't pull<a class="headerlink" href="#troubleshooting-what-to-check-when-something-cant-pull" title="Permanent link">&para;</a></h2>
+<p><strong>1. Is Gitea running?</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>podman<span class="w"> </span>ps<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>gitea
+</span></code></pre></div>
+<p>Restart if needed:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>podman<span class="w"> </span>restart<span class="w"> </span>gitea
+</span></code></pre></div>
+<p>Verify Fleet can reach it from the management cluster:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://192.168.122.20:3000/api/v1/version
+</span></code></pre></div>
+<p><strong>2. Is Hauler running?</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>systemctl<span class="w"> </span>is-active<span class="w"> </span>hauler-registry<span class="w"> </span>hauler-fileserver
+</span></code></pre></div>
+<p>Restart if needed:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>hauler-registry<span class="w"> </span>hauler-fileserver
+</span></code></pre></div>
+<p><strong>3. Is the image in Hauler?</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:5000/v2/_catalog<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</span></code></pre></div>
+<p>If the image is missing, add it:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>hauler<span class="w"> </span>store<span class="w"> </span>add<span class="w"> </span>image<span class="w"> </span>&lt;image:tag&gt;<span class="w"> </span>--store<span class="w"> </span>/var/lib/hauler
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>hauler-registry
+</span></code></pre></div>
+<p><strong>4. Can the edge node reach Hauler?</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># From edge node</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://192.168.122.20:5000/v2/_catalog
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://192.168.122.20:8080/
+</span></code></pre></div>
+<p>If these fail, check the lab network on the KVM host:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>ip<span class="w"> </span>link<span class="w"> </span>show<span class="w"> </span>virbr0
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>virsh<span class="w"> </span>net-list
+</span></code></pre></div>
+<hr />
+<h2 id="component-level-summary">Component-level summary<a class="headerlink" href="#component-level-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Offline after deploy?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K3s management cluster</td>
+<td>Yes</td>
+<td>Installed; no runtime image pulls</td>
+</tr>
+<tr>
+<td>Rancher Prime</td>
+<td>Yes</td>
+<td><code>useBundledSystemChart=true</code>; system charts bundled</td>
+</tr>
+<tr>
+<td>cert-manager</td>
+<td>Yes</td>
+<td>Installed; no runtime image pulls</td>
+</tr>
+<tr>
+<td>Elemental Operator</td>
+<td>Yes</td>
+<td>Installed; no OS channel pull in these exercises</td>
+</tr>
+<tr>
+<td>Gitea</td>
+<td>Yes</td>
+<td>Runs on eib VM; alien-geeko + eib-config repos initialised at deploy time</td>
+</tr>
+<tr>
+<td>Fleet GitRepo (alien-geeko)</td>
+<td><strong>Yes</strong></td>
+<td>Points at local Gitea — no GitHub access needed</td>
+</tr>
+<tr>
+<td>EIB (on eib VM)</td>
+<td>Yes</td>
+<td>Container image in Hauler; base OS in Hauler; definitions + scripts from Gitea eib-config</td>
+</tr>
+<tr>
+<td>Hauler registry + fileserver</td>
+<td>Yes</td>
+<td>Self-contained on eib VM</td>
+</tr>
+<tr>
+<td>Edge node K3s</td>
+<td>Yes</td>
+<td>Images via Hauler mirror; <code>registries.yaml</code> baked in by EIB</td>
+</tr>
+<tr>
+<td>Alien-Geeko app (Fleet)</td>
+<td>Yes</td>
+<td>Image in Hauler; pulled via K3s mirror on edge nodes</td>
+</tr>
+</tbody>
+</table>
+<p>The lab is fully disconnected after deploy. No exercise step requires outbound internet access.</p>
+<hr />
+<h2 id="further-reading">Further reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://documentation.suse.com/suse-edge/3.5/html/edge/id-air-gapped-deployments-with-edge-image-builder.html">SUSE Edge 3.6 — Air-gapped deployments with EIB</a></li>
+<li><a href="https://docs.k3s.io/installation/airgap">K3s — Air-gap install</a></li>
+<li><a href="https://docs.k3s.io/installation/private-registry">K3s — Private registry configuration</a></li>
+<li><a href="https://documentation.suse.com/cloudnative/rancher-manager/v2.14/en/installation-and-upgrade/other-installation-methods/air-gapped/install-rancher-ha.html">Rancher Prime 2.14 — Air-gap HA install</a></li>
+<li><a href="https://documentation.suse.com/cloudnative/os-manager/1.6/en/airgap.html">Elemental — Air-gap install</a></li>
+<li><a href="https://docs.hauler.dev/docs/intro">Hauler documentation</a></li>
+<li><a href="https://docs.gitea.com">Gitea documentation</a></li>
+<li><a href="https://fleet.rancher.io/reference/ref-gitrepo">Fleet — GitRepo resource</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate", "toc.follow", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

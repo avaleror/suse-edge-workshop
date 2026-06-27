@@ -1,0 +1,3128 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Hands-on workshop — Rancher Prime + Elemental + EIB + Fleet on bare metal KVM">
+      
+      
+      
+        <link rel="canonical" href="https://avaleror.github.io/suse-edge-workshop/lab-guide/">
+      
+      
+        <link rel="prev" href="../reference/bonus-hauler/">
+      
+      
+        <link rel="next" href="../instructor/host-setup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Full lab guide (print) - SUSE Edge 3.6 Rodeo</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=SUSE:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"SUSE";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/suse.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#suse-edge-36-rodeo-lab-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SUSE Edge 3.6 Rodeo" class="md-header__button md-logo" aria-label="SUSE Edge 3.6 Rodeo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SUSE Edge 3.6 Rodeo
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Full lab guide (print)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/avaleror/suse-edge-workshop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    avaleror/suse-edge-workshop
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../exercises/01-environment-tour/" class="md-tabs__link">
+          
+  
+  
+  Exercises
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../reference/lab-overview/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../instructor/host-setup/" class="md-tabs__link">
+          
+  
+  
+  Instructor
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SUSE Edge 3.6 Rodeo" class="md-nav__button md-logo" aria-label="SUSE Edge 3.6 Rodeo" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SUSE Edge 3.6 Rodeo
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/avaleror/suse-edge-workshop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    avaleror/suse-edge-workshop
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exercises
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exercises
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercises/01-environment-tour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Tour the environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercises/02-elemental-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Elemental setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercises/03-eib-builds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 — Build EIB images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercises/04-boot-nodes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 — Seed and boot nodes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercises/05-provision-cluster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 — Provision a cluster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exercises/06-fleet-deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 — Fleet deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lab-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/quick-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/disconnected-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disconnected environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/bonus-exercises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonus exercises
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/bonus-hauler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonus lab — Hauler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full lab guide (print)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full lab guide (print)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before we start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The scenario
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab exercises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-1-tour-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 1 — Tour the environment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-2-configure-elemental-and-the-registration-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 2 — Configure Elemental and the registration endpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 2 — Configure Elemental and the registration endpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-what-elemental-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 What Elemental does
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-inspect-the-machineregistration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Inspect the MachineRegistration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-add-labels-for-cluster-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Add labels for cluster assignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-download-the-registration-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Download the registration config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-verify-elemental-operator-is-healthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Verify Elemental Operator is healthy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-node-network-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Node network plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-3-build-four-eib-images-one-per-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 3 — Build four EIB images — one per node
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 3 — Build four EIB images — one per node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-elemental-image-for-edge1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Elemental image for edge1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-elemental-image-for-edge2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Elemental image for edge2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-standalone-rke2-image-for-edge3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Standalone RKE2 image for edge3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-standalone-k3s-image-for-edge4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Standalone K3s image for edge4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-watch-all-four-builds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Watch all four builds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-4-seed-and-boot-the-four-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 4 — Seed and boot the four nodes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 4 — Seed and boot the four nodes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-elemental-nodes-edge1-and-edge2-iso-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Elemental nodes (edge1 and edge2) — ISO workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-standalone-nodes-edge3-and-edge4-raw-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Standalone nodes (edge3 and edge4) — RAW workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-5-provision-a-k3s-cluster-on-an-elemental-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 5 — Provision a K3s cluster on an Elemental node
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 5 — Provision a K3s cluster on an Elemental node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-check-machineinventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Check MachineInventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-create-a-machineinventoryselectortemplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Create a MachineInventorySelectorTemplate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-label-edge1-for-cluster-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Label edge1 for cluster assignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-create-the-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Create the cluster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-watch-the-cluster-provision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Watch the cluster provision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-6-deploy-workloads-via-fleet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 6 — Deploy workloads via Fleet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 6 — Deploy workloads via Fleet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-trigger-fleet-deployment-on-aerogrid-hub-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Trigger Fleet deployment on aerogrid-hub-01
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-import-edge3-and-edge4-into-rancher-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Import edge3 and edge4 into Rancher (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-verify-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Verify deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-just-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you just built
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-minute-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-minute comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bonus-exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bonus exercises
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bonus exercises">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#try-a-second-elemental-cluster-with-rke2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try a second Elemental cluster with RKE2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#see-what-a-failed-registration-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what a failed registration looks like
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instructor-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instructor notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instructor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Instructor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instructor/host-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instructor/pre-lab-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-lab checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before we start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The scenario
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab exercises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-1-tour-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 1 — Tour the environment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-2-configure-elemental-and-the-registration-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 2 — Configure Elemental and the registration endpoint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 2 — Configure Elemental and the registration endpoint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-what-elemental-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 What Elemental does
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-inspect-the-machineregistration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Inspect the MachineRegistration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-add-labels-for-cluster-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Add labels for cluster assignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-download-the-registration-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Download the registration config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-verify-elemental-operator-is-healthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Verify Elemental Operator is healthy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-node-network-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Node network plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-3-build-four-eib-images-one-per-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 3 — Build four EIB images — one per node
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 3 — Build four EIB images — one per node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-elemental-image-for-edge1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Elemental image for edge1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-elemental-image-for-edge2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Elemental image for edge2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-standalone-rke2-image-for-edge3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Standalone RKE2 image for edge3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-standalone-k3s-image-for-edge4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Standalone K3s image for edge4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-watch-all-four-builds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Watch all four builds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-4-seed-and-boot-the-four-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 4 — Seed and boot the four nodes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 4 — Seed and boot the four nodes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-elemental-nodes-edge1-and-edge2-iso-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Elemental nodes (edge1 and edge2) — ISO workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-standalone-nodes-edge3-and-edge4-raw-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Standalone nodes (edge3 and edge4) — RAW workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-5-provision-a-k3s-cluster-on-an-elemental-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 5 — Provision a K3s cluster on an Elemental node
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 5 — Provision a K3s cluster on an Elemental node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-check-machineinventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Check MachineInventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-create-a-machineinventoryselectortemplate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Create a MachineInventorySelectorTemplate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-label-edge1-for-cluster-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Label edge1 for cluster assignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-create-the-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Create the cluster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-watch-the-cluster-provision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Watch the cluster provision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-6-deploy-workloads-via-fleet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 6 — Deploy workloads via Fleet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 6 — Deploy workloads via Fleet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-trigger-fleet-deployment-on-aerogrid-hub-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Trigger Fleet deployment on aerogrid-hub-01
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-import-edge3-and-edge4-into-rancher-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Import edge3 and edge4 into Rancher (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-verify-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Verify deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-just-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you just built
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-minute-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-minute comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bonus-exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bonus exercises
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bonus exercises">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#try-a-second-elemental-cluster-with-rke2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try a second Elemental cluster with RKE2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#see-what-a-failed-registration-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See what a failed registration looks like
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lab-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lab reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instructor-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instructor notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="suse-edge-36-rodeo-lab-guide">SUSE Edge 3.6 Rodeo — Lab Guide<a class="headerlink" href="#suse-edge-36-rodeo-lab-guide" title="Permanent link">&para;</a></h1>
+<p><strong>Version:</strong> 2.0 | <strong>Date:</strong> June 2026 | <strong>Duration:</strong> ~2.5 hours<br />
+<strong>Author:</strong> Andres Valero, Principal Technology Advocate, SUSE</p>
+<hr />
+<h2 id="before-we-start">Before we start<a class="headerlink" href="#before-we-start" title="Permanent link">&para;</a></h2>
+<p>This is a hands-on lab. You will build OS images, boot edge nodes, register them against a central management plane, and deploy workloads across a mixed fleet — all from one terminal. The goal is not to click through slides. It is to leave knowing how SUSE Edge actually works at the system level.</p>
+<p>Your environment is already partially running. A bare metal host is running five KVM virtual machines: a management cluster, an image-builder VM, and four edge nodes that are currently off. You will turn them on one group at a time, after building the right OS image for each.</p>
+<p><strong>Access credentials</strong> are in <code>~/.rodeo/secrets.yaml</code> on the host.</p>
+<hr />
+<h2 id="the-scenario">The scenario<a class="headerlink" href="#the-scenario" title="Permanent link">&para;</a></h2>
+<p>AeroGrid is a regional airport operator. They run self-service kiosks, baggage tracking terminals, and cargo management dashboards across 47 airport locations. Each location runs between three and five Linux nodes. IT manages them centrally from HQ.</p>
+<p>The problem: each site has its own config history. Some nodes have not been updated in years. Security audit is next month. The CTO's mandate is that every edge node should have the same OS, installed from the same image, managed from a single control plane. New nodes at any site should onboard automatically with no hands-on config at the remote end.</p>
+<p>AeroGrid also has two types of sites: larger hubs that need Kubernetes clusters capable of running containerized applications, and smaller branch terminals that just need a managed Linux node with lightweight workloads. SUSE Edge handles both from the same management plane.</p>
+<hr />
+<h2 id="lab-topology">Lab topology<a class="headerlink" href="#lab-topology" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>KVM host (bare metal)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── rancher   192.168.122.9    Rancher Prime 2.14.1 + Elemental Operator 1.9.0 + Fleet
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── eib       192.168.122.20   EIB 1.3.3.1 + Hauler 1.2.2 (local artifact registry)
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>├── edge1     192.168.122.31   [OFF] vTPM 2.0, UEFI  →  Elemental onboarding  →  K3s cluster
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── edge2     192.168.122.32   [OFF] vTPM 2.0, UEFI  →  Elemental onboarding  →  standalone
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├── edge3     192.168.122.33   [OFF] UEFI             →  EIB standalone        →  RKE2 cluster
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└── edge4     192.168.122.34   [OFF] UEFI             →  EIB standalone        →  K3s cluster
+</span></code></pre></div>
+<p><strong>Two provisioning paths run in parallel in this lab:</strong></p>
+<ul>
+<li><strong>Elemental path (edge1, edge2):</strong> Phone-home onboarding via TPM. The node boots, the Elemental agent contacts the registration endpoint, and the management cluster takes control. Cluster provisioning happens from Rancher — not from the node.</li>
+<li><strong>EIB standalone path (edge3, edge4):</strong> The image is self-contained. Boot it, and you have a running Kubernetes cluster. No phone-home. No registration step. Import into Rancher afterwards if you want central management.</li>
+</ul>
+<p>Understanding when to use each path is one of the core takeaways from this lab.</p>
+<hr />
+<h2 id="lab-exercises">Lab exercises<a class="headerlink" href="#lab-exercises" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Exercise</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Tour the environment</td>
+<td>15 min</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Configure Elemental, the registration endpoint, and the node network plan</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Build four EIB images — one per node, each with its own network config</td>
+<td>50 min</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Seed and boot the four nodes</td>
+<td>25 min</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Provision a K3s cluster on an Elemental node</td>
+<td>20 min</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Deploy workloads via Fleet</td>
+<td>20 min</td>
+</tr>
+</tbody>
+</table>
+<p>Total run time assumes EIB builds overlap with other steps. Each build runs in the background while you move on. Start each build, check it is progressing cleanly, then move to the next.</p>
+<hr />
+<h2 id="exercise-1-tour-the-environment">Exercise 1 — Tour the environment<a class="headerlink" href="#exercise-1-tour-the-environment" title="Permanent link">&para;</a></h2>
+<p>Get your bearings before touching anything. From the KVM host:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># What VMs are running, what is off</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>virsh<span class="w"> </span>list<span class="w"> </span>--all
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Check the management cluster</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="s2">&quot;kubectl get nodes &amp;&amp; kubectl get pods -A | grep -E &#39;rancher|elemental|cert-manager|fleet&#39;&quot;</span>
+</span></code></pre></div>
+<p>You should see one K3s node (the rancher VM itself) with pods for Rancher Prime, cert-manager, the Elemental Operator, and Fleet. This is your management cluster. It manages everything else.</p>
+<p>Now check the eib VM — your image factory:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="s2">&quot;podman images | grep edge-image-builder &amp;&amp; \</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="s2">   systemctl is-active hauler-registry hauler-fileserver &amp;&amp; \</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="s2">   ls /home/eib-config/&quot;</span>
+</span></code></pre></div>
+<p>Hauler is running two services: an OCI registry on port 5000 (container images) and an HTTP fileserver on port 8080 (binary artifacts and OS base images). Everything used in this lab comes from one of these two endpoints. The eib VM does not need internet access once Hauler is populated.</p>
+<p>Check what is in the Hauler store:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="s2">&quot;hauler store info --store /var/lib/hauler 2&gt;/dev/null | head -40&quot;</span>
+</span></code></pre></div>
+<p>You should see the EIB container image, the Elemental register agent, the Alien-Geeko app image, and the SL Micro base image. These were pre-staged by the instructor before the lab started.</p>
+<hr />
+<h2 id="exercise-2-configure-elemental-and-the-registration-endpoint">Exercise 2 — Configure Elemental and the registration endpoint<a class="headerlink" href="#exercise-2-configure-elemental-and-the-registration-endpoint" title="Permanent link">&para;</a></h2>
+<p>This exercise runs before you build any images. The reason: the Elemental path needs a registration URL embedded in the OS image. You cannot build the image before you have the endpoint configured and know its URL.</p>
+<h3 id="21-what-elemental-does">2.1 What Elemental does<a class="headerlink" href="#21-what-elemental-does" title="Permanent link">&para;</a></h3>
+<p>Elemental is the component that handles autonomous node onboarding. An edge node boots, the <code>elemental-register</code> agent starts, and it contacts a registration URL that you define on the management cluster. The Elemental Operator validates the node's identity (via TPM in this lab), creates a <code>MachineInventory</code> record, and from that point the management cluster controls the node's lifecycle.</p>
+<p>You do not SSH into the node. You do not run scripts on it. The node phones home and identifies itself.</p>
+<h3 id="22-inspect-the-machineregistration">2.2 Inspect the MachineRegistration<a class="headerlink" href="#22-inspect-the-machineregistration" title="Permanent link">&para;</a></h3>
+<p>A <code>MachineRegistration</code> defines who is allowed to register and what labels the node gets when it does. One has already been created for this lab. Open it:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="s2">&quot;kubectl get machineregistration -n fleet-default -o yaml&quot;</span>
+</span></code></pre></div>
+<p>Look at the spec. Key fields:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">machineName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${System</span><span class="nv"> </span><span class="s">Information/Manufacturer}-${System</span><span class="nv"> </span><span class="s">Information/UUID}&quot;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">elemental</span><span class="p">:</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="nt">registration</span><span class="p">:</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="nt">auth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tpm</span><span class="w">                   </span><span class="c1"># TPM-based identity — hardware-bound</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">      </span><span class="nt">install</span><span class="p">:</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="nt">powerOff</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">              </span><span class="c1"># Power off after install, before first-run reboot</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="nt">machineInventoryLabels</span><span class="p">:</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="nt">manufacturer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${System</span><span class="nv"> </span><span class="s">Information/Manufacturer}&quot;</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="nt">productName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${System</span><span class="nv"> </span><span class="s">Information/Product</span><span class="nv"> </span><span class="s">Name}&quot;</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="nt">locationID</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w">                  </span><span class="c1"># You will fill this in per node</span>
+</span></code></pre></div>
+<p><code>auth: tpm</code> means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. For edge security — remote sites where you cannot guarantee physical security — this matters.</p>
+<h3 id="23-add-labels-for-cluster-assignment">2.3 Add labels for cluster assignment<a class="headerlink" href="#23-add-labels-for-cluster-assignment" title="Permanent link">&para;</a></h3>
+<p>You are going to use labels to tell the management cluster which nodes should form clusters. Add the labels the MachineInventorySelectorTemplate will match later:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Check the current registration name</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="s2">&quot;kubectl get machineregistration -n fleet-default&quot;</span>
+</span></code></pre></div>
+<p>Note the registration name (something like <code>suse-edge-reg-1</code>). Now look at the registration URL — you need this for the EIB image build in Exercise 3:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">REGURL</span><span class="o">=</span><span class="k">$(</span>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="s2">&quot;kubectl get machineregistration suse-edge-reg-1 \</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="s2">   -n fleet-default \</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="s2">   -o jsonpath=&#39;{.status.registrationURL}&#39;&quot;</span><span class="k">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Registration URL: </span><span class="nv">$REGURL</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<p><strong>Copy this URL.</strong> You will embed it in the Elemental EIB image definition in the next exercise.</p>
+<h3 id="24-download-the-registration-config">2.4 Download the registration config<a class="headerlink" href="#24-download-the-registration-config" title="Permanent link">&para;</a></h3>
+<p>The registration URL does more than identify the endpoint. Fetching it returns a full YAML config blob that <code>elemental-register</code> uses at boot. Download it now:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20<span class="w"> </span><span class="s2">&quot;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="s2">  mkdir -p /home/eib-config/elemental</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="s2">  curl -k \&quot;</span><span class="nv">$REGURL</span><span class="s2">\&quot; -o /home/eib-config/elemental/elemental_config.yaml</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="s2">  cat /home/eib-config/elemental/elemental_config.yaml</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="s2">&quot;</span>
+</span></code></pre></div>
+<p>This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that <code>elemental-register</code> needs to authenticate via TPM. EIB will embed it into the OS image so it is present at first boot — no network config required at the remote site.</p>
+<h3 id="25-verify-elemental-operator-is-healthy">2.5 Verify Elemental Operator is healthy<a class="headerlink" href="#25-verify-elemental-operator-is-healthy" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="s2">&quot;kubectl get pods -n cattle-elemental-system&quot;</span>
+</span></code></pre></div>
+<p>Both <code>elemental-operator</code> and <code>elemental-operator-webhook</code> should be <code>Running</code>. If either is not, stop and flag it before building images — nodes cannot register against a broken operator.</p>
+<h3 id="26-node-network-plan">2.6 Node network plan<a class="headerlink" href="#26-node-network-plan" title="Permanent link">&para;</a></h3>
+<p>Each node gets a static IP baked into its disk image by EIB. No DHCP dependency at the edge, and addresses you can put in monitoring config before the node ever boots.</p>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>IP</th>
+<th>Prefix</th>
+<th>Gateway</th>
+<th>DNS</th>
+<th>MAC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>edge1</td>
+<td>192.168.122.31</td>
+<td>/24</td>
+<td>192.168.122.1</td>
+<td>192.168.122.1</td>
+<td>02:00:00:0E:62:A1</td>
+</tr>
+<tr>
+<td>edge2</td>
+<td>192.168.122.32</td>
+<td>/24</td>
+<td>192.168.122.1</td>
+<td>192.168.122.1</td>
+<td>02:00:00:0E:62:A2</td>
+</tr>
+<tr>
+<td>edge3</td>
+<td>192.168.122.33</td>
+<td>/24</td>
+<td>192.168.122.1</td>
+<td>192.168.122.1</td>
+<td>02:00:00:0E:62:A3</td>
+</tr>
+<tr>
+<td>edge4</td>
+<td>192.168.122.34</td>
+<td>/24</td>
+<td>192.168.122.1</td>
+<td>192.168.122.1</td>
+<td>02:00:00:0E:62:A4</td>
+</tr>
+</tbody>
+</table>
+<p>EIB picks up any YAML files in the <code>network/</code> subdirectory of its config dir and processes them as NMState configs. Each build will use exactly one file — one node, one IP. Create all four files now so they are ready when you start the builds:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/home/eib-config/network-configs
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/network-configs/edge1.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="s">interfaces:</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="s">  - name: eth0</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="s">    type: ethernet</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="s">    state: up</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="s">    ipv4:</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="s">      address:</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="s">        - ip: 192.168.122.31</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="s">          prefix-length: 24</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="s">      dhcp: false</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="s">      enabled: true</span>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="s">routes:</span>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="s">  config:</span>
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="s">    - destination: 0.0.0.0/0</span>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="s">      next-hop-address: 192.168.122.1</span>
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="s">      next-hop-interface: eth0</span>
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="s">dns-resolver:</span>
+</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="s">  config:</span>
+</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="s">    servers:</span>
+</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="s">      - 192.168.122.1</span>
+</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="s">EOF</span>
+</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>
+</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/network-configs/edge2.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="s">interfaces:</span>
+</span><span id="__span-10-29"><a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="s">  - name: eth0</span>
+</span><span id="__span-10-30"><a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="s">    type: ethernet</span>
+</span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a><span class="s">    state: up</span>
+</span><span id="__span-10-32"><a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="s">    ipv4:</span>
+</span><span id="__span-10-33"><a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a><span class="s">      address:</span>
+</span><span id="__span-10-34"><a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a><span class="s">        - ip: 192.168.122.32</span>
+</span><span id="__span-10-35"><a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a><span class="s">          prefix-length: 24</span>
+</span><span id="__span-10-36"><a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a><span class="s">      dhcp: false</span>
+</span><span id="__span-10-37"><a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a><span class="s">      enabled: true</span>
+</span><span id="__span-10-38"><a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a><span class="s">routes:</span>
+</span><span id="__span-10-39"><a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a><span class="s">  config:</span>
+</span><span id="__span-10-40"><a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a><span class="s">    - destination: 0.0.0.0/0</span>
+</span><span id="__span-10-41"><a id="__codelineno-10-41" name="__codelineno-10-41" href="#__codelineno-10-41"></a><span class="s">      next-hop-address: 192.168.122.1</span>
+</span><span id="__span-10-42"><a id="__codelineno-10-42" name="__codelineno-10-42" href="#__codelineno-10-42"></a><span class="s">      next-hop-interface: eth0</span>
+</span><span id="__span-10-43"><a id="__codelineno-10-43" name="__codelineno-10-43" href="#__codelineno-10-43"></a><span class="s">dns-resolver:</span>
+</span><span id="__span-10-44"><a id="__codelineno-10-44" name="__codelineno-10-44" href="#__codelineno-10-44"></a><span class="s">  config:</span>
+</span><span id="__span-10-45"><a id="__codelineno-10-45" name="__codelineno-10-45" href="#__codelineno-10-45"></a><span class="s">    servers:</span>
+</span><span id="__span-10-46"><a id="__codelineno-10-46" name="__codelineno-10-46" href="#__codelineno-10-46"></a><span class="s">      - 192.168.122.1</span>
+</span><span id="__span-10-47"><a id="__codelineno-10-47" name="__codelineno-10-47" href="#__codelineno-10-47"></a><span class="s">EOF</span>
+</span><span id="__span-10-48"><a id="__codelineno-10-48" name="__codelineno-10-48" href="#__codelineno-10-48"></a>
+</span><span id="__span-10-49"><a id="__codelineno-10-49" name="__codelineno-10-49" href="#__codelineno-10-49"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/network-configs/edge3.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-10-50"><a id="__codelineno-10-50" name="__codelineno-10-50" href="#__codelineno-10-50"></a><span class="s">interfaces:</span>
+</span><span id="__span-10-51"><a id="__codelineno-10-51" name="__codelineno-10-51" href="#__codelineno-10-51"></a><span class="s">  - name: eth0</span>
+</span><span id="__span-10-52"><a id="__codelineno-10-52" name="__codelineno-10-52" href="#__codelineno-10-52"></a><span class="s">    type: ethernet</span>
+</span><span id="__span-10-53"><a id="__codelineno-10-53" name="__codelineno-10-53" href="#__codelineno-10-53"></a><span class="s">    state: up</span>
+</span><span id="__span-10-54"><a id="__codelineno-10-54" name="__codelineno-10-54" href="#__codelineno-10-54"></a><span class="s">    ipv4:</span>
+</span><span id="__span-10-55"><a id="__codelineno-10-55" name="__codelineno-10-55" href="#__codelineno-10-55"></a><span class="s">      address:</span>
+</span><span id="__span-10-56"><a id="__codelineno-10-56" name="__codelineno-10-56" href="#__codelineno-10-56"></a><span class="s">        - ip: 192.168.122.33</span>
+</span><span id="__span-10-57"><a id="__codelineno-10-57" name="__codelineno-10-57" href="#__codelineno-10-57"></a><span class="s">          prefix-length: 24</span>
+</span><span id="__span-10-58"><a id="__codelineno-10-58" name="__codelineno-10-58" href="#__codelineno-10-58"></a><span class="s">      dhcp: false</span>
+</span><span id="__span-10-59"><a id="__codelineno-10-59" name="__codelineno-10-59" href="#__codelineno-10-59"></a><span class="s">      enabled: true</span>
+</span><span id="__span-10-60"><a id="__codelineno-10-60" name="__codelineno-10-60" href="#__codelineno-10-60"></a><span class="s">routes:</span>
+</span><span id="__span-10-61"><a id="__codelineno-10-61" name="__codelineno-10-61" href="#__codelineno-10-61"></a><span class="s">  config:</span>
+</span><span id="__span-10-62"><a id="__codelineno-10-62" name="__codelineno-10-62" href="#__codelineno-10-62"></a><span class="s">    - destination: 0.0.0.0/0</span>
+</span><span id="__span-10-63"><a id="__codelineno-10-63" name="__codelineno-10-63" href="#__codelineno-10-63"></a><span class="s">      next-hop-address: 192.168.122.1</span>
+</span><span id="__span-10-64"><a id="__codelineno-10-64" name="__codelineno-10-64" href="#__codelineno-10-64"></a><span class="s">      next-hop-interface: eth0</span>
+</span><span id="__span-10-65"><a id="__codelineno-10-65" name="__codelineno-10-65" href="#__codelineno-10-65"></a><span class="s">dns-resolver:</span>
+</span><span id="__span-10-66"><a id="__codelineno-10-66" name="__codelineno-10-66" href="#__codelineno-10-66"></a><span class="s">  config:</span>
+</span><span id="__span-10-67"><a id="__codelineno-10-67" name="__codelineno-10-67" href="#__codelineno-10-67"></a><span class="s">    servers:</span>
+</span><span id="__span-10-68"><a id="__codelineno-10-68" name="__codelineno-10-68" href="#__codelineno-10-68"></a><span class="s">      - 192.168.122.1</span>
+</span><span id="__span-10-69"><a id="__codelineno-10-69" name="__codelineno-10-69" href="#__codelineno-10-69"></a><span class="s">EOF</span>
+</span><span id="__span-10-70"><a id="__codelineno-10-70" name="__codelineno-10-70" href="#__codelineno-10-70"></a>
+</span><span id="__span-10-71"><a id="__codelineno-10-71" name="__codelineno-10-71" href="#__codelineno-10-71"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/network-configs/edge4.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-10-72"><a id="__codelineno-10-72" name="__codelineno-10-72" href="#__codelineno-10-72"></a><span class="s">interfaces:</span>
+</span><span id="__span-10-73"><a id="__codelineno-10-73" name="__codelineno-10-73" href="#__codelineno-10-73"></a><span class="s">  - name: eth0</span>
+</span><span id="__span-10-74"><a id="__codelineno-10-74" name="__codelineno-10-74" href="#__codelineno-10-74"></a><span class="s">    type: ethernet</span>
+</span><span id="__span-10-75"><a id="__codelineno-10-75" name="__codelineno-10-75" href="#__codelineno-10-75"></a><span class="s">    state: up</span>
+</span><span id="__span-10-76"><a id="__codelineno-10-76" name="__codelineno-10-76" href="#__codelineno-10-76"></a><span class="s">    ipv4:</span>
+</span><span id="__span-10-77"><a id="__codelineno-10-77" name="__codelineno-10-77" href="#__codelineno-10-77"></a><span class="s">      address:</span>
+</span><span id="__span-10-78"><a id="__codelineno-10-78" name="__codelineno-10-78" href="#__codelineno-10-78"></a><span class="s">        - ip: 192.168.122.34</span>
+</span><span id="__span-10-79"><a id="__codelineno-10-79" name="__codelineno-10-79" href="#__codelineno-10-79"></a><span class="s">          prefix-length: 24</span>
+</span><span id="__span-10-80"><a id="__codelineno-10-80" name="__codelineno-10-80" href="#__codelineno-10-80"></a><span class="s">      dhcp: false</span>
+</span><span id="__span-10-81"><a id="__codelineno-10-81" name="__codelineno-10-81" href="#__codelineno-10-81"></a><span class="s">      enabled: true</span>
+</span><span id="__span-10-82"><a id="__codelineno-10-82" name="__codelineno-10-82" href="#__codelineno-10-82"></a><span class="s">routes:</span>
+</span><span id="__span-10-83"><a id="__codelineno-10-83" name="__codelineno-10-83" href="#__codelineno-10-83"></a><span class="s">  config:</span>
+</span><span id="__span-10-84"><a id="__codelineno-10-84" name="__codelineno-10-84" href="#__codelineno-10-84"></a><span class="s">    - destination: 0.0.0.0/0</span>
+</span><span id="__span-10-85"><a id="__codelineno-10-85" name="__codelineno-10-85" href="#__codelineno-10-85"></a><span class="s">      next-hop-address: 192.168.122.1</span>
+</span><span id="__span-10-86"><a id="__codelineno-10-86" name="__codelineno-10-86" href="#__codelineno-10-86"></a><span class="s">      next-hop-interface: eth0</span>
+</span><span id="__span-10-87"><a id="__codelineno-10-87" name="__codelineno-10-87" href="#__codelineno-10-87"></a><span class="s">dns-resolver:</span>
+</span><span id="__span-10-88"><a id="__codelineno-10-88" name="__codelineno-10-88" href="#__codelineno-10-88"></a><span class="s">  config:</span>
+</span><span id="__span-10-89"><a id="__codelineno-10-89" name="__codelineno-10-89" href="#__codelineno-10-89"></a><span class="s">    servers:</span>
+</span><span id="__span-10-90"><a id="__codelineno-10-90" name="__codelineno-10-90" href="#__codelineno-10-90"></a><span class="s">      - 192.168.122.1</span>
+</span><span id="__span-10-91"><a id="__codelineno-10-91" name="__codelineno-10-91" href="#__codelineno-10-91"></a><span class="s">EOF</span>
+</span><span id="__span-10-92"><a id="__codelineno-10-92" name="__codelineno-10-92" href="#__codelineno-10-92"></a>
+</span><span id="__span-10-93"><a id="__codelineno-10-93" name="__codelineno-10-93" href="#__codelineno-10-93"></a>ls<span class="w"> </span>-la<span class="w"> </span>/home/eib-config/network-configs/
+</span><span id="__span-10-94"><a id="__codelineno-10-94" name="__codelineno-10-94" href="#__codelineno-10-94"></a><span class="nb">exit</span>
+</span></code></pre></div>
+<p>The interface name <code>eth0</code> comes from <code>net.ifnames=0</code> in the EIB definition's <code>kernelArgs</code>. Without that kernel arg, SL Micro would name the first NIC something like <code>ens3</code> depending on PCI bus order. With the arg set, the old naming convention applies consistently across builds.</p>
+<hr />
+<h2 id="exercise-3-build-four-eib-images-one-per-node">Exercise 3 — Build four EIB images — one per node<a class="headerlink" href="#exercise-3-build-four-eib-images-one-per-node" title="Permanent link">&para;</a></h2>
+<p>Each node gets its own image with its own static IP baked in. That means four builds, four definition files, and exactly one NMState config in <code>network/</code> for each run.</p>
+<table>
+<thead>
+<tr>
+<th>Image</th>
+<th>Node</th>
+<th>Base</th>
+<th>Output</th>
+<th>IP</th>
+<th>Kubernetes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>elemental-edge1.iso</code></td>
+<td>edge1</td>
+<td>SL Micro 6.2 SelfInstall ISO</td>
+<td>ISO</td>
+<td>192.168.122.31</td>
+<td>None (Elemental)</td>
+</tr>
+<tr>
+<td><code>elemental-edge2.iso</code></td>
+<td>edge2</td>
+<td>SL Micro 6.2 SelfInstall ISO</td>
+<td>ISO</td>
+<td>192.168.122.32</td>
+<td>None (Elemental)</td>
+</tr>
+<tr>
+<td><code>rke2-edge3.raw</code></td>
+<td>edge3</td>
+<td>SL Micro 6.2 Cloud RAW</td>
+<td>RAW</td>
+<td>192.168.122.33</td>
+<td>RKE2 v1.35.3+rke2r3</td>
+</tr>
+<tr>
+<td><code>k3s-edge4.raw</code></td>
+<td>edge4</td>
+<td>SL Micro 6.2 Cloud RAW</td>
+<td>RAW</td>
+<td>192.168.122.34</td>
+<td>K3s v1.35.3+k3s1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The build pattern for each node:</strong>
+1. Clear the <code>network/</code> dir and drop only that node's NMState file there
+2. Write the node-specific definition yaml
+3. Start EIB in the background
+4. Move on to the next node</p>
+<p>SSH to the eib VM and stay there for this entire exercise:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.20
+</span></code></pre></div>
+<p>Check the base images available from Hauler and download them:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;iso|raw|qcow&quot;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/home/eib-config/base-images<span class="w"> </span>/home/eib-config/network<span class="w"> </span>/home/eib-config/scripts
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># SL Micro SelfInstall ISO for Elemental nodes</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span><span class="s2">&quot;http://localhost:8080/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">  </span>-o<span class="w"> </span>/home/eib-config/base-images/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="c1"># SL Micro Cloud RAW for standalone cluster nodes</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span><span class="s2">&quot;http://localhost:8080/SL-Micro.x86_64-6.2-Default.raw&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">  </span>-o<span class="w"> </span>/home/eib-config/base-images/SL-Micro.x86_64-6.2-Default.raw
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>ls<span class="w"> </span>-lh<span class="w"> </span>/home/eib-config/base-images/
+</span></code></pre></div>
+<h3 id="31-elemental-image-for-edge1">3.1 Elemental image for edge1<a class="headerlink" href="#31-elemental-image-for-edge1" title="Permanent link">&para;</a></h3>
+<p>This image boots, installs SL Micro to disk, and on first boot <code>elemental-register</code> phones home to the management cluster. The static IP 192.168.122.31 is baked in via NMState so the node is reachable at that address the moment it finishes installing.</p>
+<p>Set the network config and create the definition:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Load edge1&#39;s network config — only one file in network/ at a time</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>rm<span class="w"> </span>-f<span class="w"> </span>/home/eib-config/network/*.yaml
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>cp<span class="w"> </span>/home/eib-config/network-configs/edge1.yaml<span class="w"> </span>/home/eib-config/network/
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/elemental-edge1-definition.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="s">apiVersion: 1.0</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="s">image:</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="s">  imageType: iso</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="s">  arch: x86_64</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="s">  baseImage: SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="s">  outputImageName: elemental-edge1.iso</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="s">operatingSystem:</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="s">  kernelArgs:</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="s">    - net.ifnames=0</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="s">  files:</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="s">    - sourcePath: elemental/elemental_config.yaml</span>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="s">      destinationPath: /oem/elemental.yaml</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="s">embeddedArtifacts:</span>
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="s">  registries:</span>
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="s">    urls:</span>
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="s">      - 192.168.122.20:5000</span>
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a><span class="s">EOF</span>
+</span></code></pre></div>
+<p>The <code>files:</code> section embeds the Elemental registration config you downloaded in Exercise 2 into <code>/oem/elemental.yaml</code> on the OS. When the node boots and <code>elemental-register</code> runs, it reads that file and knows where to call home. The NMState config in <code>network/</code> is what gives the node its static IP.</p>
+<p>Start the build in the background:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>podman<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span>-v<span class="w"> </span>/home/eib-config:/eib:z<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span>registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span>build<span class="w"> </span>--definition-file<span class="w"> </span>elemental-edge1-definition.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span>&gt;<span class="w"> </span>/tmp/eib-edge1.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;edge1 build PID: </span><span class="nv">$!</span><span class="s2">&quot;</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>tail<span class="w"> </span>-5<span class="w"> </span>/tmp/eib-edge1.log
+</span></code></pre></div>
+<p>Move on to the next definition while this runs. ISO builds are fast — usually a few minutes.</p>
+<h3 id="32-elemental-image-for-edge2">3.2 Elemental image for edge2<a class="headerlink" href="#32-elemental-image-for-edge2" title="Permanent link">&para;</a></h3>
+<p>Same Elemental path as edge1 but a different IP (192.168.122.32). Two separate ISOs so each node has its own identity from the moment it boots.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Check edge1 build is progressing before starting edge2</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>tail<span class="w"> </span>-10<span class="w"> </span>/tmp/eib-edge1.log
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1"># Swap in edge2&#39;s network config</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>rm<span class="w"> </span>-f<span class="w"> </span>/home/eib-config/network/*.yaml
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>cp<span class="w"> </span>/home/eib-config/network-configs/edge2.yaml<span class="w"> </span>/home/eib-config/network/
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/elemental-edge2-definition.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="s">apiVersion: 1.0</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="s">image:</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="s">  imageType: iso</span>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="s">  arch: x86_64</span>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="s">  baseImage: SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso</span>
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="s">  outputImageName: elemental-edge2.iso</span>
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="s">operatingSystem:</span>
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="s">  kernelArgs:</span>
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a><span class="s">    - net.ifnames=0</span>
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="s">  files:</span>
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="s">    - sourcePath: elemental/elemental_config.yaml</span>
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a><span class="s">      destinationPath: /oem/elemental.yaml</span>
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a><span class="s">embeddedArtifacts:</span>
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a><span class="s">  registries:</span>
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a><span class="s">    urls:</span>
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a><span class="s">      - 192.168.122.20:5000</span>
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a><span class="s">EOF</span>
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>
+</span><span id="__span-15-30"><a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>podman<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-31"><a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a><span class="w">  </span>-v<span class="w"> </span>/home/eib-config:/eib:z<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-32"><a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a><span class="w">  </span>registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-33"><a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a><span class="w">  </span>build<span class="w"> </span>--definition-file<span class="w"> </span>elemental-edge2-definition.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-34"><a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a><span class="w">  </span>&gt;<span class="w"> </span>/tmp/eib-edge2.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</span><span id="__span-15-35"><a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a>
+</span><span id="__span-15-36"><a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;edge2 build PID: </span><span class="nv">$!</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<h3 id="33-standalone-rke2-image-for-edge3">3.3 Standalone RKE2 image for edge3<a class="headerlink" href="#33-standalone-rke2-image-for-edge3" title="Permanent link">&para;</a></h3>
+<p>This image boots and comes up as a running single-node RKE2 cluster — no registration, no phone-home. The full Kubernetes stack is embedded in the disk. Static IP 192.168.122.33, hostname <code>edge3</code> set at first boot.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Swap in edge3&#39;s network config</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>rm<span class="w"> </span>-f<span class="w"> </span>/home/eib-config/network/*.yaml
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>cp<span class="w"> </span>/home/eib-config/network-configs/edge3.yaml<span class="w"> </span>/home/eib-config/network/
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="c1"># Hostname script — EIB embeds this as a combustion script, runs at first boot</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/scripts/10-hostname-edge3.sh<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="s">#!/bin/bash</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="s">hostnamectl set-hostname edge3</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="s">EOF</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>chmod<span class="w"> </span>+x<span class="w"> </span>/home/eib-config/scripts/10-hostname-edge3.sh
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/rke2-edge3-definition.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="s">apiVersion: 1.0</span>
+</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>
+</span><span id="__span-16-15"><a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="s">image:</span>
+</span><span id="__span-16-16"><a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a><span class="s">  imageType: raw</span>
+</span><span id="__span-16-17"><a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a><span class="s">  arch: x86_64</span>
+</span><span id="__span-16-18"><a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a><span class="s">  baseImage: SL-Micro.x86_64-6.2-Default.raw</span>
+</span><span id="__span-16-19"><a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a><span class="s">  outputImageName: rke2-edge3.raw</span>
+</span><span id="__span-16-20"><a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a>
+</span><span id="__span-16-21"><a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a><span class="s">operatingSystem:</span>
+</span><span id="__span-16-22"><a id="__codelineno-16-22" name="__codelineno-16-22" href="#__codelineno-16-22"></a><span class="s">  kernelArgs:</span>
+</span><span id="__span-16-23"><a id="__codelineno-16-23" name="__codelineno-16-23" href="#__codelineno-16-23"></a><span class="s">    - net.ifnames=0</span>
+</span><span id="__span-16-24"><a id="__codelineno-16-24" name="__codelineno-16-24" href="#__codelineno-16-24"></a><span class="s">  scripts:</span>
+</span><span id="__span-16-25"><a id="__codelineno-16-25" name="__codelineno-16-25" href="#__codelineno-16-25"></a><span class="s">    - 10-hostname-edge3.sh</span>
+</span><span id="__span-16-26"><a id="__codelineno-16-26" name="__codelineno-16-26" href="#__codelineno-16-26"></a><span class="s">    - 99-k3s-registries.sh</span>
+</span><span id="__span-16-27"><a id="__codelineno-16-27" name="__codelineno-16-27" href="#__codelineno-16-27"></a>
+</span><span id="__span-16-28"><a id="__codelineno-16-28" name="__codelineno-16-28" href="#__codelineno-16-28"></a><span class="s">kubernetes:</span>
+</span><span id="__span-16-29"><a id="__codelineno-16-29" name="__codelineno-16-29" href="#__codelineno-16-29"></a><span class="s">  version: v1.35.3+rke2r3</span>
+</span><span id="__span-16-30"><a id="__codelineno-16-30" name="__codelineno-16-30" href="#__codelineno-16-30"></a>
+</span><span id="__span-16-31"><a id="__codelineno-16-31" name="__codelineno-16-31" href="#__codelineno-16-31"></a><span class="s">embeddedArtifacts:</span>
+</span><span id="__span-16-32"><a id="__codelineno-16-32" name="__codelineno-16-32" href="#__codelineno-16-32"></a><span class="s">  registries:</span>
+</span><span id="__span-16-33"><a id="__codelineno-16-33" name="__codelineno-16-33" href="#__codelineno-16-33"></a><span class="s">    urls:</span>
+</span><span id="__span-16-34"><a id="__codelineno-16-34" name="__codelineno-16-34" href="#__codelineno-16-34"></a><span class="s">      - 192.168.122.20:5000</span>
+</span><span id="__span-16-35"><a id="__codelineno-16-35" name="__codelineno-16-35" href="#__codelineno-16-35"></a><span class="s">EOF</span>
+</span></code></pre></div>
+<p>The <code>kubernetes:</code> section is the key difference from the Elemental builds. EIB downloads the RKE2 binary, all required container images, and configures CRI-O. Everything lands in the disk image. The node does not need internet access or a running management plane — it starts Kubernetes on its own at boot.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Check edge2 build is moving before adding another job</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>tail<span class="w"> </span>-10<span class="w"> </span>/tmp/eib-edge2.log
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>podman<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">  </span>-v<span class="w"> </span>/home/eib-config:/eib:z<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">  </span>registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">  </span>build<span class="w"> </span>--definition-file<span class="w"> </span>rke2-edge3-definition.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">  </span>&gt;<span class="w"> </span>/tmp/eib-rke2.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;edge3 RKE2 build PID: </span><span class="nv">$!</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<h3 id="34-standalone-k3s-image-for-edge4">3.4 Standalone K3s image for edge4<a class="headerlink" href="#34-standalone-k3s-image-for-edge4" title="Permanent link">&para;</a></h3>
+<p>Same standalone pattern as edge3 but K3s instead of RKE2. Lighter footprint, faster first-boot cluster start.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Swap in edge4&#39;s network config</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>rm<span class="w"> </span>-f<span class="w"> </span>/home/eib-config/network/*.yaml
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>cp<span class="w"> </span>/home/eib-config/network-configs/edge4.yaml<span class="w"> </span>/home/eib-config/network/
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="c1"># Hostname script for edge4</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/scripts/10-hostname-edge4.sh<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="s">#!/bin/bash</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="s">hostnamectl set-hostname edge4</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="s">EOF</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>chmod<span class="w"> </span>+x<span class="w"> </span>/home/eib-config/scripts/10-hostname-edge4.sh
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>/home/eib-config/k3s-edge4-definition.yaml<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="s">apiVersion: 1.0</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="s">image:</span>
+</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="s">  imageType: raw</span>
+</span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="s">  arch: x86_64</span>
+</span><span id="__span-18-18"><a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="s">  baseImage: SL-Micro.x86_64-6.2-Default.raw</span>
+</span><span id="__span-18-19"><a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a><span class="s">  outputImageName: k3s-edge4.raw</span>
+</span><span id="__span-18-20"><a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a>
+</span><span id="__span-18-21"><a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a><span class="s">operatingSystem:</span>
+</span><span id="__span-18-22"><a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a><span class="s">  kernelArgs:</span>
+</span><span id="__span-18-23"><a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a><span class="s">    - net.ifnames=0</span>
+</span><span id="__span-18-24"><a id="__codelineno-18-24" name="__codelineno-18-24" href="#__codelineno-18-24"></a><span class="s">  scripts:</span>
+</span><span id="__span-18-25"><a id="__codelineno-18-25" name="__codelineno-18-25" href="#__codelineno-18-25"></a><span class="s">    - 10-hostname-edge4.sh</span>
+</span><span id="__span-18-26"><a id="__codelineno-18-26" name="__codelineno-18-26" href="#__codelineno-18-26"></a><span class="s">    - 99-k3s-registries.sh</span>
+</span><span id="__span-18-27"><a id="__codelineno-18-27" name="__codelineno-18-27" href="#__codelineno-18-27"></a>
+</span><span id="__span-18-28"><a id="__codelineno-18-28" name="__codelineno-18-28" href="#__codelineno-18-28"></a><span class="s">kubernetes:</span>
+</span><span id="__span-18-29"><a id="__codelineno-18-29" name="__codelineno-18-29" href="#__codelineno-18-29"></a><span class="s">  version: v1.35.3+k3s1</span>
+</span><span id="__span-18-30"><a id="__codelineno-18-30" name="__codelineno-18-30" href="#__codelineno-18-30"></a>
+</span><span id="__span-18-31"><a id="__codelineno-18-31" name="__codelineno-18-31" href="#__codelineno-18-31"></a><span class="s">embeddedArtifacts:</span>
+</span><span id="__span-18-32"><a id="__codelineno-18-32" name="__codelineno-18-32" href="#__codelineno-18-32"></a><span class="s">  registries:</span>
+</span><span id="__span-18-33"><a id="__codelineno-18-33" name="__codelineno-18-33" href="#__codelineno-18-33"></a><span class="s">    urls:</span>
+</span><span id="__span-18-34"><a id="__codelineno-18-34" name="__codelineno-18-34" href="#__codelineno-18-34"></a><span class="s">      - 192.168.122.20:5000</span>
+</span><span id="__span-18-35"><a id="__codelineno-18-35" name="__codelineno-18-35" href="#__codelineno-18-35"></a><span class="s">EOF</span>
+</span><span id="__span-18-36"><a id="__codelineno-18-36" name="__codelineno-18-36" href="#__codelineno-18-36"></a>
+</span><span id="__span-18-37"><a id="__codelineno-18-37" name="__codelineno-18-37" href="#__codelineno-18-37"></a>podman<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-18-38"><a id="__codelineno-18-38" name="__codelineno-18-38" href="#__codelineno-18-38"></a><span class="w">  </span>-v<span class="w"> </span>/home/eib-config:/eib:z<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-18-39"><a id="__codelineno-18-39" name="__codelineno-18-39" href="#__codelineno-18-39"></a><span class="w">  </span>registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-18-40"><a id="__codelineno-18-40" name="__codelineno-18-40" href="#__codelineno-18-40"></a><span class="w">  </span>build<span class="w"> </span>--definition-file<span class="w"> </span>k3s-edge4-definition.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-18-41"><a id="__codelineno-18-41" name="__codelineno-18-41" href="#__codelineno-18-41"></a><span class="w">  </span>&gt;<span class="w"> </span>/tmp/eib-k3s.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</span><span id="__span-18-42"><a id="__codelineno-18-42" name="__codelineno-18-42" href="#__codelineno-18-42"></a>
+</span><span id="__span-18-43"><a id="__codelineno-18-43" name="__codelineno-18-43" href="#__codelineno-18-43"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;edge4 K3s build PID: </span><span class="nv">$!</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<h3 id="35-watch-all-four-builds">3.5 Watch all four builds<a class="headerlink" href="#35-watch-all-four-builds" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>watch<span class="w"> </span>-n5<span class="w"> </span><span class="s1">&#39;echo &quot;=== edge1 (Elemental ISO) ===&quot; &amp;&amp; tail -3 /tmp/eib-edge1.log &amp;&amp; \</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="s1">           echo &quot;=== edge2 (Elemental ISO) ===&quot; &amp;&amp; tail -3 /tmp/eib-edge2.log &amp;&amp; \</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="s1">           echo &quot;=== edge3 (RKE2 RAW)     ===&quot; &amp;&amp; tail -3 /tmp/eib-rke2.log &amp;&amp; \</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="s1">           echo &quot;=== edge4 (K3s RAW)      ===&quot; &amp;&amp; tail -3 /tmp/eib-k3s.log&#39;</span>
+</span></code></pre></div>
+<p>A successful build ends with:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Build complete, the image can be found at: &lt;outputImageName&gt;
+</span></code></pre></div>
+<p><strong>Why builds take different amounts of time:</strong> The Elemental ISOs are fast — EIB wraps an existing ISO with a config file and the NMState network config. The RKE2 and K3s RAW builds are slower because EIB downloads and embeds all required container images from the Hauler OCI registry. The <code>99-k3s-registries.sh</code> script tells EIB to pull from <code>192.168.122.20:5000</code> instead of the internet.</p>
+<p>When all four builds are done, verify the output files:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>ls<span class="w"> </span>-lh<span class="w"> </span>/home/eib-config/elemental-edge1.iso<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">        </span>/home/eib-config/elemental-edge2.iso<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">        </span>/home/eib-config/rke2-edge3.raw<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">        </span>/home/eib-config/k3s-edge4.raw
+</span></code></pre></div>
+<p>Exit back to the KVM host:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nb">exit</span>
+</span></code></pre></div>
+<hr />
+<h2 id="exercise-4-seed-and-boot-the-four-nodes">Exercise 4 — Seed and boot the four nodes<a class="headerlink" href="#exercise-4-seed-and-boot-the-four-nodes" title="Permanent link">&para;</a></h2>
+<p>You have four nodes, two image formats, and two different boot workflows. This exercise walks through both.</p>
+<h3 id="41-elemental-nodes-edge1-and-edge2-iso-workflow">4.1 Elemental nodes (edge1 and edge2) — ISO workflow<a class="headerlink" href="#41-elemental-nodes-edge1-and-edge2-iso-workflow" title="Permanent link">&para;</a></h3>
+<p>edge1 and edge2 each boot from their own ISO. The ISO contains a self-installer: it boots, writes SL Micro to the virtual disk with the static IP already configured, powers off, and the node reboots into the installed OS where <code>elemental-register</code> runs.</p>
+<p>Pull each ISO from the eib VM and attach it as a virtual CDROM:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># edge1 gets its specific ISO (192.168.122.31 baked in)</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>rodeo<span class="w"> </span>pull-edge-image<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">  </span>--config-dir<span class="w"> </span>/root/rodeo-lab<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">  </span>--image<span class="w"> </span>/home/eib-config/elemental-edge1.iso<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">  </span>--local-from-eib<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">  </span>--nodes<span class="w"> </span>edge1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">  </span>--yes
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="c1"># edge2 gets its specific ISO (192.168.122.32 baked in)</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>rodeo<span class="w"> </span>pull-edge-image<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="w">  </span>--config-dir<span class="w"> </span>/root/rodeo-lab<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="w">  </span>--image<span class="w"> </span>/home/eib-config/elemental-edge2.iso<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="w">  </span>--local-from-eib<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="w">  </span>--nodes<span class="w"> </span>edge2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="w">  </span>--yes
+</span></code></pre></div>
+<p>Each command SCPs the ISO, attaches it as a CDROM (sda, boot-order-1) to that node's libvirt domain, and creates a blank <code>vda.qcow2</code> for the OS to install into.</p>
+<p>Start both nodes:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>virsh<span class="w"> </span>start<span class="w"> </span>edge1
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>virsh<span class="w"> </span>start<span class="w"> </span>edge2
+</span></code></pre></div>
+<p>Watch the boot on edge1's serial console (Ctrl+] to exit):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>virsh<span class="w"> </span>console<span class="w"> </span>edge1
+</span></code></pre></div>
+<p>You will see OVMF, then the SL Micro installer, then a text progress bar as the OS writes to disk. When you see <code>System is shutting down</code> the install is done. The node powers off.</p>
+<p>Wait for both to shut down:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>watch<span class="w"> </span>virsh<span class="w"> </span>list<span class="w"> </span>--all<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>edge
+</span></code></pre></div>
+<p>When both show <code>shut off</code>, eject the ISOs and restore disk-first boot:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>rodeo<span class="w"> </span>eject-iso<span class="w"> </span>--nodes<span class="w"> </span>edge1,edge2<span class="w"> </span>--yes
+</span></code></pre></div>
+<p>Now start them again — this time they boot from the installed disk:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>virsh<span class="w"> </span>start<span class="w"> </span>edge1
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>virsh<span class="w"> </span>start<span class="w"> </span>edge2
+</span></code></pre></div>
+<p>From this point, the nodes are running SL Micro and <code>elemental-register</code> is starting up. Watch for DHCP leases:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>watch<span class="w"> </span>virsh<span class="w"> </span>net-dhcp-leases<span class="w"> </span>default<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;edge|0e:62:a&quot;</span>
+</span></code></pre></div>
+<h3 id="42-standalone-nodes-edge3-and-edge4-raw-workflow">4.2 Standalone nodes (edge3 and edge4) — RAW workflow<a class="headerlink" href="#42-standalone-nodes-edge3-and-edge4-raw-workflow" title="Permanent link">&para;</a></h3>
+<p>edge3 and edge4 use pre-built RAW images. No installer, no reboot cycle. The node boots from a ready disk image with Kubernetes already configured to start.</p>
+<p>Pull and thin-clone both images from the eib VM:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="c1"># edge3 gets the RKE2 image</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>rodeo<span class="w"> </span>pull-edge-image<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="w">  </span>--config-dir<span class="w"> </span>/root/rodeo-lab<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="w">  </span>--image<span class="w"> </span>/home/eib-config/rke2-edge3.raw<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a><span class="w">  </span>--local-from-eib<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="w">  </span>--nodes<span class="w"> </span>edge3<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="w">  </span>--yes
+</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a>
+</span><span id="__span-30-9"><a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a><span class="c1"># edge4 gets the K3s image</span>
+</span><span id="__span-30-10"><a id="__codelineno-30-10" name="__codelineno-30-10" href="#__codelineno-30-10"></a>rodeo<span class="w"> </span>pull-edge-image<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-11"><a id="__codelineno-30-11" name="__codelineno-30-11" href="#__codelineno-30-11"></a><span class="w">  </span>--config-dir<span class="w"> </span>/root/rodeo-lab<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-12"><a id="__codelineno-30-12" name="__codelineno-30-12" href="#__codelineno-30-12"></a><span class="w">  </span>--image<span class="w"> </span>/home/eib-config/k3s-edge4.raw<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-13"><a id="__codelineno-30-13" name="__codelineno-30-13" href="#__codelineno-30-13"></a><span class="w">  </span>--local-from-eib<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-14"><a id="__codelineno-30-14" name="__codelineno-30-14" href="#__codelineno-30-14"></a><span class="w">  </span>--nodes<span class="w"> </span>edge4<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-30-15"><a id="__codelineno-30-15" name="__codelineno-30-15" href="#__codelineno-30-15"></a><span class="w">  </span>--yes
+</span></code></pre></div>
+<p>Check the disk layout:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>ls<span class="w"> </span>-lh<span class="w"> </span>/var/lib/libvirt/images/rke2-edge3-base.qcow2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="w">        </span>/var/lib/libvirt/images/edge3-vda.qcow2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="w">        </span>/var/lib/libvirt/images/k3s-edge4-base.qcow2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="w">        </span>/var/lib/libvirt/images/edge4-vda.qcow2
+</span></code></pre></div>
+<p>The base images hold the full content. The per-node <code>vda.qcow2</code> files are thin clones — a few megabytes each — that only store writes that diverge from the base. If you had ten edge3-class nodes, you would clone the base ten times at near-zero disk cost.</p>
+<p>Start edge3 and edge4:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>virsh<span class="w"> </span>start<span class="w"> </span>edge3
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>virsh<span class="w"> </span>start<span class="w"> </span>edge4
+</span></code></pre></div>
+<p>These nodes take 3-5 minutes to come up fully. RKE2 and K3s do their first-run initialization: generating TLS certificates, starting the control plane, and marking the node Ready.</p>
+<p>Check from edge3 (once it gets an IP from DHCP):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="c1"># Get edge3 IP</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>virsh<span class="w"> </span>net-dhcp-leases<span class="w"> </span>default<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;0e:62:a3&quot;</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="c1"># SSH in and check Kubernetes</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.33<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="w">  </span><span class="s2">&quot;kubectl get nodes&quot;</span>
+</span></code></pre></div>
+<p>You should see one node in Ready state with the RKE2 version. Do the same for edge4 at 192.168.122.34 and confirm K3s is running there.</p>
+<hr />
+<h2 id="exercise-5-provision-a-k3s-cluster-on-an-elemental-node">Exercise 5 — Provision a K3s cluster on an Elemental node<a class="headerlink" href="#exercise-5-provision-a-k3s-cluster-on-an-elemental-node" title="Permanent link">&para;</a></h2>
+<p>edge1 and edge2 are now running SL Micro. The <code>elemental-register</code> agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes — that happens in this exercise.</p>
+<h3 id="51-check-machineinventory">5.1 Check MachineInventory<a class="headerlink" href="#51-check-machineinventory" title="Permanent link">&para;</a></h3>
+<p>Watch for the registered nodes on the management cluster:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">  </span><span class="s2">&quot;kubectl get machineinventory -n fleet-default -w&quot;</span>
+</span></code></pre></div>
+<p>You should see one or two entries appear — one per node that has completed registration. Each row is a node that has proven its TPM identity and is now waiting to be told what to do.</p>
+<p>In the Rancher UI: go to <strong>OS Management &gt; MachineInventory</strong>. The same records appear there with more detail — hardware info, labels inherited from the MachineRegistration, and status.</p>
+<h3 id="52-create-a-machineinventoryselectortemplate">5.2 Create a MachineInventorySelectorTemplate<a class="headerlink" href="#52-create-a-machineinventoryselectortemplate" title="Permanent link">&para;</a></h3>
+<p>This resource links a label selector to a machine pool. Any <code>MachineInventory</code> that matches the selector becomes a candidate node for a cluster.</p>
+<p>Apply this on the management cluster:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 &quot;kubectl apply -f -&quot;</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="s">apiVersion: elemental.cattle.io/v1beta1</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="s">kind: MachineInventorySelectorTemplate</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="s">metadata:</span>
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="s">  name: aerogrid-hub-selector</span>
+</span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a><span class="s">  namespace: fleet-default</span>
+</span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="s">spec:</span>
+</span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="s">  template:</span>
+</span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a><span class="s">    spec:</span>
+</span><span id="__span-35-10"><a id="__codelineno-35-10" name="__codelineno-35-10" href="#__codelineno-35-10"></a><span class="s">      selector:</span>
+</span><span id="__span-35-11"><a id="__codelineno-35-11" name="__codelineno-35-11" href="#__codelineno-35-11"></a><span class="s">        matchLabels:</span>
+</span><span id="__span-35-12"><a id="__codelineno-35-12" name="__codelineno-35-12" href="#__codelineno-35-12"></a><span class="s">          site-role: hub</span>
+</span><span id="__span-35-13"><a id="__codelineno-35-13" name="__codelineno-35-13" href="#__codelineno-35-13"></a><span class="s">EOF</span>
+</span></code></pre></div>
+<h3 id="53-label-edge1-for-cluster-assignment">5.3 Label edge1 for cluster assignment<a class="headerlink" href="#53-label-edge1-for-cluster-assignment" title="Permanent link">&para;</a></h3>
+<p>Right now neither node matches <code>site-role: hub</code>. Label edge1 to trigger the match:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="c1"># Get edge1&#39;s MachineInventory name</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="nv">EDGE1</span><span class="o">=</span><span class="k">$(</span>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="w">  </span><span class="s2">&quot;kubectl get machineinventory -n fleet-default \</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="s2">   -o jsonpath=&#39;{.items[0].metadata.name}&#39;&quot;</span><span class="k">)</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>
+</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;edge1 MachineInventory: </span><span class="nv">$EDGE1</span><span class="s2">&quot;</span>
+</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a>
+</span><span id="__span-36-8"><a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a><span class="c1"># Label it</span>
+</span><span id="__span-36-9"><a id="__codelineno-36-9" name="__codelineno-36-9" href="#__codelineno-36-9"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-36-10"><a id="__codelineno-36-10" name="__codelineno-36-10" href="#__codelineno-36-10"></a><span class="w">  </span><span class="s2">&quot;kubectl label machineinventory </span><span class="nv">$EDGE1</span><span class="s2"> \</span>
+</span><span id="__span-36-11"><a id="__codelineno-36-11" name="__codelineno-36-11" href="#__codelineno-36-11"></a><span class="s2">   -n fleet-default \</span>
+</span><span id="__span-36-12"><a id="__codelineno-36-12" name="__codelineno-36-12" href="#__codelineno-36-12"></a><span class="s2">   site-role=hub \</span>
+</span><span id="__span-36-13"><a id="__codelineno-36-13" name="__codelineno-36-13" href="#__codelineno-36-13"></a><span class="s2">   demo=true \</span>
+</span><span id="__span-36-14"><a id="__codelineno-36-14" name="__codelineno-36-14" href="#__codelineno-36-14"></a><span class="s2">   edge-type=x86-cluster&quot;</span>
+</span></code></pre></div>
+<h3 id="54-create-the-cluster">5.4 Create the cluster<a class="headerlink" href="#54-create-the-cluster" title="Permanent link">&para;</a></h3>
+<p>Now create a <code>Cluster</code> resource that uses the selector template as its machine pool:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 &quot;kubectl apply -f -&quot;</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="s">apiVersion: provisioning.cattle.io/v1</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="s">kind: Cluster</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="s">metadata:</span>
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="s">  name: aerogrid-hub-01</span>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="s">  namespace: fleet-default</span>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="s">spec:</span>
+</span><span id="__span-37-8"><a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="s">  kubernetesVersion: v1.35.3+k3s1</span>
+</span><span id="__span-37-9"><a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="s">  rkeConfig:</span>
+</span><span id="__span-37-10"><a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a><span class="s">    machinePools:</span>
+</span><span id="__span-37-11"><a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="s">      - name: hub-nodes</span>
+</span><span id="__span-37-12"><a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="s">        quantity: 1</span>
+</span><span id="__span-37-13"><a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="s">        etcdRole: true</span>
+</span><span id="__span-37-14"><a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="s">        controlPlaneRole: true</span>
+</span><span id="__span-37-15"><a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a><span class="s">        workerRole: true</span>
+</span><span id="__span-37-16"><a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a><span class="s">        machineConfigRef:</span>
+</span><span id="__span-37-17"><a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a><span class="s">          kind: MachineInventorySelectorTemplate</span>
+</span><span id="__span-37-18"><a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a><span class="s">          name: aerogrid-hub-selector</span>
+</span><span id="__span-37-19"><a id="__codelineno-37-19" name="__codelineno-37-19" href="#__codelineno-37-19"></a><span class="s">          apiVersion: elemental.cattle.io/v1beta1</span>
+</span><span id="__span-37-20"><a id="__codelineno-37-20" name="__codelineno-37-20" href="#__codelineno-37-20"></a><span class="s">EOF</span>
+</span></code></pre></div>
+<h3 id="55-watch-the-cluster-provision">5.5 Watch the cluster provision<a class="headerlink" href="#55-watch-the-cluster-provision" title="Permanent link">&para;</a></h3>
+<p>In Rancher UI: go to <strong>Cluster Management</strong>. You will see <code>aerogrid-hub-01</code> appear with status <code>Provisioning</code>. The management cluster is now remotely installing K3s on edge1 via the Elemental system agent.</p>
+<p>From the terminal:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="w">  </span><span class="s2">&quot;kubectl get cluster -n fleet-default -w&quot;</span>
+</span></code></pre></div>
+<p>Provisioning takes 5-10 minutes. When the status changes to <code>Active</code>, the cluster is ready.</p>
+<p><strong>What just happened:</strong> you provisioned a Kubernetes cluster on a remote node without touching the node. The node registered itself, you applied a label, and the management cluster did the rest. This is the Elemental model for large-scale edge deployments.</p>
+<hr />
+<h2 id="exercise-6-deploy-workloads-via-fleet">Exercise 6 — Deploy workloads via Fleet<a class="headerlink" href="#exercise-6-deploy-workloads-via-fleet" title="Permanent link">&para;</a></h2>
+<p>You now have four running nodes:
+- <strong>aerogrid-hub-01</strong> on edge1 (Elemental-provisioned K3s)
+- <strong>edge2</strong> registered but not yet assigned to a cluster
+- <strong>edge3</strong> running RKE2 standalone (not yet in Rancher)
+- <strong>edge4</strong> running K3s standalone (not yet in Rancher)</p>
+<p>Fleet is already watching for clusters with the right labels. A <code>GitRepo</code> called <code>alien-geeko</code> is pre-configured to target any cluster labeled <code>demo=true</code> and <code>edge-type=x86-cluster</code>.</p>
+<h3 id="61-trigger-fleet-deployment-on-aerogrid-hub-01">6.1 Trigger Fleet deployment on aerogrid-hub-01<a class="headerlink" href="#61-trigger-fleet-deployment-on-aerogrid-hub-01" title="Permanent link">&para;</a></h3>
+<p>edge1 already has the <code>demo=true</code> and <code>edge-type=x86-cluster</code> labels from the MachineInventorySelectorTemplate labeling step. Once the cluster is active and imported into Rancher's fleet-default workspace, Fleet should pick it up automatically.</p>
+<p>Check in the Rancher UI: <strong>Continuous Delivery &gt; Git Repos &gt; alien-geeko</strong>. Look at the target clusters section. When <code>aerogrid-hub-01</code> appears in the list and its status moves to <code>Active</code>, Fleet is deploying the app.</p>
+<p>If it does not appear automatically:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1"># Make sure the cluster has the right labels</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a><span class="w">  </span><span class="s2">&quot;kubectl label cluster aerogrid-hub-01 -n fleet-default \</span>
+</span><span id="__span-39-4"><a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="s2">   demo=true edge-type=x86-cluster --overwrite&quot;</span>
+</span></code></pre></div>
+<h3 id="62-import-edge3-and-edge4-into-rancher-optional">6.2 Import edge3 and edge4 into Rancher (optional)<a class="headerlink" href="#62-import-edge3-and-edge4-into-rancher-optional" title="Permanent link">&para;</a></h3>
+<p>edge3 and edge4 are running standalone clusters that Rancher does not know about yet. Import them:</p>
+<p>In Rancher UI: <strong>Cluster Management &gt; Import Existing</strong>. Give each cluster a name (<code>aerogrid-branch-rke2</code>, <code>aerogrid-branch-k3s</code>). Rancher generates a <code>kubectl apply</code> command with a registration manifest. Run it on each node:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1"># On edge3 (RKE2)</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.33<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a><span class="w">  </span><span class="s2">&quot;kubectl apply -f &lt;paste-the-registration-manifest-url&gt;&quot;</span>
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>
+</span><span id="__span-40-5"><a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a><span class="c1"># On edge4 (K3s)</span>
+</span><span id="__span-40-6"><a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.34<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-40-7"><a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a><span class="w">  </span><span class="s2">&quot;kubectl apply -f &lt;paste-the-registration-manifest-url&gt;&quot;</span>
+</span></code></pre></div>
+<p>Once imported, label them for Fleet:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="s2">&quot;</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="s2">  kubectl label cluster aerogrid-branch-rke2 -n fleet-default \</span>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="s2">    demo=true edge-type=x86-cluster --overwrite</span>
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="s2">  kubectl label cluster aerogrid-branch-k3s -n fleet-default \</span>
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a><span class="s2">    demo=true edge-type=x86-cluster --overwrite</span>
+</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a><span class="s2">&quot;</span>
+</span></code></pre></div>
+<p>Fleet will deploy Alien-Geeko to each cluster the moment the labels match. Go to <strong>Continuous Delivery &gt; Git Repos &gt; alien-geeko</strong> and watch the bundle status update for each cluster.</p>
+<h3 id="63-verify-deployment">6.3 Verify deployment<a class="headerlink" href="#63-verify-deployment" title="Permanent link">&para;</a></h3>
+<p>Alien-Geeko is a Node.js web terminal that shows live Kubernetes cluster vitals. Once Fleet deploys it, find the NodePort and open it in a browser.</p>
+<p>For each cluster, run:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="c1"># On the management cluster, check fleet bundle status</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a><span class="w">  </span><span class="s2">&quot;kubectl get bundle -n fleet-default | grep alien&quot;</span>
+</span><span id="__span-42-4"><a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>
+</span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a><span class="c1"># On edge1 (via management cluster kubeconfig), find the NodePort</span>
+</span><span id="__span-42-6"><a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-42-7"><a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a><span class="w">  </span><span class="s2">&quot;kubectl get svc -A | grep alien&quot;</span>
+</span></code></pre></div>
+<p>Open <code>http://192.168.122.31:&lt;nodeport&gt;</code> for the edge1 deployment.</p>
+<hr />
+<h2 id="what-you-just-built">What you just built<a class="headerlink" href="#what-you-just-built" title="Permanent link">&para;</a></h2>
+<p>Four nodes, three image types, two provisioning paths, one management plane. Let me walk back through the architecture so the pieces connect.</p>
+<p><strong>The image-first model:</strong> every node in this lab booted from a purpose-built disk image. No manual SSH config, no <code>apt install</code>, no Ansible playbook applied to a running system. The image IS the configuration. If a node breaks, you re-image it. If a new site opens, you ship the image. The management cluster tells nodes what cluster to join — it does not configure the OS.</p>
+<p><strong>Why two paths exist:</strong> Elemental (edge1/edge2) is for sites where you do not know the node's final role at image-build time. You build one generic SL Micro image, ship it everywhere, and the management cluster decides what each node becomes after it registers. EIB standalone (edge3/edge4) is for sites where the role is known upfront — you bake K3s or RKE2 into the image and the node is a cluster the moment it boots.</p>
+<p><strong>Why TPM matters:</strong> without TPM, a cloned disk can register as any node in your fleet. With <code>auth: tpm</code>, the registration token is derived from hardware. You can revoke a specific node's registration by deleting its <code>MachineInventory</code>. Physical theft of the hardware does not compromise other nodes.</p>
+<p><strong>Why Hauler is there:</strong> in a real deployment, remote sites have unreliable internet. Hauler is a portable artifact store. You populate it once at HQ, copy it to a USB drive, and the site's nodes pull everything locally. Build K3s into the image from Hauler, the image never touches the internet. In this lab, Hauler was pre-populated by the instructor — in production, you run <code>hauler store sync</code> to update it and redistribute.</p>
+<hr />
+<h2 id="two-minute-comparison">Two-minute comparison<a class="headerlink" href="#two-minute-comparison" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Elemental (edge1/edge2)</th>
+<th>EIB Standalone (edge3/edge4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node role decided</td>
+<td>At provisioning time (after registration)</td>
+<td>At image-build time</td>
+</tr>
+<tr>
+<td>Cluster control</td>
+<td>Rancher provisions and manages K8s</td>
+<td>Node runs its own K8s; optionally imported</td>
+</tr>
+<tr>
+<td>Onboarding</td>
+<td>Automatic via TPM phone-home</td>
+<td>Manual import OR pre-registered via EIB</td>
+</tr>
+<tr>
+<td>Good for</td>
+<td>Mixed-role sites, large fleets, dynamic scaling</td>
+<td>Fixed-function nodes, strict airgap, predictable workloads</td>
+</tr>
+<tr>
+<td>Recovery</td>
+<td>Re-register = re-provision from management</td>
+<td>Re-image = re-flash disk</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="bonus-exercises">Bonus exercises<a class="headerlink" href="#bonus-exercises" title="Permanent link">&para;</a></h2>
+<h3 id="try-a-second-elemental-cluster-with-rke2">Try a second Elemental cluster with RKE2<a class="headerlink" href="#try-a-second-elemental-cluster-with-rke2" title="Permanent link">&para;</a></h3>
+<p>Label edge2 with <code>site-role: hub</code> and create a second <code>Cluster</code> resource pointing at the same <code>aerogrid-hub-selector</code> template but with <code>quantity: 1</code> targeting edge2. Rancher will provision RKE2 on edge2.</p>
+<h3 id="see-what-a-failed-registration-looks-like">See what a failed registration looks like<a class="headerlink" href="#see-what-a-failed-registration-looks-like" title="Permanent link">&para;</a></h3>
+<p>Power off edge1, clear its TPM state, and boot it again:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>virsh<span class="w"> </span>destroy<span class="w"> </span>edge1
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="c1"># Clearing a vTPM: delete the swtpm state directory</span>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/libvirt/swtpm/&lt;edge1-uuid&gt;
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>virsh<span class="w"> </span>start<span class="w"> </span>edge1
+</span></code></pre></div>
+<p>Watch the Elemental logs on the management cluster:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>/root/.ssh/id_ed25519<span class="w"> </span>root@192.168.122.9<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a><span class="w">  </span><span class="s2">&quot;kubectl logs -n cattle-elemental-system -l app=elemental-operator -f&quot;</span>
+</span></code></pre></div>
+<p>The registration attempt will be rejected because the TPM identity changed. The <code>MachineInventory</code> record will not update. This is the expected failure mode for hardware replacement at a remote site — you control the replacement from the management cluster, not from the site.</p>
+<hr />
+<h2 id="lab-reference">Lab reference<a class="headerlink" href="#lab-reference" title="Permanent link">&para;</a></h2>
+<h3 id="access">Access<a class="headerlink" href="#access" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KVM host IP</td>
+<td>192.168.1.241 (or lab-assigned)</td>
+</tr>
+<tr>
+<td>Rancher UI</td>
+<td><code>https://&lt;host-ip&gt;:30002</code></td>
+</tr>
+<tr>
+<td>Rancher user</td>
+<td><code>admin</code></td>
+</tr>
+<tr>
+<td>Rancher password</td>
+<td><code>cat ~/.rodeo/secrets.yaml</code></td>
+</tr>
+<tr>
+<td>Management cluster SSH</td>
+<td><code>ssh -i /root/.ssh/id_ed25519 root@192.168.122.9</code></td>
+</tr>
+<tr>
+<td>EIB VM SSH</td>
+<td><code>ssh -i /root/.ssh/id_ed25519 root@192.168.122.20</code></td>
+</tr>
+<tr>
+<td>Hauler OCI registry</td>
+<td><code>http://192.168.122.20:5000</code></td>
+</tr>
+<tr>
+<td>Hauler fileserver</td>
+<td><code>http://192.168.122.20:8080</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="node-reference">Node reference<a class="headerlink" href="#node-reference" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>IP</th>
+<th>MAC</th>
+<th>Type</th>
+<th>Image</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>edge1</td>
+<td>192.168.122.31</td>
+<td>02:00:00:0E:62:A1</td>
+<td>Elemental</td>
+<td>elemental-edge1.iso</td>
+</tr>
+<tr>
+<td>edge2</td>
+<td>192.168.122.32</td>
+<td>02:00:00:0E:62:A2</td>
+<td>Elemental</td>
+<td>elemental-edge2.iso</td>
+</tr>
+<tr>
+<td>edge3</td>
+<td>192.168.122.33</td>
+<td>02:00:00:0E:62:A3</td>
+<td>EIB standalone</td>
+<td>rke2-edge3.raw</td>
+</tr>
+<tr>
+<td>edge4</td>
+<td>192.168.122.34</td>
+<td>02:00:00:0E:62:A4</td>
+<td>EIB standalone</td>
+<td>k3s-edge4.raw</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-commands">Key commands<a class="headerlink" href="#key-commands" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="c1"># EIB build (run on eib VM, /home/eib-config is the working dir)</span>
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>podman<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--privileged<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="w">  </span>-v<span class="w"> </span>/home/eib-config:/eib:z<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-4"><a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="w">  </span>registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-5"><a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a><span class="w">  </span>build<span class="w"> </span>--definition-file<span class="w"> </span>&lt;definition-file.yaml&gt;
+</span><span id="__span-45-6"><a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a>
+</span><span id="__span-45-7"><a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a><span class="c1"># Seed edge nodes from eib VM (ISO or RAW auto-detected)</span>
+</span><span id="__span-45-8"><a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a>rodeo<span class="w"> </span>pull-edge-image<span class="w"> </span>--config-dir<span class="w"> </span>/root/rodeo-lab<span class="w"> </span>--nodes<span class="w"> </span>edge1,edge2<span class="w"> </span>--yes
+</span><span id="__span-45-9"><a id="__codelineno-45-9" name="__codelineno-45-9" href="#__codelineno-45-9"></a>
+</span><span id="__span-45-10"><a id="__codelineno-45-10" name="__codelineno-45-10" href="#__codelineno-45-10"></a><span class="c1"># ISO workflow: eject after install, then start from disk</span>
+</span><span id="__span-45-11"><a id="__codelineno-45-11" name="__codelineno-45-11" href="#__codelineno-45-11"></a>rodeo<span class="w"> </span>eject-iso<span class="w"> </span>--nodes<span class="w"> </span>edge1,edge2<span class="w"> </span>--yes
+</span><span id="__span-45-12"><a id="__codelineno-45-12" name="__codelineno-45-12" href="#__codelineno-45-12"></a>
+</span><span id="__span-45-13"><a id="__codelineno-45-13" name="__codelineno-45-13" href="#__codelineno-45-13"></a><span class="c1"># Watch Elemental registration</span>
+</span><span id="__span-45-14"><a id="__codelineno-45-14" name="__codelineno-45-14" href="#__codelineno-45-14"></a>kubectl<span class="w"> </span>get<span class="w"> </span>machineinventory<span class="w"> </span>-n<span class="w"> </span>fleet-default<span class="w"> </span>-w
+</span><span id="__span-45-15"><a id="__codelineno-45-15" name="__codelineno-45-15" href="#__codelineno-45-15"></a>
+</span><span id="__span-45-16"><a id="__codelineno-45-16" name="__codelineno-45-16" href="#__codelineno-45-16"></a><span class="c1"># Get registration URL</span>
+</span><span id="__span-45-17"><a id="__codelineno-45-17" name="__codelineno-45-17" href="#__codelineno-45-17"></a>kubectl<span class="w"> </span>get<span class="w"> </span>machineregistration<span class="w"> </span>suse-edge-reg-1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-18"><a id="__codelineno-45-18" name="__codelineno-45-18" href="#__codelineno-45-18"></a><span class="w">  </span>-n<span class="w"> </span>fleet-default<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-19"><a id="__codelineno-45-19" name="__codelineno-45-19" href="#__codelineno-45-19"></a><span class="w">  </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.registrationURL}&#39;</span>
+</span><span id="__span-45-20"><a id="__codelineno-45-20" name="__codelineno-45-20" href="#__codelineno-45-20"></a>
+</span><span id="__span-45-21"><a id="__codelineno-45-21" name="__codelineno-45-21" href="#__codelineno-45-21"></a><span class="c1"># Watch cluster provisioning</span>
+</span><span id="__span-45-22"><a id="__codelineno-45-22" name="__codelineno-45-22" href="#__codelineno-45-22"></a>kubectl<span class="w"> </span>get<span class="w"> </span>cluster<span class="w"> </span>-n<span class="w"> </span>fleet-default<span class="w"> </span>-w
+</span><span id="__span-45-23"><a id="__codelineno-45-23" name="__codelineno-45-23" href="#__codelineno-45-23"></a>
+</span><span id="__span-45-24"><a id="__codelineno-45-24" name="__codelineno-45-24" href="#__codelineno-45-24"></a><span class="c1"># Watch Fleet bundle status</span>
+</span><span id="__span-45-25"><a id="__codelineno-45-25" name="__codelineno-45-25" href="#__codelineno-45-25"></a>kubectl<span class="w"> </span>get<span class="w"> </span>bundle<span class="w"> </span>-n<span class="w"> </span>fleet-default
+</span></code></pre></div>
+<h3 id="component-versions">Component versions<a class="headerlink" href="#component-versions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rancher Prime</td>
+<td>2.14.1</td>
+</tr>
+<tr>
+<td>K3s (management cluster)</td>
+<td>v1.35.3+k3s1</td>
+</tr>
+<tr>
+<td>cert-manager</td>
+<td>v1.20.1</td>
+</tr>
+<tr>
+<td>Elemental Operator</td>
+<td>1.9.0</td>
+</tr>
+<tr>
+<td>Edge Image Builder</td>
+<td>1.3.3.1</td>
+</tr>
+<tr>
+<td>Hauler</td>
+<td>1.2.2</td>
+</tr>
+<tr>
+<td>SUSE Linux Micro</td>
+<td>6.2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="instructor-notes">Instructor notes<a class="headerlink" href="#instructor-notes" title="Permanent link">&para;</a></h2>
+<p><strong>Before the lab starts:</strong></p>
+<ol>
+<li>Run <code>rodeo up --profile suse-edge</code> on the bare metal host to deploy the management stack and the four edge VM shells.</li>
+<li>Pre-stage SL Micro images in Hauler on the eib VM:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>ssh<span class="w"> </span>root@192.168.122.20
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>hauler<span class="w"> </span>store<span class="w"> </span>add<span class="w"> </span>file<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="w">  </span><span class="s2">&quot;https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="w">  </span>--store<span class="w"> </span>/var/lib/hauler
+</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>hauler<span class="w"> </span>store<span class="w"> </span>add<span class="w"> </span>file<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a><span class="w">  </span><span class="s2">&quot;https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Default.raw&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-46-7"><a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a><span class="w">  </span>--store<span class="w"> </span>/var/lib/hauler
+</span><span id="__span-46-8"><a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>hauler-fileserver
+</span></code></pre></div></li>
+<li>Verify the Elemental Operator is running and the MachineRegistration exists.</li>
+<li>Share access credentials and host IP with students.</li>
+</ol>
+<p><strong>Timing:</strong> EIB builds for RAW images with embedded Kubernetes take 15-30 minutes each. Start the Elemental ISO build first (Exercise 3.1), then run through Exercise 2 details while it builds. Start the RKE2 and K3s builds at the end of Exercise 3. Exercises 4, 5, and 6 can begin once the Elemental ISO build completes.</p>
+<hr />
+<p><em>Lab built with rodeo-cli v0.10.x. Source: https://github.com/avaleror/rodeo-cli</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate", "toc.follow", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
