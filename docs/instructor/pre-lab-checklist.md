@@ -9,7 +9,7 @@ Run through this before handing the lab to students. The deploy (`rodeo deploy`)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -n cattle-elemental-system"
 
-# 2. Elemental Operator is running — both pods
+# 2. Elemental Operator is running, both pods
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 
@@ -53,9 +53,9 @@ Everything is automated by `rodeo deploy`. No manual post-deploy steps needed.
 ## Timing notes
 
 - EIB builds for RAW images with embedded Kubernetes take 15-30 minutes each.
-- Start the Elemental ISO builds first (Exercise 3.1 and 3.2) — they are fast and let students proceed to Exercises 4 and 5 early.
+- Start the Elemental ISO builds first (Exercise 3.1 and 3.2). They are fast and let students proceed to Exercises 4 and 5 early.
 - The RKE2 and K3s builds can run while students do Exercise 4 (Elemental install boot cycle).
-- Exercises 5 and 6 require the Elemental nodes to have completed registration — typically 10-15 minutes after the ISO boot cycle.
+- Exercises 5 and 6 require the Elemental nodes to have completed registration, typically 10-15 minutes after the ISO boot cycle.
 
 ## Student credentials
 

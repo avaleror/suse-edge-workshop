@@ -1,4 +1,4 @@
-# SUSE Edge 3.6 Rodeo — Lab Guide
+# SUSE Edge 3.6 Rodeo: Lab Guide
 
 **Version:** 2.0 | **Date:** June 2026 | **Duration:** ~2.5 hours  
 **Author:** Andres Valero, Principal Technology Advocate, SUSE
@@ -7,7 +7,7 @@
 
 ## Before we start
 
-This is a hands-on lab. You will build OS images, boot edge nodes, register them against a central management plane, and deploy workloads across a mixed fleet — all from one terminal. The goal is not to click through slides. It is to leave knowing how SUSE Edge actually works at the system level.
+This is a hands-on lab. You will build OS images, boot edge nodes, register them against a central management plane, and deploy workloads across a mixed fleet, all from one terminal. The goal is not to click through slides. It is to leave knowing how SUSE Edge actually works at the system level.
 
 Your environment is already partially running. A bare metal host is running five KVM virtual machines: a management cluster, an image-builder VM, and four edge nodes that are currently off. You will turn them on one group at a time, after building the right OS image for each.
 
@@ -41,7 +41,7 @@ KVM host (bare metal)
 
 **Two provisioning paths run in parallel in this lab:**
 
-- **Elemental path (edge1, edge2):** Phone-home onboarding via TPM. The node boots, the Elemental agent contacts the registration endpoint, and the management cluster takes control. Cluster provisioning happens from Rancher — not from the node.
+- **Elemental path (edge1, edge2):** Phone-home onboarding via TPM. The node boots, the Elemental agent contacts the registration endpoint, and the management cluster takes control. Cluster provisioning happens from Rancher, not from the node.
 - **EIB standalone path (edge3, edge4):** The image is self-contained. Boot it, and you have a running Kubernetes cluster. No phone-home. No registration step. Import into Rancher afterwards if you want central management.
 
 Understanding when to use each path is one of the core takeaways from this lab.
@@ -54,7 +54,7 @@ Understanding when to use each path is one of the core takeaways from this lab.
 |---|---|---|
 | 1 | Tour the environment | 15 min |
 | 2 | Configure Elemental, the registration endpoint, and the node network plan | 30 min |
-| 3 | Build four EIB images — one per node, each with its own network config | 50 min |
+| 3 | Build four EIB images, one per node, each with its own network config | 50 min |
 | 4 | Seed and boot the four nodes | 25 min |
 | 5 | Provision a K3s cluster on an Elemental node | 20 min |
 | 6 | Deploy workloads via Fleet | 20 min |
@@ -63,7 +63,7 @@ Total run time assumes EIB builds overlap with other steps. Each build runs in t
 
 ---
 
-## Exercise 1 — Tour the environment
+## Exercise 1: Tour the environment
 
 Get your bearings before touching anything. From the KVM host:
 
@@ -78,7 +78,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 
 You should see one K3s node (the rancher VM itself) with pods for Rancher Prime, cert-manager, the Elemental Operator, and Fleet. This is your management cluster. It manages everything else.
 
-Now check the eib VM — your image factory:
+Now check the eib VM, your image factory:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
@@ -100,7 +100,7 @@ You should see the EIB container image, the Elemental register agent, the Alien-
 
 ---
 
-## Exercise 2 — Configure Elemental and the registration endpoint
+## Exercise 2: Configure Elemental and the registration endpoint
 
 This exercise runs before you build any images. The reason: the Elemental path needs a registration URL embedded in the OS image. You cannot build the image before you have the endpoint configured and know its URL.
 
@@ -127,7 +127,7 @@ spec:
   config:
     elemental:
       registration:
-        auth: tpm                   # TPM-based identity — hardware-bound
+        auth: tpm                   # TPM-based identity, hardware-bound
       install:
         powerOff: true              # Power off after install, before first-run reboot
   machineInventoryLabels:
@@ -136,7 +136,7 @@ spec:
     locationID: ""                  # You will fill this in per node
 ```
 
-`auth: tpm` means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. For edge security — remote sites where you cannot guarantee physical security — this matters.
+`auth: tpm` means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. This matters for edge security: remote sites where you cannot guarantee physical security.
 
 ### 2.3 Add labels for cluster assignment
 
@@ -148,7 +148,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default"
 ```
 
-Note the registration name (something like `suse-edge-reg-1`). Now look at the registration URL — you need this for the EIB image build in Exercise 3:
+Note the registration name (something like `suse-edge-reg-1`). Now look at the registration URL. You need this for the EIB image build in Exercise 3:
 
 ```bash
 REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
@@ -173,7 +173,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 "
 "
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it into the OS image so it is present at first boot — no network config required at the remote site.
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it into the OS image so it is present at first boot. No network config required at the remote site.
 
 ### 2.5 Verify Elemental Operator is healthy
 
@@ -182,7 +182,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 ```
 
-Both `elemental-operator` and `elemental-operator-webhook` should be `Running`. If either is not, stop and flag it before building images — nodes cannot register against a broken operator.
+Both `elemental-operator` and `elemental-operator-webhook` should be `Running`. If either is not, stop and flag it before building images. Nodes cannot register against a broken operator.
 
 ### 2.6 Node network plan
 
@@ -195,7 +195,7 @@ Each node gets a static IP baked into its disk image by EIB. No DHCP dependency 
 | edge3 | 192.168.122.33 | /24 | 192.168.122.1 | 192.168.122.1 | 02:00:00:0E:62:A3 |
 | edge4 | 192.168.122.34 | /24 | 192.168.122.1 | 192.168.122.1 | 02:00:00:0E:62:A4 |
 
-EIB picks up any YAML files in the `network/` subdirectory of its config dir and processes them as NMState configs. Each build will use exactly one file — one node, one IP. Create all four files now so they are ready when you start the builds:
+EIB picks up any YAML files in the `network/` subdirectory of its config dir and processes them as NMState configs. Each build will use exactly one file, one node, one IP. Create all four files now so they are ready when you start the builds:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
@@ -298,7 +298,7 @@ The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `ke
 
 ---
 
-## Exercise 3 — Build four EIB images — one per node
+## Exercise 3: Build four EIB images, one per node
 
 Each node gets its own image with its own static IP baked in. That means four builds, four definition files, and exactly one NMState config in `network/` for each run.
 
@@ -346,7 +346,7 @@ This image boots, installs SL Micro to disk, and on first boot `elemental-regist
 Set the network config and create the definition:
 
 ```bash
-# Load edge1's network config — only one file in network/ at a time
+# Load edge1's network config, only one file in network/ at a time
 rm -f /home/eib-config/network/*.yaml
 cp /home/eib-config/network-configs/edge1.yaml /home/eib-config/network/
 
@@ -388,7 +388,7 @@ echo "edge1 build PID: $!"
 tail -5 /tmp/eib-edge1.log
 ```
 
-Move on to the next definition while this runs. ISO builds are fast — usually a few minutes.
+Move on to the next definition while this runs. ISO builds are fast, usually a few minutes.
 
 ### 3.2 Elemental image for edge2
 
@@ -435,14 +435,14 @@ echo "edge2 build PID: $!"
 
 ### 3.3 Standalone RKE2 image for edge3
 
-This image boots and comes up as a running single-node RKE2 cluster — no registration, no phone-home. The full Kubernetes stack is embedded in the disk. Static IP 192.168.122.33, hostname `edge3` set at first boot.
+This image boots and comes up as a running single-node RKE2 cluster, no registration, no phone-home. The full Kubernetes stack is embedded in the disk. Static IP 192.168.122.33, hostname `edge3` set at first boot.
 
 ```bash
 # Swap in edge3's network config
 rm -f /home/eib-config/network/*.yaml
 cp /home/eib-config/network-configs/edge3.yaml /home/eib-config/network/
 
-# Hostname script — EIB embeds this as a combustion script, runs at first boot
+# Hostname script, EIB embeds this as a combustion script, runs at first boot
 cat > /home/eib-config/scripts/10-hostname-edge3.sh << 'EOF'
 #!/bin/bash
 hostnamectl set-hostname edge3
@@ -475,7 +475,7 @@ embeddedArtifacts:
 EOF
 ```
 
-The `kubernetes:` section is the key difference from the Elemental builds. EIB downloads the RKE2 binary, all required container images, and configures CRI-O. Everything lands in the disk image. The node does not need internet access or a running management plane — it starts Kubernetes on its own at boot.
+The `kubernetes:` section is the key difference from the Elemental builds. EIB downloads the RKE2 binary, all required container images, and configures CRI-O. Everything lands in the disk image. The node does not need internet access or a running management plane. It starts Kubernetes on its own at boot.
 
 ```bash
 # Check edge2 build is moving before adding another job
@@ -555,7 +555,7 @@ A successful build ends with:
 Build complete, the image can be found at: <outputImageName>
 ```
 
-**Why builds take different amounts of time:** The Elemental ISOs are fast — EIB wraps an existing ISO with a config file and the NMState network config. The RKE2 and K3s RAW builds are slower because EIB downloads and embeds all required container images from the Hauler OCI registry. The `99-k3s-registries.sh` script tells EIB to pull from `192.168.122.20:5000` instead of the internet.
+**Why builds take different amounts of time:** The Elemental ISOs are fast. EIB wraps an existing ISO with a config file and the NMState network config. The RKE2 and K3s RAW builds are slower because EIB downloads and embeds all required container images from the Hauler OCI registry. The `99-k3s-registries.sh` script tells EIB to pull from `192.168.122.20:5000` instead of the internet.
 
 When all four builds are done, verify the output files:
 
@@ -574,11 +574,11 @@ exit
 
 ---
 
-## Exercise 4 — Seed and boot the four nodes
+## Exercise 4: Seed and boot the four nodes
 
 You have four nodes, two image formats, and two different boot workflows. This exercise walks through both.
 
-### 4.1 Elemental nodes (edge1 and edge2) — ISO workflow
+### 4.1 Elemental nodes (edge1 and edge2): ISO workflow
 
 edge1 and edge2 each boot from their own ISO. The ISO contains a self-installer: it boots, writes SL Micro to the virtual disk with the static IP already configured, powers off, and the node reboots into the installed OS where `elemental-register` runs.
 
@@ -631,7 +631,7 @@ When both show `shut off`, eject the ISOs and restore disk-first boot:
 rodeo eject-iso --nodes edge1,edge2 --yes
 ```
 
-Now start them again — this time they boot from the installed disk:
+Now start them again, this time they boot from the installed disk:
 
 ```bash
 virsh start edge1
@@ -644,7 +644,7 @@ From this point, the nodes are running SL Micro and `elemental-register` is star
 watch virsh net-dhcp-leases default | grep -E "edge|0e:62:a"
 ```
 
-### 4.2 Standalone nodes (edge3 and edge4) — RAW workflow
+### 4.2 Standalone nodes (edge3 and edge4): RAW workflow
 
 edge3 and edge4 use pre-built RAW images. No installer, no reboot cycle. The node boots from a ready disk image with Kubernetes already configured to start.
 
@@ -677,7 +677,7 @@ ls -lh /var/lib/libvirt/images/rke2-edge3-base.qcow2 \
         /var/lib/libvirt/images/edge4-vda.qcow2
 ```
 
-The base images hold the full content. The per-node `vda.qcow2` files are thin clones — a few megabytes each — that only store writes that diverge from the base. If you had ten edge3-class nodes, you would clone the base ten times at near-zero disk cost.
+The base images hold the full content. The per-node `vda.qcow2` files are thin clones, a few megabytes each, that only store writes that diverge from the base. If you had ten edge3-class nodes, you would clone the base ten times at near-zero disk cost.
 
 Start edge3 and edge4:
 
@@ -703,9 +703,9 @@ You should see one node in Ready state with the RKE2 version. Do the same for ed
 
 ---
 
-## Exercise 5 — Provision a K3s cluster on an Elemental node
+## Exercise 5: Provision a K3s cluster on an Elemental node
 
-edge1 and edge2 are now running SL Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes — that happens in this exercise.
+edge1 and edge2 are now running SL Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes. That happens in this exercise.
 
 ### 5.1 Check MachineInventory
 
@@ -716,9 +716,9 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default -w"
 ```
 
-You should see one or two entries appear — one per node that has completed registration. Each row is a node that has proven its TPM identity and is now waiting to be told what to do.
+You should see one or two entries appear, one per node that has completed registration. Each row is a node that has proven its TPM identity and is now waiting to be told what to do.
 
-In the Rancher UI: go to **OS Management > MachineInventory**. The same records appear there with more detail — hardware info, labels inherited from the MachineRegistration, and status.
+In the Rancher UI: go to **OS Management > MachineInventory**. The same records appear there with more detail: hardware info, labels inherited from the MachineRegistration, and status.
 
 ### 5.2 Create a MachineInventorySelectorTemplate
 
@@ -807,7 +807,7 @@ Provisioning takes 5-10 minutes. When the status changes to `Active`, the cluste
 
 ---
 
-## Exercise 6 — Deploy workloads via Fleet
+## Exercise 6: Deploy workloads via Fleet
 
 You now have four running nodes:
 - **aerogrid-hub-01** on edge1 (Elemental-provisioned K3s)
@@ -885,13 +885,13 @@ Open `http://192.168.122.31:<nodeport>` for the edge1 deployment.
 
 Four nodes, three image types, two provisioning paths, one management plane. Let me walk back through the architecture so the pieces connect.
 
-**The image-first model:** every node in this lab booted from a purpose-built disk image. No manual SSH config, no `apt install`, no Ansible playbook applied to a running system. The image IS the configuration. If a node breaks, you re-image it. If a new site opens, you ship the image. The management cluster tells nodes what cluster to join — it does not configure the OS.
+**The image-first model:** every node in this lab booted from a purpose-built disk image. No manual SSH config, no `apt install`, no Ansible playbook applied to a running system. The image IS the configuration. If a node breaks, you re-image it. If a new site opens, you ship the image. The management cluster tells nodes what cluster to join. It does not configure the OS.
 
-**Why two paths exist:** Elemental (edge1/edge2) is for sites where you do not know the node's final role at image-build time. You build one generic SL Micro image, ship it everywhere, and the management cluster decides what each node becomes after it registers. EIB standalone (edge3/edge4) is for sites where the role is known upfront — you bake K3s or RKE2 into the image and the node is a cluster the moment it boots.
+**Why two paths exist:** Elemental (edge1/edge2) is for sites where you do not know the node's final role at image-build time. You build one generic SL Micro image, ship it everywhere, and the management cluster decides what each node becomes after it registers. EIB standalone (edge3/edge4) is for sites where the role is known upfront: you bake K3s or RKE2 into the image and the node is a cluster the moment it boots.
 
 **Why TPM matters:** without TPM, a cloned disk can register as any node in your fleet. With `auth: tpm`, the registration token is derived from hardware. You can revoke a specific node's registration by deleting its `MachineInventory`. Physical theft of the hardware does not compromise other nodes.
 
-**Why Hauler is there:** in a real deployment, remote sites have unreliable internet. Hauler is a portable artifact store. You populate it once at HQ, copy it to a USB drive, and the site's nodes pull everything locally. Build K3s into the image from Hauler, the image never touches the internet. In this lab, Hauler was pre-populated by the instructor — in production, you run `hauler store sync` to update it and redistribute.
+**Why Hauler is there:** in a real deployment, remote sites have unreliable internet. Hauler is a portable artifact store. You populate it once at HQ, copy it to a USB drive, and the site's nodes pull everything locally. Build K3s into the image from Hauler, the image never touches the internet. In this lab, Hauler was pre-populated by the instructor. In production, you run `hauler store sync` to update it and redistribute.
 
 ---
 
@@ -931,7 +931,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl logs -n cattle-elemental-system -l app=elemental-operator -f"
 ```
 
-The registration attempt will be rejected because the TPM identity changed. The `MachineInventory` record will not update. This is the expected failure mode for hardware replacement at a remote site — you control the replacement from the management cluster, not from the site.
+The registration attempt will be rejected because the TPM identity changed. The `MachineInventory` record will not update. This is the expected failure mode for hardware replacement at a remote site: you control the replacement from the management cluster, not from the site.
 
 ---
 

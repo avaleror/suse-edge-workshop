@@ -1,4 +1,4 @@
-# Bonus lab — Hauler: build and serve an air-gap bundle
+# Bonus lab: Hauler, build and serve an air-gap bundle
 
 **Time:** 45 min  
 **Requires:** Lab deployed and EIB VM reachable
@@ -11,7 +11,7 @@ Hauler is an open source project from the Rancher Government team. It solves one
 
 It is **not** a SUSE Edge product. It is not in the SUSE Edge support matrix. You will not find it in the SUSE Edge Helm chart repos or get SUSE support for it. It is MIT-licensed, community-maintained, and happens to be very useful for the kind of air-gap work that comes with edge deployments.
 
-This lab uses Hauler to pre-stage content for the exercises. Production teams use it alongside or instead of Harbor, Quay, or plain Docker Distribution — depending on the use case. Hauler is particularly good when you need to **transport** content (USB stick, bastion transfer, S3 sync) rather than run a permanent registry.
+This lab uses Hauler to pre-stage content for the exercises. Production teams use it alongside or instead of Harbor, Quay, or plain Docker Distribution, depending on the use case. Hauler is particularly good when you need to **transport** content (USB stick, bastion transfer, S3 sync) rather than run a permanent registry.
 
 If you want Hauler's GitHub repo: [https://github.com/hauler-dev/hauler](https://github.com/hauler-dev/hauler)  
 Docs: [https://docs.hauler.dev](https://docs.hauler.dev)
@@ -33,7 +33,7 @@ Hauler works in three stages:
                                             + file server (port 8080)
 ```
 
-The "store" is a local directory (default `/var/lib/hauler`). Content is stored as OCI artifacts — images, charts, and files all use the same format. The archive is just a compressed snapshot of the store.
+The "store" is a local directory (default `/var/lib/hauler`). Content is stored as OCI artifacts: images, charts, and files all use the same format. The archive is just a compressed snapshot of the store.
 
 ---
 
@@ -55,7 +55,7 @@ mkdir -p $SCRATCH
 
 ---
 
-## Part 1 — Add content to the store
+## Part 1: Add content to the store
 
 ### 1.1 Add container images
 
@@ -70,7 +70,7 @@ hauler store add image nginx:1.27 --platform linux/amd64 --store $SCRATCH
 hauler store info --store $SCRATCH
 ```
 
-`store info` shows each artifact as a line: type, name, and size. Images are stored as OCI manifests — no Docker daemon involved.
+`store info` shows each artifact as a line: type, name, and size. Images are stored as OCI manifests. No Docker daemon involved.
 
 ### 1.2 Add a Helm chart
 
@@ -89,7 +89,7 @@ Charts are stored as OCI artifacts using the `application/vnd.cncf.helm.config.v
 ### 1.3 Add files
 
 ```bash
-# Add any file by URL — Hauler downloads and stores it
+# Add any file by URL, Hauler downloads and stores it
 hauler store add file \
   "https://github.com/k3s-io/k3s/releases/download/v1.35.5%2Bk3s1/k3s" \
   --name k3s-binary \
@@ -102,9 +102,9 @@ Files are also OCI artifacts internally, served as blobs over HTTP on port 8080.
 
 ---
 
-## Part 2 — Declarative approach (Hauler manifest)
+## Part 2: Declarative approach (Hauler manifest)
 
-Imperative `store add` is fine for quick tests. For repeatable, versioned bundles, use a **Hauler manifest** — a YAML file listing everything you want.
+Imperative `store add` is fine for quick tests. For repeatable, versioned bundles, use a **Hauler manifest**: a YAML file listing everything you want.
 
 ```bash
 cat > /tmp/my-bundle.yaml << 'EOF'
@@ -146,11 +146,11 @@ hauler store sync --filename /tmp/my-bundle.yaml --store $SCRATCH
 hauler store info --store $SCRATCH
 ```
 
-`store sync` is idempotent — run it again and Hauler skips content that is already present (by digest).
+`store sync` is idempotent: run it again and Hauler skips content that is already present (by digest).
 
 ---
 
-## Part 3 — Save and load (simulating the transport)
+## Part 3: Save and load (simulating the transport)
 
 This is the key step for air-gap workflows. On the internet-connected side, you save the store to a portable archive. On the disconnected side, you load it.
 
@@ -164,7 +164,7 @@ hauler store save \
 ls -lh /tmp/my-bundle.tar.zst
 ```
 
-The archive is a zstd-compressed tarball. Copy it to a USB stick, push it to an S3 bucket with a bastion, or SCP it directly — Hauler doesn't care.
+The archive is a zstd-compressed tarball. Copy it to a USB stick, push it to an S3 bucket with a bastion, or SCP it directly. Hauler doesn't care.
 
 ### Load
 
@@ -183,7 +183,7 @@ The content and the digest list should match what was in `$SCRATCH`.
 
 ---
 
-## Part 4 — Serve and consume
+## Part 4: Serve and consume
 
 Start the Hauler OCI registry and file server from the loaded store:
 
@@ -229,7 +229,7 @@ ls -lh /tmp/cert-manager-v1.20.1.tgz
 
 ---
 
-## Part 5 — Configuring K3s to use Hauler as a mirror
+## Part 5: Configuring K3s to use Hauler as a mirror
 
 In production, you want K3s nodes to pull all container images from Hauler instead of the internet. The mechanism is `registries.yaml`.
 
@@ -287,7 +287,7 @@ rm -rf $SCRATCH $AIRGAP /tmp/my-bundle.tar.zst /tmp/my-bundle.yaml
 
 | Tool | Good for | Watch out for |
 |---|---|---|
-| **Hauler** | Transport: USB sticks, one-time migrations, airgap bundles | Not a production registry — no auth, no replication, no HA |
+| **Hauler** | Transport: USB sticks, one-time migrations, airgap bundles | Not a production registry: no auth, no replication, no HA |
 | **Harbor** | Production private registry with RBAC, scanning, replication | Complex to operate; needs persistent storage and a team |
 | **Docker Distribution** | Minimal registry, easy to run as a container | No UI, no auth out of the box |
 | **Zot** | Production OCI registry, CNCF project, lightweight | Less ecosystem tooling than Harbor |

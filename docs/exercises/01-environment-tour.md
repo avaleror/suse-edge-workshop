@@ -1,7 +1,7 @@
-# Exercise 1 — Tour the environment
+# Exercise 1: Tour the environment
 
 **Time:** 15 min  
-**Next:** [Exercise 2 — Configure Elemental](02-elemental-setup.md)
+**Next:** [Exercise 2: Configure Elemental](02-elemental-setup.md)
 
 ---
 
@@ -18,7 +18,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 
 You should see one K3s node (the rancher VM itself) with pods for Rancher Prime, cert-manager, the Elemental Operator, and Fleet. This is your management cluster. It manages everything else.
 
-Now check the eib VM — your image factory:
+Now check the eib VM, your image factory:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
@@ -40,4 +40,4 @@ You should see the EIB container image, the Elemental register agent, the Alien-
 
 ---
 
-**Next:** [Exercise 2 — Configure Elemental](02-elemental-setup.md)
+**Next:** [Exercise 2: Configure Elemental](02-elemental-setup.md)

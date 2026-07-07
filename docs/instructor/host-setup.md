@@ -1,4 +1,4 @@
-# Host Setup — SUSE Edge 3.6 Workshop
+# Host Setup: SUSE Edge 3.6 Workshop
 
 This workshop deploys on a bare metal Linux host with KVM. These steps cover host prep and initial deploy.
 
@@ -10,7 +10,7 @@ This workshop deploys on a bare metal Linux host with KVM. These steps cover hos
 | RAM | 40 GiB |
 | vCPU | 16 |
 | Disk | 250 GiB (free in `/var/lib/libvirt/images`) |
-| Network | Internet access during deploy only — lab exercises run fully offline |
+| Network | Internet access during deploy only: lab exercises run fully offline |
 
 ## Install rodeo-cli
 
@@ -59,15 +59,15 @@ During the `elemental` phase, rodeo-cli automatically populates the Hauler store
 
 | Artifact | Served at | Used in |
 |---|---|---|
-| EIB container image (`edge-image-builder:1.3.3.1`) | Hauler OCI registry `:5000` | Exercise 3 — EIB builds |
-| `elemental-register` image | Hauler OCI registry `:5000` | Exercise 3 — Elemental ISO builds |
-| Alien-Geeko app image | Hauler OCI registry `:5000` | Exercise 6 — Fleet deploy |
-| SL Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3 — EIB Elemental ISO base |
-| SL Micro 6.2 Default RAW | Hauler fileserver `:8080` | Exercise 3 — EIB standalone RAW base |
-| `gitea/alien-geeko` repo | Gitea `:3000` | Exercise 6 — Fleet GitRepo source |
-| `gitea/eib-config` repo | Gitea `:3000` | Exercise 2 — students clone this for EIB definitions + scripts |
+| EIB container image (`edge-image-builder:1.3.3.1`) | Hauler OCI registry `:5000` | Exercise 3: EIB builds |
+| `elemental-register` image | Hauler OCI registry `:5000` | Exercise 3: Elemental ISO builds |
+| Alien-Geeko app image | Hauler OCI registry `:5000` | Exercise 6: Fleet deploy |
+| SL Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3: EIB Elemental ISO base |
+| SL Micro 6.2 Default RAW | Hauler fileserver `:8080` | Exercise 3: EIB standalone RAW base |
+| `gitea/alien-geeko` repo | Gitea `:3000` | Exercise 6: Fleet GitRepo source |
+| `gitea/eib-config` repo | Gitea `:3000` | Exercise 2: students clone this for EIB definitions + scripts |
 
-Edge nodes boot with `registries.yaml` baked in by EIB, pointing all container pulls (`docker.io`, `registry.suse.com`, `ghcr.io`) to the local Hauler registry at `192.168.122.20:5000`. Fleet syncs from local Gitea at `192.168.122.20:3000` — no GitHub access needed. EIB pulls image definitions and scripts from the `eib-config` Gitea repo.
+Edge nodes boot with `registries.yaml` baked in by EIB, pointing all container pulls (`docker.io`, `registry.suse.com`, `ghcr.io`) to the local Hauler registry at `192.168.122.20:5000`. Fleet syncs from local Gitea at `192.168.122.20:3000`. No GitHub access needed. EIB pulls image definitions and scripts from the `eib-config` Gitea repo.
 
 See the [Disconnected environment reference](../reference/disconnected-environment.md) for full details on what runs offline and why.
 

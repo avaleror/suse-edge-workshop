@@ -25,7 +25,7 @@
 ## Key commands
 
 ```bash
-# EIB build (run on eib VM — /home/eib-config is the working dir)
+# EIB build (run on eib VM, /home/eib-config is the working dir)
 podman run --rm --privileged \
   -v /home/eib-config:/eib:z \
   registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \

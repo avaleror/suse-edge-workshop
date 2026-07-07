@@ -1,8 +1,8 @@
-# Exercise 2 — Configure Elemental and the node network plan
+# Exercise 2: Configure Elemental and the node network plan
 
 **Time:** 20 min  
-**Previous:** [Exercise 1 — Tour the environment](01-environment-tour.md)  
-**Next:** [Exercise 3 — Build EIB images](03-eib-builds.md)
+**Previous:** [Exercise 1: Tour the environment](01-environment-tour.md)  
+**Next:** [Exercise 3: Build EIB images](03-eib-builds.md)
 
 ---
 
@@ -31,7 +31,7 @@ spec:
   config:
     elemental:
       registration:
-        auth: tpm                   # TPM-based identity — hardware-bound
+        auth: tpm                   # TPM-based identity, hardware-bound
       install:
         powerOff: true              # Power off after install, before first-run reboot
   machineInventoryLabels:
@@ -40,7 +40,7 @@ spec:
     locationID: ""                  # You will fill this in per node
 ```
 
-`auth: tpm` means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. For edge deployments — remote sites where you cannot guarantee physical security — this matters.
+`auth: tpm` means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. This matters for edge deployments: remote sites where you cannot guarantee physical security.
 
 ## 2.3 Get the registration URL
 
@@ -95,7 +95,7 @@ curl -k "$REGURL" -o /home/eib-workspace/elemental/elemental_config.yaml
 cat /home/eib-workspace/elemental/elemental_config.yaml
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it at `/oem/elemental.yaml` in the OS image — no network config required at the remote site.
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it at `/oem/elemental.yaml` in the OS image. No network config required at the remote site.
 
 Exit back to the KVM host:
 
@@ -110,7 +110,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 ```
 
-Both `elemental-operator` and `elemental-operator-webhook` should be `Running`. If either is not, stop and flag it before building images — nodes cannot register against a broken operator.
+Both `elemental-operator` and `elemental-operator-webhook` should be `Running`. If either is not, stop and flag it before building images. Nodes cannot register against a broken operator.
 
 ## 2.6 Node network plan
 
@@ -130,10 +130,10 @@ exit
 | edge3 | 192.168.122.33 | /24 | 192.168.122.1 | 192.168.122.1 | 02:00:00:0E:62:A3 |
 | edge4 | 192.168.122.34 | /24 | 192.168.122.1 | 192.168.122.1 | 02:00:00:0E:62:A4 |
 
-EIB picks up any YAML file in the `network/` subdirectory of its config dir. Each build uses exactly one file — one node, one IP. In Exercise 3 you will copy the right file into `network/` before starting each build.
+EIB picks up any YAML file in the `network/` subdirectory of its config dir. Each build uses exactly one file, one node, one IP. In Exercise 3 you will copy the right file into `network/` before starting each build.
 
 The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `kernelArgs`. Without that kernel arg, SL Micro would name the first NIC something like `ens3` depending on PCI bus order. With the arg set, the old naming convention applies consistently across all four builds.
 
 ---
 
-**Next:** [Exercise 3 — Build EIB images](03-eib-builds.md)
+**Next:** [Exercise 3: Build EIB images](03-eib-builds.md)

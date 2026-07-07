@@ -1,12 +1,12 @@
-# Exercise 5 — Provision a K3s cluster on an Elemental node
+# Exercise 5: Provision a K3s cluster on an Elemental node
 
 **Time:** 20 min  
-**Previous:** [Exercise 4 — Seed and boot nodes](04-boot-nodes.md)  
-**Next:** [Exercise 6 — Deploy workloads via Fleet](06-fleet-deploy.md)
+**Previous:** [Exercise 4: Seed and boot nodes](04-boot-nodes.md)  
+**Next:** [Exercise 6: Deploy workloads via Fleet](06-fleet-deploy.md)
 
 ---
 
-edge1 and edge2 are now running SL Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes — that happens here.
+edge1 and edge2 are now running SL Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes. That happens here.
 
 ## 5.1 Check MachineInventory
 
@@ -17,7 +17,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default -w"
 ```
 
-You should see one or two entries appear — one per node that has completed registration. Each row is a node that has proven its TPM identity and is now waiting to be told what to do.
+You should see one or two entries appear, one per node that has completed registration. Each row is a node that has proven its TPM identity and is now waiting to be told what to do.
 
 In the Rancher UI: go to **OS Management > MachineInventory**. The same records appear there with hardware info, labels inherited from the MachineRegistration, and status.
 
@@ -106,4 +106,4 @@ Provisioning takes 5-10 minutes. When status changes to `Active`, the cluster is
 
 ---
 
-**Next:** [Exercise 6 — Deploy workloads via Fleet](06-fleet-deploy.md)
+**Next:** [Exercise 6: Deploy workloads via Fleet](06-fleet-deploy.md)

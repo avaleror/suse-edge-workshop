@@ -2,7 +2,7 @@
 
 If you finish early or want to go deeper.
 
-Want to understand how Hauler works under the hood? There is a dedicated bonus lab: [Hauler — build and serve an air-gap bundle](bonus-hauler.md).
+Want to understand how Hauler works under the hood? There is a dedicated bonus lab: [Hauler: build and serve an air-gap bundle](bonus-hauler.md).
 
 ## Try a second Elemental cluster with RKE2
 
@@ -26,7 +26,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl logs -n cattle-elemental-system -l app=elemental-operator -f"
 ```
 
-The registration attempt will be rejected because the TPM identity changed. The `MachineInventory` record will not update. This is the expected failure mode for hardware replacement at a remote site — you control the replacement from the management cluster, not from the site.
+The registration attempt will be rejected because the TPM identity changed. The `MachineInventory` record will not update. This is the expected failure mode for hardware replacement at a remote site: you control the replacement from the management cluster, not from the site.
 
 ## Build a custom EIB image with additional packages
 

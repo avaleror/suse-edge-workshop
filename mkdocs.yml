@@ -1,5 +1,5 @@
 site_name: SUSE Edge 3.6 Rodeo
-site_description: Hands-on workshop — Rancher Prime + Elemental + EIB + Fleet on bare metal KVM
+site_description: Hands-on workshop, Rancher Prime + Elemental + EIB + Fleet on bare metal KVM
 site_url: https://avaleror.github.io/suse-edge-workshop/
 repo_url: https://github.com/avaleror/suse-edge-workshop
 repo_name: avaleror/suse-edge-workshop
@@ -68,18 +68,18 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Exercises:
-    - "01 — Tour the environment": exercises/01-environment-tour.md
-    - "02 — Elemental setup": exercises/02-elemental-setup.md
-    - "03 — Build EIB images": exercises/03-eib-builds.md
-    - "04 — Seed and boot nodes": exercises/04-boot-nodes.md
-    - "05 — Provision a cluster": exercises/05-provision-cluster.md
-    - "06 — Fleet deploy": exercises/06-fleet-deploy.md
+    - "01: Tour the environment": exercises/01-environment-tour.md
+    - "02: Elemental setup": exercises/02-elemental-setup.md
+    - "03: Build EIB images": exercises/03-eib-builds.md
+    - "04: Seed and boot nodes": exercises/04-boot-nodes.md
+    - "05: Provision a cluster": exercises/05-provision-cluster.md
+    - "06: Fleet deploy": exercises/06-fleet-deploy.md
   - Reference:
     - Lab overview: reference/lab-overview.md
     - Quick reference: reference/quick-reference.md
     - Disconnected environment: reference/disconnected-environment.md
     - Bonus exercises: reference/bonus-exercises.md
-    - "Bonus lab — Hauler": reference/bonus-hauler.md
+    - "Bonus lab: Hauler": reference/bonus-hauler.md
     - Full lab guide (print): lab-guide.md
   - Instructor:
     - Host setup: instructor/host-setup.md

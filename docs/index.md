@@ -4,7 +4,7 @@ hide:
 ---
 
 <div class="hero">
-  <div class="subtitle">SUSE Edge 3.6 — Hands-on Workshop</div>
+  <div class="subtitle">SUSE Edge 3.6: Hands-on Workshop</div>
   <h1>The Edge Rodeo</h1>
   <div class="tagline">Rancher Prime &bull; Elemental &bull; Edge Image Builder &bull; Fleet &bull; Hauler</div>
 
@@ -112,8 +112,8 @@ The full Kubernetes stack is baked into the disk image. Boot it, you have a runn
 
 The EIB VM hosts two services that together make the lab self-contained:
 
-- **[Hauler](https://docs.hauler.dev)** — OCI registry at `:5000` (EIB container, `elemental-register`, Alien-Geeko app) and file server at `:8080` (SL Micro 6.2 ISO and RAW). EIB pulls container images to embed and the SL Micro base OS from here.
-- **[Gitea](https://gitea.io)** — local Git server at `:3000` with two repos: `gitea/alien-geeko` (Fleet GitRepo source — no GitHub access needed) and `gitea/eib-config` (EIB image definitions, NMState network configs, and combustion scripts that students clone in Exercise 2).
+- **[Hauler](https://docs.hauler.dev)**: OCI registry at `:5000` (EIB container, `elemental-register`, Alien-Geeko app) and file server at `:8080` (SL Micro 6.2 ISO and RAW). EIB pulls container images to embed and the SL Micro base OS from here.
+- **[Gitea](https://gitea.io)**: local Git server at `:3000` with two repos: `gitea/alien-geeko` (Fleet GitRepo source, no GitHub access needed) and `gitea/eib-config` (EIB image definitions, NMState network configs, and combustion scripts that students clone in Exercise 2).
 
 Edge nodes boot with `registries.yaml` baked in by EIB, routing all container pulls through Hauler. Fleet syncs from local Gitea. EIB itself pulls its definitions and scripts from Gitea and its binary content from Hauler. The management cluster runs entirely offline after deploy. See the [Disconnected environment reference](reference/disconnected-environment.md) for the full architecture.
 

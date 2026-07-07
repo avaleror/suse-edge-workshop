@@ -8,7 +8,7 @@ This lab is designed to run offline after the initial deploy. This page explains
 
 | Phase | Internet needed? | Who runs it |
 |---|---|---|
-| `rodeo deploy` | Yes — pulls several GB | Instructor, once |
+| `rodeo deploy` | Yes: pulls several GB | Instructor, once |
 | Lab exercises (01 – 06) | No | Students |
 
 Once `rodeo deploy` completes, the lab network at `192.168.122.0/24` is self-sufficient. Every image, binary, artifact, and Git repo needed for the exercises lives locally on the EIB VM.
@@ -46,14 +46,14 @@ flowchart TB
 
     Internet -. "rodeo deploy (one time)" .-> HOST
 
-    Fleet -->|"1 — polls GitRepo"| Gitea
-    Fleet -->|"2 — push bundles"| EDGES
+    Fleet -->|"1: polls GitRepo"| Gitea
+    Fleet -->|"2: push bundles"| EDGES
 
-    EIB -->|"3 — pull images"| HaulerOCI
-    EIB -->|"4 — pull base OS"| HaulerFS
-    EIB -->|"5 — definitions & scripts"| Gitea
+    EIB -->|"3: pull images"| HaulerOCI
+    EIB -->|"4: pull base OS"| HaulerFS
+    EIB -->|"5: definitions & scripts"| Gitea
 
-    EDGES -->|"6 — registries.yaml"| HaulerOCI
+    EDGES -->|"6: registries.yaml"| HaulerOCI
 ```
 
 | Flow | What happens |
@@ -69,7 +69,7 @@ flowchart TB
 
 ## What Gitea provides
 
-Gitea is a lightweight open source Git server (MIT license, community-maintained). It is **not** a SUSE Edge product — see the [Hauler bonus lab](bonus-hauler.md) for more background on community tools used in this lab.
+Gitea is a lightweight open source Git server (MIT license, community-maintained). It is **not** a SUSE Edge product. See the [Hauler bonus lab](bonus-hauler.md) for more background on community tools used in this lab.
 
 Gitea runs on the EIB VM at `http://192.168.122.20:3000`. It holds two repositories:
 
@@ -105,20 +105,20 @@ curl -s http://localhost:3000/api/v1/repos/gitea/eib-config \
 
 Hauler runs on the EIB VM at two endpoints:
 
-**OCI registry — port 5000**
+**OCI registry: port 5000**
 
 | Image | Source | Used in |
 |---|---|---|
-| `registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1` | SUSE registry | Exercise 3 — all EIB builds |
-| `registry.suse.com/rancher/elemental-register:1.9.0` | SUSE registry | Exercise 3 — Elemental ISO builds |
-| `docker.io/avaleror/alien-geeko:latest` | Docker Hub | Exercise 6 — Fleet deploy to edge clusters |
+| `registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1` | SUSE registry | Exercise 3: all EIB builds |
+| `registry.suse.com/rancher/elemental-register:1.9.0` | SUSE registry | Exercise 3: Elemental ISO builds |
+| `docker.io/avaleror/alien-geeko:latest` | Docker Hub | Exercise 6: Fleet deploy to edge clusters |
 
-**File server — port 8080**
+**File server: port 8080**
 
 | File | Used in |
 |---|---|
-| `SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso` | Exercise 3.1, 3.2 — EIB Elemental ISO base |
-| `SL-Micro.x86_64-6.2-Default.raw` | Exercise 3.3, 3.4 — EIB standalone RAW base |
+| `SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso` | Exercise 3.1, 3.2: EIB Elemental ISO base |
+| `SL-Micro.x86_64-6.2-Default.raw` | Exercise 3.3, 3.4: EIB standalone RAW base |
 
 Verify everything is in place:
 
@@ -139,7 +139,7 @@ hauler store info --store /var/lib/hauler
 
 ## How EIB builds stay offline
 
-EIB runs inside Podman on the EIB VM. It pulls from two local sources — one for binary content, one for configuration:
+EIB runs inside Podman on the EIB VM. It pulls from two local sources, one for binary content and one for configuration:
 
 **Hauler (images + base OS):**
 The `embeddedArtifacts.registries` section in every definition file points EIB at the local Hauler OCI registry:
@@ -250,7 +250,7 @@ kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
   | tr ',' '\n' | grep bundled
 ```
 
-Elemental Operator images are pulled from `registry.suse.com` during the `elemental` deploy phase. After that the running operator pods need no external access. Edge nodes use EIB-built images with the Elemental agent pre-embedded — there is no OS channel pull during these exercises.
+Elemental Operator images are pulled from `registry.suse.com` during the `elemental` deploy phase. After that the running operator pods need no external access. Edge nodes use EIB-built images with the Elemental agent pre-embedded. There is no OS channel pull during these exercises.
 
 ---
 
@@ -328,7 +328,7 @@ virsh net-list
 | cert-manager | Yes | Installed; no runtime image pulls |
 | Elemental Operator | Yes | Installed; no OS channel pull in these exercises |
 | Gitea | Yes | Runs on eib VM; alien-geeko + eib-config repos initialised at deploy time |
-| Fleet GitRepo (alien-geeko) | **Yes** | Points at local Gitea — no GitHub access needed |
+| Fleet GitRepo (alien-geeko) | **Yes** | Points at local Gitea: no GitHub access needed |
 | EIB (on eib VM) | Yes | Container image in Hauler; base OS in Hauler; definitions + scripts from Gitea eib-config |
 | Hauler registry + fileserver | Yes | Self-contained on eib VM |
 | Edge node K3s | Yes | Images via Hauler mirror; `registries.yaml` baked in by EIB |
@@ -340,11 +340,11 @@ The lab is fully disconnected after deploy. No exercise step requires outbound i
 
 ## Further reading
 
-- [SUSE Edge 3.6 — Air-gapped deployments with EIB](https://documentation.suse.com/suse-edge/3.5/html/edge/id-air-gapped-deployments-with-edge-image-builder.html)
-- [K3s — Air-gap install](https://docs.k3s.io/installation/airgap)
-- [K3s — Private registry configuration](https://docs.k3s.io/installation/private-registry)
-- [Rancher Prime 2.14 — Air-gap HA install](https://documentation.suse.com/cloudnative/rancher-manager/v2.14/en/installation-and-upgrade/other-installation-methods/air-gapped/install-rancher-ha.html)
-- [Elemental — Air-gap install](https://documentation.suse.com/cloudnative/os-manager/1.6/en/airgap.html)
+- [SUSE Edge 3.6: Air-gapped deployments with EIB](https://documentation.suse.com/suse-edge/3.5/html/edge/id-air-gapped-deployments-with-edge-image-builder.html)
+- [K3s: Air-gap install](https://docs.k3s.io/installation/airgap)
+- [K3s: Private registry configuration](https://docs.k3s.io/installation/private-registry)
+- [Rancher Prime 2.14: Air-gap HA install](https://documentation.suse.com/cloudnative/rancher-manager/v2.14/en/installation-and-upgrade/other-installation-methods/air-gapped/install-rancher-ha.html)
+- [Elemental: Air-gap install](https://documentation.suse.com/cloudnative/os-manager/1.6/en/airgap.html)
 - [Hauler documentation](https://docs.hauler.dev/docs/intro)
 - [Gitea documentation](https://docs.gitea.com)
-- [Fleet — GitRepo resource](https://fleet.rancher.io/reference/ref-gitrepo)
+- [Fleet: GitRepo resource](https://fleet.rancher.io/reference/ref-gitrepo)

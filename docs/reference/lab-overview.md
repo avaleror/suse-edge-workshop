@@ -1,4 +1,4 @@
-# Lab overview — infrastructure, architecture and deploy pipeline
+# Lab overview: infrastructure, architecture and deploy pipeline
 
 This page explains the full picture: what infrastructure rodeo-cli builds, what each piece is for, and exactly what happens during `rodeo deploy`. Read it before the exercises to build a mental model, or after if something felt like magic.
 
@@ -72,16 +72,16 @@ MAC addresses all use the `0E` prefix (Edge profile convention):
 Two approaches run in parallel through the lab, both valid production choices:
 
 **Elemental path (edge1, edge2)**
-EIB builds a minimal SL Micro ISO. The node boots from it, installs the OS to disk, and on first boot `elemental-register` contacts the Elemental Operator on the management cluster using its TPM identity. Rancher then provisions K3s remotely. The node never needs SSH access from an operator — it phones home and identifies itself.
+EIB builds a minimal SL Micro ISO. The node boots from it, installs the OS to disk, and on first boot `elemental-register` contacts the Elemental Operator on the management cluster using its TPM identity. Rancher then provisions K3s remotely. The node never needs SSH access from an operator. It phones home and identifies itself.
 
 **EIB standalone path (edge3, edge4)**
 EIB builds a RAW disk image with K3s or RKE2 and all required container images baked in. The node boots from the image and is a running Kubernetes cluster with no registration step. This model suits fixed-function sites where the node's role is known at build time.
 
 ---
 
-## The deploy pipeline — what rodeo-cli does
+## The deploy pipeline: what rodeo-cli does
 
-Running `rodeo deploy` executes seven phases in order. Each phase is idempotent — if it has already completed it is skipped on retry, so a failed deploy can be resumed from where it stopped.
+Running `rodeo deploy` executes seven phases in order. Each phase is idempotent: if it has already completed it is skipped on retry, so a failed deploy can be resumed from where it stopped.
 
 ```mermaid
 flowchart LR
@@ -90,7 +90,7 @@ flowchart LR
 
 ---
 
-### Phase 1 — kvm_host (Ansible, ~5 min)
+### Phase 1: kvm_host (Ansible, ~5 min)
 
 Runs against the host itself to install and configure everything KVM needs.
 
@@ -117,7 +117,7 @@ Runs against the host itself to install and configure everything KVM needs.
 
 ---
 
-### Phase 2 — vms (Ansible, ~10 min)
+### Phase 2: vms (Ansible, ~10 min)
 
 Creates all disk images, cloud-init seeds, and libvirt domain definitions. The VMs are not started yet.
 
@@ -145,7 +145,7 @@ No disk image is created here. Students build OS images in Exercise 3 and rodeo-
 
 ---
 
-### Phase 3 — boot (Python, ~2 min)
+### Phase 3: boot (Python, ~2 min)
 
 Brings the non-Harvester VMs online.
 
@@ -157,7 +157,7 @@ After this phase, both VMs are booting and cloud-init is running on each. The ne
 
 ---
 
-### Phase 4 — rancher (Python, ~20 min)
+### Phase 4: rancher (Python, ~20 min)
 
 Installs the full management stack on the rancher VM over SSH.
 
@@ -176,15 +176,15 @@ The TLS certificate is issued by Let's Encrypt via the HTTP-01 ACME challenge. T
 
 ---
 
-### Phase 5 — elemental (Python, ~30 min total — Hauler pull is the bottleneck)
+### Phase 5: elemental (Python, ~30 min total; Hauler pull is the bottleneck)
 
 Installs Elemental, sets up Fleet GitOps, and populates the offline artifact stores on the EIB VM.
 
 **5a. Elemental Operator**
 
 Two Helm charts installed on the management cluster:
-- `elemental-operator-crds-chart` v1.9.0 — the CRD definitions (`MachineRegistration`, `MachineInventory`, `ManagedOSImage`, etc.)
-- `elemental-operator-chart` v1.9.0 — the operator pod in `cattle-elemental-system`
+- `elemental-operator-crds-chart` v1.9.0: the CRD definitions (`MachineRegistration`, `MachineInventory`, `ManagedOSImage`, etc.)
+- `elemental-operator-chart` v1.9.0: the operator pod in `cattle-elemental-system`
 
 **5b. UI extension repos**
 
@@ -193,9 +193,9 @@ Two `ClusterRepo` resources added to Rancher so the Elemental UI extension and p
 **5c. MachineRegistration**
 
 Creates `suse-edge-reg-1` in `fleet-default` namespace. Key settings:
-- `auth: tpm` — registration token is derived from the node's TPM, so a cloned disk on a different machine cannot re-register
-- `powerOff: true` — node powers off after the OS install step, before the first-run reboot (prevents accidental double-registration)
-- `machineInventoryLabels` — captures manufacturer and product name from DMI at registration time
+- `auth: tpm`: registration token is derived from the node's TPM, so a cloned disk on a different machine cannot re-register
+- `powerOff: true`: node powers off after the OS install step, before the first-run reboot (prevents accidental double-registration)
+- `machineInventoryLabels`: captures manufacturer and product name from DMI at registration time
 
 **5d. Hauler store population**
 
@@ -209,15 +209,15 @@ Runs on the eib VM over SSH. This is the only step that pulls significant data f
 | SL Micro 6.2 SelfInstall ISO | `download.suse.com` | ~900 MB | Hauler files :8080 + `/home/eib-config/base-images/` |
 | SL Micro 6.2 Default RAW | `download.suse.com` | ~2 GB | Hauler files :8080 + `/home/eib-config/base-images/` |
 
-After storing the artifacts, `hauler-registry.service` and `hauler-fileserver.service` are enabled and started. The `99-k3s-registries.sh` combustion script is written to `/home/eib-config/scripts/`. This script will later be baked into every edge node image by EIB — it configures K3s to route all container pulls through Hauler.
+After storing the artifacts, `hauler-registry.service` and `hauler-fileserver.service` are enabled and started. The `99-k3s-registries.sh` combustion script is written to `/home/eib-config/scripts/`. This script will later be baked into every edge node image by EIB. It configures K3s to route all container pulls through Hauler.
 
 **5e. Gitea deployment**
 
 A `gitea/gitea:1.22-rootless` Podman container is started on the eib VM at port 3000. After the API is ready, two repositories are created:
 
-- **`gitea/alien-geeko`** — mirrored from GitHub once at deploy time. Fleet polls this repo every 15 seconds to check for workload changes. No GitHub access is needed after deploy.
+- **`gitea/alien-geeko`**: mirrored from GitHub once at deploy time. Fleet polls this repo every 15 seconds to check for workload changes. No GitHub access is needed after deploy.
 
-- **`gitea/eib-config`** — created locally and populated with git from templates generated by rodeo-cli. Contains:
+- **`gitea/eib-config`**: created locally and populated with git from templates generated by rodeo-cli. Contains:
   - Four node-specific EIB definition YAML files (one per edge node)
   - NMState network config templates for each node (pre-filled with fixed lab IPs)
   - Combustion scripts (`99-k3s-registries.sh`, hostname scripts for edge3/edge4)
@@ -231,13 +231,13 @@ Creates a `GitRepo` resource in `fleet-default` namespace pointing at `http://19
 
 ---
 
-### Phase 6 — apply (Python, instant unless manifests are present)
+### Phase 6: apply (Python, instant unless manifests are present)
 
-Walks subdirectories of the config dir for any `<hostname>/*.yaml` files and applies them to that VM with `kubectl apply -f -` over SSH. For the standard suse-edge workshop there are no such files, so this phase is a no-op. It exists for customisations — instructors can drop extra manifests here without modifying rodeo-cli.
+Walks subdirectories of the config dir for any `<hostname>/*.yaml` files and applies them to that VM with `kubectl apply -f -` over SSH. For the standard suse-edge workshop there are no such files, so this phase is a no-op. It exists for customisations: instructors can drop extra manifests here without modifying rodeo-cli.
 
 ---
 
-### Phase 7 — finalise (Python, ~1 min)
+### Phase 7: finalise (Python, ~1 min)
 
 - Enables `autostart` on all VMs in libvirt. If the host reboots, all VMs come back up automatically.
 - Enables `libvirt-guests.service` so libvirt handles VM shutdown/resume on host power events.
@@ -294,7 +294,7 @@ The relevant keys for this lab:
 
 ## Further reading
 
-- [Disconnected environment reference](disconnected-environment.md) — runtime data flows and offline design
-- [Host setup](../instructor/host-setup.md) — install and deploy steps for instructors
-- [Pre-lab checklist](../instructor/pre-lab-checklist.md) — verify everything before handing to students
-- [rodeo-cli source](https://github.com/avaleror/rodeo-cli) — profiles, phases, and Ansible roles
+- [Disconnected environment reference](disconnected-environment.md): runtime data flows and offline design
+- [Host setup](../instructor/host-setup.md): install and deploy steps for instructors
+- [Pre-lab checklist](../instructor/pre-lab-checklist.md): verify everything before handing to students
+- [rodeo-cli source](https://github.com/avaleror/rodeo-cli): profiles, phases, and Ansible roles

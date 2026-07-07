@@ -1,4 +1,4 @@
-# SUSE Edge 3.6 Rodeo — Workshop
+# SUSE Edge 3.6 Rodeo: Workshop
 
 Hands-on workshop covering the full SUSE Edge 3.6 lifecycle: image building with EIB, TPM-based edge node onboarding via Elemental, cluster provisioning from Rancher, and GitOps workload delivery via Fleet.
 

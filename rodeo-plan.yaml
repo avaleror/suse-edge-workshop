@@ -1,4 +1,4 @@
-# rodeo-plan.yaml — SUSE Edge 3.6 workshop deployment plan.
+# rodeo-plan.yaml: SUSE Edge 3.6 workshop deployment plan.
 #
 # Deploys on a bare metal Linux host with KVM.
 # Run: rodeo deploy --config-dir .
@@ -64,9 +64,9 @@ ansible:
   inventory: deployer/inventory.local
 
 # Rancher TLS.
-# source: secret  — Rancher self-signed cert, exposed on NodePort 30002.
+# source: secret: Rancher self-signed cert, exposed on NodePort 30002.
 #                   Works on any host including home lab / private networks.
-# source: letsEncrypt — sslip.io hostname + Let's Encrypt. Requires port 80/443
+# source: letsEncrypt: sslip.io hostname + Let's Encrypt. Requires port 80/443
 #                       reachable from the internet (use this on Instruqt or cloud hosts).
 rancher_tls:
   source: secret
