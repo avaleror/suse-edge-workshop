@@ -3,3 +3,4 @@ CLAUDE.md
 secrets.yaml
 *.secrets
 .env
+site/

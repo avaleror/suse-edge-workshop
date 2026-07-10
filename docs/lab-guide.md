@@ -17,11 +17,11 @@ Your environment is already partially running. A bare metal host is running five
 
 ## The scenario
 
-AeroGrid is a regional airport operator. They run self-service kiosks, baggage tracking terminals, and cargo management dashboards across 47 airport locations. Each location runs between three and five Linux nodes. IT manages them centrally from HQ.
+Vertex Trust Bank operates ATMs, branch teller terminals, and regional processing hubs across 47 branch locations. Each location runs between three and five Linux nodes. IT manages them centrally from HQ.
 
-The problem: each site has its own config history. Some nodes have not been updated in years. Security audit is next month. The CTO's mandate is that every edge node should have the same OS, installed from the same image, managed from a single control plane. New nodes at any site should onboard automatically with no hands-on config at the remote end.
+The problem: each branch has its own config history. Some nodes have not been updated in years. A regulatory audit is next month. The CTO's mandate is that every edge node should have the same OS, installed from the same image, managed from a single control plane. New nodes at any branch should onboard automatically with no hands-on config at the remote end.
 
-AeroGrid also has two types of sites: larger hubs that need Kubernetes clusters capable of running containerized applications, and smaller branch terminals that just need a managed Linux node with lightweight workloads. SUSE Edge handles both from the same management plane.
+Vertex Trust Bank also has two types of sites: larger regional hubs that need Kubernetes clusters capable of running containerized applications, and smaller branch terminals that just need a managed Linux node with lightweight workloads. SUSE Edge handles both from the same management plane.
 
 ---
 
@@ -96,7 +96,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "hauler store info --store /var/lib/hauler 2>/dev/null | head -40"
 ```
 
-You should see the EIB container image, the Elemental register agent, the Alien-Geeko app image, and the SL Micro base image. These were pre-staged by the instructor before the lab started.
+You should see the EIB container image, the Elemental register agent, the vertex-bank-app image, and the SL Micro base image. These were pre-staged by the instructor before the lab started.
 
 ---
 
@@ -731,7 +731,7 @@ cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineInventorySelectorTemplate
 metadata:
-  name: aerogrid-hub-selector
+  name: vertex-hub-selector
   namespace: fleet-default
 spec:
   template:
@@ -772,7 +772,7 @@ cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f
 apiVersion: provisioning.cattle.io/v1
 kind: Cluster
 metadata:
-  name: aerogrid-hub-01
+  name: vertex-hub-01
   namespace: fleet-default
 spec:
   kubernetesVersion: v1.35.3+k3s1
@@ -785,14 +785,14 @@ spec:
         workerRole: true
         machineConfigRef:
           kind: MachineInventorySelectorTemplate
-          name: aerogrid-hub-selector
+          name: vertex-hub-selector
           apiVersion: elemental.cattle.io/v1beta1
 EOF
 ```
 
 ### 5.5 Watch the cluster provision
 
-In Rancher UI: go to **Cluster Management**. You will see `aerogrid-hub-01` appear with status `Provisioning`. The management cluster is now remotely installing K3s on edge1 via the Elemental system agent.
+In Rancher UI: go to **Cluster Management**. You will see `vertex-hub-01` appear with status `Provisioning`. The management cluster is now remotely installing K3s on edge1 via the Elemental system agent.
 
 From the terminal:
 
@@ -810,25 +810,25 @@ Provisioning takes 5-10 minutes. When the status changes to `Active`, the cluste
 ## Exercise 6: Deploy workloads via Fleet
 
 You now have four running nodes:
-- **aerogrid-hub-01** on edge1 (Elemental-provisioned K3s)
+- **vertex-hub-01** on edge1 (Elemental-provisioned K3s)
 - **edge2** registered but not yet assigned to a cluster
 - **edge3** running RKE2 standalone (not yet in Rancher)
 - **edge4** running K3s standalone (not yet in Rancher)
 
-Fleet is already watching for clusters with the right labels. A `GitRepo` called `alien-geeko` is pre-configured to target any cluster labeled `demo=true` and `edge-type=x86-cluster`.
+Fleet is already watching for clusters with the right labels. A `GitRepo` called `vertex-bank-app` is pre-configured to target any cluster labeled `demo=true` and `edge-type=x86-cluster`.
 
-### 6.1 Trigger Fleet deployment on aerogrid-hub-01
+### 6.1 Trigger Fleet deployment on vertex-hub-01
 
 edge1 already has the `demo=true` and `edge-type=x86-cluster` labels from the MachineInventorySelectorTemplate labeling step. Once the cluster is active and imported into Rancher's fleet-default workspace, Fleet should pick it up automatically.
 
-Check in the Rancher UI: **Continuous Delivery > Git Repos > alien-geeko**. Look at the target clusters section. When `aerogrid-hub-01` appears in the list and its status moves to `Active`, Fleet is deploying the app.
+Check in the Rancher UI: **Continuous Delivery > Git Repos > vertex-bank-app**. Look at the target clusters section. When `vertex-hub-01` appears in the list and its status moves to `Active`, Fleet is deploying the app.
 
 If it does not appear automatically:
 
 ```bash
 # Make sure the cluster has the right labels
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl label cluster aerogrid-hub-01 -n fleet-default \
+  "kubectl label cluster vertex-hub-01 -n fleet-default \
    demo=true edge-type=x86-cluster --overwrite"
 ```
 
@@ -836,7 +836,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 
 edge3 and edge4 are running standalone clusters that Rancher does not know about yet. Import them:
 
-In Rancher UI: **Cluster Management > Import Existing**. Give each cluster a name (`aerogrid-branch-rke2`, `aerogrid-branch-k3s`). Rancher generates a `kubectl apply` command with a registration manifest. Run it on each node:
+In Rancher UI: **Cluster Management > Import Existing**. Give each cluster a name (`vertex-branch-rke2`, `vertex-branch-k3s`). Rancher generates a `kubectl apply` command with a registration manifest. Run it on each node:
 
 ```bash
 # On edge3 (RKE2)
@@ -852,29 +852,29 @@ Once imported, label them for Fleet:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
-  kubectl label cluster aerogrid-branch-rke2 -n fleet-default \
+  kubectl label cluster vertex-branch-rke2 -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
-  kubectl label cluster aerogrid-branch-k3s -n fleet-default \
+  kubectl label cluster vertex-branch-k3s -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
 "
 ```
 
-Fleet will deploy Alien-Geeko to each cluster the moment the labels match. Go to **Continuous Delivery > Git Repos > alien-geeko** and watch the bundle status update for each cluster.
+Fleet will deploy vertex-bank-app to each cluster the moment the labels match. Go to **Continuous Delivery > Git Repos > vertex-bank-app** and watch the bundle status update for each cluster.
 
 ### 6.3 Verify deployment
 
-Alien-Geeko is a Node.js web terminal that shows live Kubernetes cluster vitals. Once Fleet deploys it, find the NodePort and open it in a browser.
+vertex-bank-app is a Node.js web terminal that shows live Kubernetes cluster vitals. Once Fleet deploys it, find the NodePort and open it in a browser.
 
 For each cluster, run:
 
 ```bash
 # On the management cluster, check fleet bundle status
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get bundle -n fleet-default | grep alien"
+  "kubectl get bundle -n fleet-default | grep vertex-bank"
 
 # On edge1 (via management cluster kubeconfig), find the NodePort
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get svc -A | grep alien"
+  "kubectl get svc -A | grep vertex-bank"
 ```
 
 Open `http://192.168.122.31:<nodeport>` for the edge1 deployment.
@@ -911,7 +911,7 @@ Four nodes, three image types, two provisioning paths, one management plane. Let
 
 ### Try a second Elemental cluster with RKE2
 
-Label edge2 with `site-role: hub` and create a second `Cluster` resource pointing at the same `aerogrid-hub-selector` template but with `quantity: 1` targeting edge2. Rancher will provision RKE2 on edge2.
+Label edge2 with `site-role: hub` and create a second `Cluster` resource pointing at the same `vertex-hub-selector` template but with `quantity: 1` targeting edge2. Rancher will provision RKE2 on edge2.
 
 ### See what a failed registration looks like
 

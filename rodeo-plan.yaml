@@ -28,7 +28,7 @@ network:
   mode: nat
   rancher_ip: "192.168.122.9"
   gateway: "192.168.122.1"
-  dns_domain: "aerogrid.com"
+  dns_domain: "vertextrust.bank"
 
 resources:
   rancher:
@@ -79,3 +79,15 @@ credentials:
 
 elemental:
   registrations: 1
+
+# Vertex Trust Bank story: replaces the alien-geeko demo default with vertex-bank-app.
+# Requires rodeo-cli's alien_geeko config wiring (rodeo/engine/rancher.py, rodeo/success.py).
+alien_geeko:
+  image: "docker.io/avaleror/vertex-bank-app:latest"
+  fleet_repo: "https://github.com/SUSE-Technical-Marketing/vertex-bank-app.git"
+  fleet_branch: main
+  fleet_name: vertex-bank-app
+  fleet_namespace: fleet-default
+  target_labels:
+    demo: "true"
+    edge-type: x86-cluster

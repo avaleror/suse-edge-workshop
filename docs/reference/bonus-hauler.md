@@ -116,7 +116,7 @@ spec:
   images:
     - name: alpine:3.21
     - name: nginx:1.27
-    - name: docker.io/avaleror/alien-geeko:latest
+    - name: docker.io/avaleror/vertex-bank-app:latest
 ---
 apiVersion: content.hauler.cattle.io/v1alpha1
 kind: Charts

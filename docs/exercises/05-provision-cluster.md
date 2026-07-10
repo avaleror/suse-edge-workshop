@@ -30,7 +30,7 @@ cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineInventorySelectorTemplate
 metadata:
-  name: aerogrid-hub-selector
+  name: vertex-hub-selector
   namespace: fleet-default
 spec:
   template:
@@ -71,7 +71,7 @@ cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f
 apiVersion: provisioning.cattle.io/v1
 kind: Cluster
 metadata:
-  name: aerogrid-hub-01
+  name: vertex-hub-01
   namespace: fleet-default
 spec:
   kubernetesVersion: v1.35.3+k3s1
@@ -84,14 +84,14 @@ spec:
         workerRole: true
         machineConfigRef:
           kind: MachineInventorySelectorTemplate
-          name: aerogrid-hub-selector
+          name: vertex-hub-selector
           apiVersion: elemental.cattle.io/v1beta1
 EOF
 ```
 
 ## 5.5 Watch the cluster provision
 
-In Rancher UI: go to **Cluster Management**. You will see `aerogrid-hub-01` appear with status `Provisioning`. The management cluster is now remotely installing K3s on edge1 via the Elemental system agent.
+In Rancher UI: go to **Cluster Management**. You will see `vertex-hub-01` appear with status `Provisioning`. The management cluster is now remotely installing K3s on edge1 via the Elemental system agent.
 
 From the terminal:
 

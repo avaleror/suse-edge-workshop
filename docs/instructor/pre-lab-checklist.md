@@ -33,15 +33,15 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
 # 7. Gitea is running and both repos are present
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "podman ps --filter name=gitea --format '{{.Status}}' && \
-   curl -s http://localhost:3000/api/v1/repos/gitea/alien-geeko \
-   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('alien-geeko:', r['full_name'])\" && \
+   curl -s http://localhost:3000/api/v1/repos/gitea/vertex-bank-app \
+   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('vertex-bank-app:', r['full_name'])\" && \
    curl -s http://localhost:3000/api/v1/repos/gitea/eib-config \
    | python3 -c \"import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'])\""
 
 # 8. Fleet GitRepo points at local Gitea (not GitHub)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
-   get gitrepo alien-geeko -n fleet-default \
+   get gitrepo vertex-bank-app -n fleet-default \
    -o jsonpath='{.spec.repo}'"
 
 # 9. Edge VMs are defined but off

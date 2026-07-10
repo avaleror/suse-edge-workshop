@@ -28,10 +28,10 @@ flowchart TB
 
         subgraph EIBVM["eib  ·  192.168.122.20"]
             subgraph HAULER["Hauler"]
-                HaulerOCI["OCI registry  :5000\nedge-image-builder\nelemental-register\nalien-geeko"]
+                HaulerOCI["OCI registry  :5000\nedge-image-builder\nelemental-register\nvertex-bank-app"]
                 HaulerFS["File server  :8080\nSL Micro SelfInstall ISO\nSL Micro Default RAW"]
             end
-            Gitea["Gitea  :3000\ngitea/alien-geeko\ngitea/eib-config"]
+            Gitea["Gitea  :3000\ngitea/vertex-bank-app\ngitea/eib-config"]
             EIB["EIB\npodman run"]
         end
 
@@ -58,7 +58,7 @@ flowchart TB
 
 | Flow | What happens |
 |---|---|
-| 1 | Fleet controller on rancher VM polls Gitea on eib VM for `alien-geeko` GitRepo changes. All traffic on 192.168.122.0/24. No GitHub access after deploy. |
+| 1 | Fleet controller on rancher VM polls Gitea on eib VM for `vertex-bank-app` GitRepo changes. All traffic on 192.168.122.0/24. No GitHub access after deploy. |
 | 2 | Fleet pushes workload bundles from management cluster to downstream cluster agents on the edge nodes. |
 | 3 | EIB pulls container images to embed in OS images from the Hauler OCI registry at :5000. |
 | 4 | EIB pulls the SL Micro base OS (ISO or RAW) from the Hauler file server at :8080. |
@@ -75,10 +75,10 @@ Gitea runs on the EIB VM at `http://192.168.122.20:3000`. It holds two repositor
 
 | Repo | URL | Used by |
 |---|---|---|
-| `gitea/alien-geeko` | `http://192.168.122.20:3000/gitea/alien-geeko.git` | Fleet GitRepo `alien-geeko` |
+| `gitea/vertex-bank-app` | `http://192.168.122.20:3000/gitea/vertex-bank-app.git` | Fleet GitRepo `vertex-bank-app` |
 | `gitea/eib-config` | `http://192.168.122.20:3000/gitea/eib-config.git` | Students in Exercises 2 and 3 |
 
-`alien-geeko` is mirrored from GitHub once at deploy time. After that, Fleet polls it every 15 seconds. `eib-config` holds the EIB image definition templates, NMState network configs, and combustion scripts that students clone in Exercise 2 and use in Exercise 3.
+`vertex-bank-app` is mirrored from GitHub once at deploy time. After that, Fleet polls it every 15 seconds. `eib-config` holds the EIB image definition templates, NMState network configs, and combustion scripts that students clone in Exercise 2 and use in Exercise 3.
 
 Verify it is running:
 
@@ -92,8 +92,8 @@ podman ps --filter name=gitea --format "table {{.Names}}\t{{.Status}}\t{{.Ports}
 curl -s http://localhost:3000/api/v1/version | python3 -m json.tool
 
 # Both repos exist
-curl -s http://localhost:3000/api/v1/repos/gitea/alien-geeko \
-  | python3 -c "import sys,json; r=json.load(sys.stdin); print('alien-geeko:', r['full_name'], r['default_branch'])"
+curl -s http://localhost:3000/api/v1/repos/gitea/vertex-bank-app \
+  | python3 -c "import sys,json; r=json.load(sys.stdin); print('vertex-bank-app:', r['full_name'], r['default_branch'])"
 
 curl -s http://localhost:3000/api/v1/repos/gitea/eib-config \
   | python3 -c "import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'], r['default_branch'])"
@@ -111,7 +111,7 @@ Hauler runs on the EIB VM at two endpoints:
 |---|---|---|
 | `registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1` | SUSE registry | Exercise 3: all EIB builds |
 | `registry.suse.com/rancher/elemental-register:1.9.0` | SUSE registry | Exercise 3: Elemental ISO builds |
-| `docker.io/avaleror/alien-geeko:latest` | Docker Hub | Exercise 6: Fleet deploy to edge clusters |
+| `docker.io/avaleror/vertex-bank-app:latest` | Docker Hub | Exercise 6: Fleet deploy to edge clusters |
 
 **File server: port 8080**
 
@@ -211,15 +211,15 @@ journalctl -u k3s | grep -i "pulling image" | head -10
 
 ## How Fleet stays offline
 
-The `alien-geeko` GitRepo resource points at local Gitea, not GitHub:
+The `vertex-bank-app` GitRepo resource points at local Gitea, not GitHub:
 
 ```yaml
 spec:
-  repo: http://192.168.122.20:3000/gitea/alien-geeko.git
+  repo: http://192.168.122.20:3000/gitea/vertex-bank-app.git
   branch: main
 ```
 
-Fleet's controller on the rancher VM polls this URL every 15 seconds. When students label a cluster (`demo=true edge-type=x86-cluster`), Fleet detects the match, bundles the Alien-Geeko manifests from the local Gitea repo, and pushes them to the downstream cluster agent. The agent applies the manifests locally without any outbound internet access.
+Fleet's controller on the rancher VM polls this URL every 15 seconds. When students label a cluster (`demo=true edge-type=x86-cluster`), Fleet detects the match, bundles the vertex-bank-app manifests from the local Gitea repo, and pushes them to the downstream cluster agent. The agent applies the manifests locally without any outbound internet access.
 
 Verify the GitRepo is using local Gitea:
 
@@ -227,11 +227,11 @@ Verify the GitRepo is using local Gitea:
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9
 
 kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
-  get gitrepo alien-geeko -n fleet-default \
+  get gitrepo vertex-bank-app -n fleet-default \
   -o jsonpath='{.spec.repo}'
 ```
 
-Expected output: `http://192.168.122.20:3000/gitea/alien-geeko.git`
+Expected output: `http://192.168.122.20:3000/gitea/vertex-bank-app.git`
 
 ---
 
@@ -327,12 +327,12 @@ virsh net-list
 | Rancher Prime | Yes | `useBundledSystemChart=true`; system charts bundled |
 | cert-manager | Yes | Installed; no runtime image pulls |
 | Elemental Operator | Yes | Installed; no OS channel pull in these exercises |
-| Gitea | Yes | Runs on eib VM; alien-geeko + eib-config repos initialised at deploy time |
-| Fleet GitRepo (alien-geeko) | **Yes** | Points at local Gitea: no GitHub access needed |
+| Gitea | Yes | Runs on eib VM; vertex-bank-app + eib-config repos initialised at deploy time |
+| Fleet GitRepo (vertex-bank-app) | **Yes** | Points at local Gitea: no GitHub access needed |
 | EIB (on eib VM) | Yes | Container image in Hauler; base OS in Hauler; definitions + scripts from Gitea eib-config |
 | Hauler registry + fileserver | Yes | Self-contained on eib VM |
 | Edge node K3s | Yes | Images via Hauler mirror; `registries.yaml` baked in by EIB |
-| Alien-Geeko app (Fleet) | Yes | Image in Hauler; pulled via K3s mirror on edge nodes |
+| vertex-bank-app (Fleet) | Yes | Image in Hauler; pulled via K3s mirror on edge nodes |
 
 The lab is fully disconnected after deploy. No exercise step requires outbound internet access.
 

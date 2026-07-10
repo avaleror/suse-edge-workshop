@@ -36,7 +36,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "hauler store info --store /var/lib/hauler 2>/dev/null | head -40"
 ```
 
-You should see the EIB container image, the Elemental register agent, the Alien-Geeko app image, and the SL Micro base image. These were pre-staged by the instructor before the lab started.
+You should see the EIB container image, the Elemental register agent, the vertex-bank-app image, and the SL Micro base image. These were pre-staged by the instructor before the lab started.
 
 ---
 

@@ -18,9 +18,9 @@ hide:
 ## The scenario
 
 <div class="scenario">
-AeroGrid is a regional airport operator managing self-service kiosks, baggage tracking terminals, and cargo dashboards across 47 sites. Every edge node must boot from the same OS image, onboard automatically with no hands-on config at the remote end, and be manageable from a single control plane.
+Vertex Trust Bank operates ATMs, branch teller terminals, and regional processing hubs across 47 branches. Every edge node must boot from the same OS image, onboard automatically with no hands-on config at the remote end, and be manageable from a single control plane.
 
-This workshop deploys the AeroGrid management stack and walks you through building and booting four edge nodes across two different provisioning paths.
+This workshop deploys the Vertex Trust Bank management stack and walks you through building and booting four edge nodes across two different provisioning paths.
 </div>
 
 ## Lab topology
@@ -99,7 +99,7 @@ The full Kubernetes stack is baked into the disk image. Boot it, you have a runn
   <div class="ex-number">Exercise 06</div>
   <div class="ex-title">Deploy workloads via Fleet</div>
   <div class="ex-time">⏱ 20 min</div>
-  <div class="ex-desc">Label clusters for Fleet, import standalone nodes into Rancher, and watch Alien-Geeko deploy across the fleet.</div>
+  <div class="ex-desc">Label clusters for Fleet, import standalone nodes into Rancher, and watch vertex-bank-app deploy across the fleet.</div>
 </a>
 
 </div>
@@ -112,8 +112,8 @@ The full Kubernetes stack is baked into the disk image. Boot it, you have a runn
 
 The EIB VM hosts two services that together make the lab self-contained:
 
-- **[Hauler](https://docs.hauler.dev)**: OCI registry at `:5000` (EIB container, `elemental-register`, Alien-Geeko app) and file server at `:8080` (SL Micro 6.2 ISO and RAW). EIB pulls container images to embed and the SL Micro base OS from here.
-- **[Gitea](https://gitea.io)**: local Git server at `:3000` with two repos: `gitea/alien-geeko` (Fleet GitRepo source, no GitHub access needed) and `gitea/eib-config` (EIB image definitions, NMState network configs, and combustion scripts that students clone in Exercise 2).
+- **[Hauler](https://docs.hauler.dev)**: OCI registry at `:5000` (EIB container, `elemental-register`, vertex-bank-app) and file server at `:8080` (SL Micro 6.2 ISO and RAW). EIB pulls container images to embed and the SL Micro base OS from here.
+- **[Gitea](https://gitea.io)**: local Git server at `:3000` with two repos: `gitea/vertex-bank-app` (Fleet GitRepo source, no GitHub access needed) and `gitea/eib-config` (EIB image definitions, NMState network configs, and combustion scripts that students clone in Exercise 2).
 
 Edge nodes boot with `registries.yaml` baked in by EIB, routing all container pulls through Hauler. Fleet syncs from local Gitea. EIB itself pulls its definitions and scripts from Gitea and its binary content from Hauler. The management cluster runs entirely offline after deploy. See the [Disconnected environment reference](reference/disconnected-environment.md) for the full architecture.
 

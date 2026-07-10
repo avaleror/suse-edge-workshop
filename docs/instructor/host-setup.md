@@ -61,10 +61,10 @@ During the `elemental` phase, rodeo-cli automatically populates the Hauler store
 |---|---|---|
 | EIB container image (`edge-image-builder:1.3.3.1`) | Hauler OCI registry `:5000` | Exercise 3: EIB builds |
 | `elemental-register` image | Hauler OCI registry `:5000` | Exercise 3: Elemental ISO builds |
-| Alien-Geeko app image | Hauler OCI registry `:5000` | Exercise 6: Fleet deploy |
+| vertex-bank-app image | Hauler OCI registry `:5000` | Exercise 6: Fleet deploy |
 | SL Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3: EIB Elemental ISO base |
 | SL Micro 6.2 Default RAW | Hauler fileserver `:8080` | Exercise 3: EIB standalone RAW base |
-| `gitea/alien-geeko` repo | Gitea `:3000` | Exercise 6: Fleet GitRepo source |
+| `gitea/vertex-bank-app` repo | Gitea `:3000` | Exercise 6: Fleet GitRepo source |
 | `gitea/eib-config` repo | Gitea `:3000` | Exercise 2: students clone this for EIB definitions + scripts |
 
 Edge nodes boot with `registries.yaml` baked in by EIB, pointing all container pulls (`docker.io`, `registry.suse.com`, `ghcr.io`) to the local Hauler registry at `192.168.122.20:5000`. Fleet syncs from local Gitea at `192.168.122.20:3000`. No GitHub access needed. EIB pulls image definitions and scripts from the `eib-config` Gitea repo.
@@ -90,8 +90,8 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
 # Gitea running and both repos present
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "podman ps --filter name=gitea --format '{{.Status}}' && \
-   curl -s http://localhost:3000/api/v1/repos/gitea/alien-geeko \
-   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('alien-geeko:', r['full_name'])\" && \
+   curl -s http://localhost:3000/api/v1/repos/gitea/vertex-bank-app \
+   | python3 -c \"import sys,json; r=json.load(sys.stdin); print('vertex-bank-app:', r['full_name'])\" && \
    curl -s http://localhost:3000/api/v1/repos/gitea/eib-config \
    | python3 -c \"import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'])\""
 

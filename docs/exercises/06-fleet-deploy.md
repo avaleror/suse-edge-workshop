@@ -7,34 +7,34 @@
 
 You now have four running nodes:
 
-- **aerogrid-hub-01** on edge1 (Elemental-provisioned K3s)
+- **vertex-hub-01** on edge1 (Elemental-provisioned K3s)
 - **edge2** registered but not yet assigned to a cluster
 - **edge3** running RKE2 standalone (not yet in Rancher)
 - **edge4** running K3s standalone (not yet in Rancher)
 
-Fleet is already watching for clusters with the right labels. A `GitRepo` called `alien-geeko` is pre-configured to target any cluster labeled `demo=true` and `edge-type=x86-cluster`.
+Fleet is already watching for clusters with the right labels. A `GitRepo` called `vertex-bank-app` is pre-configured to target any cluster labeled `demo=true` and `edge-type=x86-cluster`.
 
-The `alien-geeko` GitRepo points at the local Gitea instance on the EIB VM, not GitHub. Fleet syncs from `http://192.168.122.20:3000/gitea/alien-geeko.git` every 15 seconds. No internet access is needed.
+The `vertex-bank-app` GitRepo points at the local Gitea instance on the EIB VM, not GitHub. Fleet syncs from `http://192.168.122.20:3000/gitea/vertex-bank-app.git` every 15 seconds. No internet access is needed.
 
 ```bash
 # Confirm the GitRepo source
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
-   get gitrepo alien-geeko -n fleet-default \
+   get gitrepo vertex-bank-app -n fleet-default \
    -o jsonpath='{.spec.repo}'"
 ```
 
-## 6.1 Trigger Fleet deployment on aerogrid-hub-01
+## 6.1 Trigger Fleet deployment on vertex-hub-01
 
 edge1 already has the `demo=true` and `edge-type=x86-cluster` labels from the labeling step in Exercise 5. Once the cluster is active and imported into Rancher's fleet-default workspace, Fleet picks it up automatically.
 
-Check in Rancher UI: **Continuous Delivery > Git Repos > alien-geeko**. When `aerogrid-hub-01` appears in the target clusters section and status moves to `Active`, Fleet is deploying the app.
+Check in Rancher UI: **Continuous Delivery > Git Repos > vertex-bank-app**. When `vertex-hub-01` appears in the target clusters section and status moves to `Active`, Fleet is deploying the app.
 
 If it does not appear automatically:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl label cluster aerogrid-hub-01 -n fleet-default \
+  "kubectl label cluster vertex-hub-01 -n fleet-default \
    demo=true edge-type=x86-cluster --overwrite"
 ```
 
@@ -42,7 +42,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 
 edge3 and edge4 are running standalone clusters that Rancher does not know about yet. Import them:
 
-In Rancher UI: **Cluster Management > Import Existing**. Give each cluster a name (`aerogrid-branch-rke2`, `aerogrid-branch-k3s`). Rancher generates a `kubectl apply` command with a registration manifest. Run it on each node:
+In Rancher UI: **Cluster Management > Import Existing**. Give each cluster a name (`vertex-branch-rke2`, `vertex-branch-k3s`). Rancher generates a `kubectl apply` command with a registration manifest. Run it on each node:
 
 ```bash
 # On edge3 (RKE2)
@@ -58,27 +58,27 @@ Once imported, label them for Fleet:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
-  kubectl label cluster aerogrid-branch-rke2 -n fleet-default \
+  kubectl label cluster vertex-branch-rke2 -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
-  kubectl label cluster aerogrid-branch-k3s -n fleet-default \
+  kubectl label cluster vertex-branch-k3s -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
 "
 ```
 
-Fleet deploys Alien-Geeko to each cluster the moment the labels match. Go to **Continuous Delivery > Git Repos > alien-geeko** and watch the bundle status update per cluster.
+Fleet deploys vertex-bank-app to each cluster the moment the labels match. Go to **Continuous Delivery > Git Repos > vertex-bank-app** and watch the bundle status update per cluster.
 
 ## 6.3 Verify deployment
 
-Alien-Geeko is a Node.js web terminal that shows live Kubernetes cluster vitals. Once Fleet deploys it, find the NodePort and open it in a browser:
+vertex-bank-app is a Node.js web terminal that shows live Kubernetes cluster vitals. Once Fleet deploys it, find the NodePort and open it in a browser:
 
 ```bash
 # Check fleet bundle status
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get bundle -n fleet-default | grep alien"
+  "kubectl get bundle -n fleet-default | grep vertex-bank"
 
 # Find the NodePort on edge1
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get svc -A | grep alien"
+  "kubectl get svc -A | grep vertex-bank"
 ```
 
 Open `http://192.168.122.31:<nodeport>` for the edge1 deployment.
