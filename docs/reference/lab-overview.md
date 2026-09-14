@@ -271,13 +271,13 @@ By the time `rodeo deploy` returns, the host has:
 | Gitea container (running) | eib VM (:3000) | elemental phase |
 | Gitea repo `gitea/vertex-bank-app` | eib VM | elemental phase |
 | Gitea repo `gitea/eib-config` | eib VM | elemental phase |
-| Lab credentials | `~/.rodeo/secrets.yaml` on host | rodeo init |
+| Lab credentials | `~/.rodeo/secrets.yaml` on host | `rodeo up` |
 
 ---
 
 ## Lab credentials
 
-All passwords are generated at `rodeo init` time and stored in `~/.rodeo/secrets.yaml` on the KVM host. Nothing is hardcoded anywhere.
+All passwords are generated silently the first time `rodeo up` runs and stored in `~/.rodeo/secrets.yaml` on the KVM host. Nothing is hardcoded anywhere.
 
 ```bash
 cat ~/.rodeo/secrets.yaml

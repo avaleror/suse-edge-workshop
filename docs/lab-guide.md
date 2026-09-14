@@ -1026,4 +1026,4 @@ kubectl get bundle -n fleet-default
 
 ---
 
-*Lab built with rodeo-cli v0.10.x. Source: https://github.com/avaleror/rodeo-cli*
+*Lab built with [rodeo-cli](https://github.com/avaleror/rodeo-cli).*

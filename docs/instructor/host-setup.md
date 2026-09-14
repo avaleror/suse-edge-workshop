@@ -23,26 +23,20 @@ This installs prerequisites (python3, pip, git), clones the repo to `/opt/rodeo-
 To pin a specific version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash -s -- --ref v0.10.0
+curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash -s -- --ref v0.16.1
 ```
-
-## Generate secrets
-
-```bash
-rodeo init --profile suse-edge --dir /path/to/suse-edge-workshop
-```
-
-This creates `~/.rodeo/secrets.yaml` with generated passwords. The `rodeo-plan.yaml` in this repo references them via `??placeholder` notation.
 
 ## Deploy
 
-From the workshop directory:
-
 ```bash
-sudo rodeo deploy --config-dir .
+git clone https://github.com/avaleror/suse-edge-workshop.git
+cd suse-edge-workshop
+rodeo up
 ```
 
-The deploy runs in phases: `kvm_host → vms → boot → rancher → elemental → apply → finalise`. Total time is 30-60 minutes depending on internet speed (Hauler pulls several GB of images). See [Lab overview](../reference/lab-overview.md) for a detailed breakdown of what each phase does.
+Because you are inside a directory that already contains `rodeo-plan.yaml`, `rodeo up` auto-detects the lab — no separate `rodeo init` step needed. It self-escalates with sudo, silently generates `~/.rodeo/secrets.yaml` (the `rodeo-plan.yaml` in this repo references the passwords via `??placeholder` notation), wraps the deploy in tmux so a dropped SSH doesn't kill it, and runs the pipeline: `kvm_host → vms → boot → rancher → elemental → apply → finalise → custom_scripts`. Total time is 30-60 minutes depending on internet speed (Hauler pulls several GB of images). See [Lab overview](../reference/lab-overview.md) for a detailed breakdown of what each phase does.
+
+If your SSH session drops, re-attach with the session name `rodeo up` printed at the start (`tmux attach -t <name>`).
 
 When complete, the success screen shows:
 
@@ -108,7 +102,7 @@ Everything should be green before students start `lab-guide.md`.
 ## Tear down
 
 ```bash
-sudo rodeo clean --config-dir .
+sudo rodeo clean --yes
 ```
 
 This removes all VMs, disk images, and libvirt network config. The host is left clean.

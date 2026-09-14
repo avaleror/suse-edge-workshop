@@ -26,11 +26,14 @@ mkdocs.yml                  # MkDocs Material config
 Deploy the lab environment on a bare metal KVM host:
 
 ```bash
-pip install git+https://github.com/avaleror/rodeo-cli.git@main
-rodeo init --profile suse-edge --dir suse-edge-workshop
+curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
+git clone https://github.com/avaleror/suse-edge-workshop.git
 cd suse-edge-workshop
-sudo rodeo deploy --config-dir .
+rodeo doctor
+rodeo up
 ```
+
+`rodeo up` self-escalates with sudo, generates `~/.rodeo/secrets.yaml`, wraps the deploy in tmux, and prints login URLs when finished — no separate `rodeo init`/`sudo rodeo deploy` steps needed, since this repo already ships its own `rodeo-plan.yaml`.
 
 Then follow the lab guide at https://avaleror.github.io/suse-edge-workshop/
 
@@ -45,4 +48,4 @@ Open http://127.0.0.1:8000
 
 ---
 
-*Deployed with [rodeo-cli](https://github.com/avaleror/rodeo-cli) v0.10.x.*
+*Deployed with [rodeo-cli](https://github.com/avaleror/rodeo-cli).*
