@@ -96,7 +96,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "hauler store info --store /var/lib/hauler 2>/dev/null | head -40"
 ```
 
-You should see the EIB container image, the Elemental register agent, the vertex-bank-app image, and the SL Micro base image. These were pre-staged by the instructor before the lab started.
+You should see the EIB container image, the Elemental register agent, the vertex-bank-app image, and the openSUSE Leap Micro base image. These were pre-staged by the instructor before the lab started.
 
 ---
 
@@ -129,30 +129,36 @@ spec:
       registration:
         auth: tpm                   # TPM-based identity, hardware-bound
       install:
-        powerOff: true              # Power off after install, before first-run reboot
+        device: /dev/vda            # Pre-selected so the install runs unattended
+        poweroff: true              # Power off after install, before first-run reboot
   machineInventoryLabels:
     manufacturer: "${System Information/Manufacturer}"
     productName: "${System Information/Product Name}"
-    locationID: ""                  # You will fill this in per node
+    registration: "<this-registration's-name>"
 ```
 
 `auth: tpm` means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. This matters for edge security: remote sites where you cannot guarantee physical security.
+
+`install.device: /dev/vda` pre-selects the install target so the self-installer never prompts for confirmation, and `install.poweroff: true` shuts the node down cleanly once the install finishes. Without both of these, the installer stops at an interactive "destroy all data" prompt and waits forever for a keypress nobody is there to give it.
 
 ### 2.3 Add labels for cluster assignment
 
 You are going to use labels to tell the management cluster which nodes should form clusters. Add the labels the MachineInventorySelectorTemplate will match later:
 
 ```bash
-# Check the current registration name
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get machineregistration -n fleet-default"
+# The registration name is derived from your lab's plan name, so it varies
+# by deployment — discover it rather than assuming a fixed name.
+REGNAME=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}'")
+
+echo "Registration name: $REGNAME"
 ```
 
-Note the registration name (something like `suse-edge-reg-1`). Now look at the registration URL. You need this for the EIB image build in Exercise 3:
+Now use it to get the registration URL. You need this for the EIB image build in Exercise 3:
 
 ```bash
 REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get machineregistration suse-edge-reg-1 \
+  "kubectl get machineregistration $REGNAME \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
 
@@ -167,13 +173,13 @@ The registration URL does more than identify the endpoint. Fetching it returns a
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 "
-  mkdir -p /home/eib-config/elemental
-  curl -k \"$REGURL\" -o /home/eib-config/elemental/elemental_config.yaml
-  cat /home/eib-config/elemental/elemental_config.yaml
+  mkdir -p /home/eib-config/os-files/oem
+  curl -k \"$REGURL\" -o /home/eib-config/os-files/oem/elemental.yaml
+  cat /home/eib-config/os-files/oem/elemental.yaml
 "
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it into the OS image so it is present at first boot. No network config required at the remote site.
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. Files under `os-files/` land at the same path on the built image, so EIB embeds this one at `/oem/elemental.yaml`, present at first boot. No network config required at the remote site.
 
 ### 2.5 Verify Elemental Operator is healthy
 
@@ -182,7 +188,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 ```
 
-Both `elemental-operator` and `elemental-operator-webhook` should be `Running`. If either is not, stop and flag it before building images. Nodes cannot register against a broken operator.
+`elemental-operator` should be `Running`. Some Elemental Operator releases also run a separate `elemental-operator-webhook` pod; its absence alone is not a problem, but if `elemental-operator` itself is not `Running`, stop and flag it before building images. Nodes cannot register against a broken operator.
 
 ### 2.6 Node network plan
 
@@ -207,6 +213,7 @@ interfaces:
   - name: eth0
     type: ethernet
     state: up
+    mac-address: 02:00:00:0E:62:A1
     ipv4:
       address:
         - ip: 192.168.122.31
@@ -220,7 +227,7 @@ routes:
       next-hop-interface: eth0
 dns-resolver:
   config:
-    servers:
+    server:
       - 192.168.122.1
 EOF
 
@@ -229,6 +236,7 @@ interfaces:
   - name: eth0
     type: ethernet
     state: up
+    mac-address: 02:00:00:0E:62:A2
     ipv4:
       address:
         - ip: 192.168.122.32
@@ -242,7 +250,7 @@ routes:
       next-hop-interface: eth0
 dns-resolver:
   config:
-    servers:
+    server:
       - 192.168.122.1
 EOF
 
@@ -251,6 +259,7 @@ interfaces:
   - name: eth0
     type: ethernet
     state: up
+    mac-address: 02:00:00:0E:62:A3
     ipv4:
       address:
         - ip: 192.168.122.33
@@ -264,7 +273,7 @@ routes:
       next-hop-interface: eth0
 dns-resolver:
   config:
-    servers:
+    server:
       - 192.168.122.1
 EOF
 
@@ -273,6 +282,7 @@ interfaces:
   - name: eth0
     type: ethernet
     state: up
+    mac-address: 02:00:00:0E:62:A4
     ipv4:
       address:
         - ip: 192.168.122.34
@@ -286,7 +296,7 @@ routes:
       next-hop-interface: eth0
 dns-resolver:
   config:
-    servers:
+    server:
       - 192.168.122.1
 EOF
 
@@ -294,7 +304,7 @@ ls -la /home/eib-config/network-configs/
 exit
 ```
 
-The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `kernelArgs`. Without that kernel arg, SL Micro would name the first NIC something like `ens3` depending on PCI bus order. With the arg set, the old naming convention applies consistently across builds.
+The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `kernelArgs`. Without that kernel arg, openSUSE Leap Micro would name the first NIC something like `ens3` depending on PCI bus order. With the arg set, the old naming convention applies consistently across builds.
 
 ---
 
@@ -304,10 +314,10 @@ Each node gets its own image with its own static IP baked in. That means four bu
 
 | Image | Node | Base | Output | IP | Kubernetes |
 |---|---|---|---|---|---|
-| `elemental-edge1.iso` | edge1 | SL Micro 6.2 SelfInstall ISO | ISO | 192.168.122.31 | None (Elemental) |
-| `elemental-edge2.iso` | edge2 | SL Micro 6.2 SelfInstall ISO | ISO | 192.168.122.32 | None (Elemental) |
-| `rke2-edge3.raw` | edge3 | SL Micro 6.2 Cloud RAW | RAW | 192.168.122.33 | RKE2 v1.35.3+rke2r3 |
-| `k3s-edge4.raw` | edge4 | SL Micro 6.2 Cloud RAW | RAW | 192.168.122.34 | K3s v1.35.3+k3s1 |
+| `elemental-edge1.iso` | edge1 | openSUSE Leap Micro 6.2 SelfInstall ISO | ISO | 192.168.122.31 | None (Elemental) |
+| `elemental-edge2.iso` | edge2 | openSUSE Leap Micro 6.2 SelfInstall ISO | ISO | 192.168.122.32 | None (Elemental) |
+| `rke2-edge3.raw` | edge3 | openSUSE Leap Micro 6.2 Default RAW | RAW | 192.168.122.33 | RKE2 v1.35.3+rke2r3 |
+| `k3s-edge4.raw` | edge4 | openSUSE Leap Micro 6.2 Default RAW | RAW | 192.168.122.34 | K3s v1.35.5+k3s1 |
 
 **The build pattern for each node:**
 1. Clear the `network/` dir and drop only that node's NMState file there
@@ -326,22 +336,42 @@ Check the base images available from Hauler and download them:
 ```bash
 curl -s http://localhost:8080/ | grep -E "iso|raw|qcow"
 
-mkdir -p /home/eib-config/base-images /home/eib-config/network /home/eib-config/scripts
+mkdir -p /home/eib-config/base-images /home/eib-config/network \
+         /home/eib-config/custom/scripts /home/eib-config/scripts-available \
+         /home/eib-config/os-files/oem
 
-# SL Micro SelfInstall ISO for Elemental nodes
-curl -fsSL "http://localhost:8080/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso" \
-  -o /home/eib-config/base-images/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso
+# EIB auto-discovers and runs EVERYTHING under custom/scripts/, with no way to
+# select a subset. Stage scripts in scripts-available/ instead (same idea as
+# network-configs/ for NMState files) and copy in only what each build needs,
+# right before that build — never leave another node's scripts sitting in
+# custom/scripts/ (confirmed live: a leftover hostnamectl combustion script
+# from another node fails this early in boot and drops the node into
+# emergency mode).
+cp /home/eib-config/scripts/99-k3s-registries.sh /home/eib-config/scripts-available/
 
-# SL Micro Cloud RAW for standalone cluster nodes
-curl -fsSL "http://localhost:8080/SL-Micro.x86_64-6.2-Default.raw" \
-  -o /home/eib-config/base-images/SL-Micro.x86_64-6.2-Default.raw
+# openSUSE Leap Micro SelfInstall ISO for Elemental nodes
+curl -fsSL "http://localhost:8080/leap-micro-selfinstall.iso" \
+  -o /home/eib-config/base-images/leap-micro-selfinstall.iso
+
+# openSUSE Leap Micro Default RAW for standalone cluster nodes
+curl -fsSL "http://localhost:8080/leap-micro-default.raw" \
+  -o /home/eib-config/base-images/leap-micro-default.raw
 
 ls -lh /home/eib-config/base-images/
+
+# elemental-register / elemental-system-agent RPMs (edge1/edge2 side-load these,
+# no SUSE Customer Center registration code needed)
+curl -fsSL "http://localhost:8080/elemental-register.rpm" \
+  -o /home/eib-config/rpms/elemental-register.rpm
+curl -fsSL "http://localhost:8080/elemental-system-agent.rpm" \
+  -o /home/eib-config/rpms/elemental-system-agent.rpm
+
+ls -lh /home/eib-config/rpms/
 ```
 
 ### 3.1 Elemental image for edge1
 
-This image boots, installs SL Micro to disk, and on first boot `elemental-register` phones home to the management cluster. The static IP 192.168.122.31 is baked in via NMState so the node is reachable at that address the moment it finishes installing.
+This image boots, installs openSUSE Leap Micro to disk, and on first boot `elemental-register` phones home to the management cluster. The static IP 192.168.122.31 is baked in via NMState so the node is reachable at that address the moment it finishes installing.
 
 Set the network config and create the definition:
 
@@ -350,30 +380,45 @@ Set the network config and create the definition:
 rm -f /home/eib-config/network/*.yaml
 cp /home/eib-config/network-configs/edge1.yaml /home/eib-config/network/
 
+# Elemental builds need no combustion scripts. EIB errors out if
+# custom/scripts/ exists but is empty, so remove the directory entirely
+# rather than just clearing it.
+rm -rf /home/eib-config/custom/scripts
+
 cat > /home/eib-config/elemental-edge1-definition.yaml << 'EOF'
-apiVersion: 1.0
+apiVersion: 1.2
 
 image:
   imageType: iso
   arch: x86_64
-  baseImage: SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso
+  baseImage: leap-micro-selfinstall.iso
   outputImageName: elemental-edge1.iso
 
 operatingSystem:
   kernelArgs:
     - net.ifnames=0
-  files:
-    - sourcePath: elemental/elemental_config.yaml
-      destinationPath: /oem/elemental.yaml
+  packages:
+    # Side-loads the elemental-register/elemental-system-agent RPMs from
+    # rpms/ instead of installing them via a registered zypper repo — no
+    # SUSE Customer Center entitlement needed. noGPGCheck is required
+    # because we don't import the openSUSE signing key for these packages.
+    noGPGCheck: true
 
-embeddedArtifacts:
+embeddedArtifactRegistry:
   registries:
-    urls:
-      - 192.168.122.20:5000
+    - uri: 192.168.122.20:5000
+      # EIB requires a non-empty username/password on every registry entry,
+      # even for this unauthenticated local Hauler mirror — these are
+      # placeholders EIB needs syntactically, not real secrets.
+      authentication:
+        username: hauler
+        password: hauler
 EOF
 ```
 
-The `files:` section embeds the Elemental registration config you downloaded in Exercise 2 into `/oem/elemental.yaml` on the OS. When the node boots and `elemental-register` runs, it reads that file and knows where to call home. The NMState config in `network/` is what gives the node its static IP.
+Files placed under `os-files/` in the workspace land at the same path on the built image — the Elemental registration config you downloaded to `os-files/oem/elemental.yaml` in Exercise 2 lands at `/oem/elemental.yaml` on the OS automatically, no reference needed in the definition. When the node boots and `elemental-register` runs, it reads that file and knows where to call home. The NMState config in `network/` is what gives the node its static IP.
+
+The RPMs you downloaded earlier at `/home/eib-config/rpms/` are picked up automatically — EIB auto-discovers a `rpms/` directory the same way it does `os-files/` and `custom/scripts/`, no YAML reference needed.
 
 Start the build in the background:
 
@@ -401,27 +446,29 @@ tail -10 /tmp/eib-edge1.log
 # Swap in edge2's network config
 rm -f /home/eib-config/network/*.yaml
 cp /home/eib-config/network-configs/edge2.yaml /home/eib-config/network/
+rm -rf /home/eib-config/custom/scripts
 
 cat > /home/eib-config/elemental-edge2-definition.yaml << 'EOF'
-apiVersion: 1.0
+apiVersion: 1.2
 
 image:
   imageType: iso
   arch: x86_64
-  baseImage: SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso
+  baseImage: leap-micro-selfinstall.iso
   outputImageName: elemental-edge2.iso
 
 operatingSystem:
   kernelArgs:
     - net.ifnames=0
-  files:
-    - sourcePath: elemental/elemental_config.yaml
-      destinationPath: /oem/elemental.yaml
+  packages:
+    noGPGCheck: true
 
-embeddedArtifacts:
+embeddedArtifactRegistry:
   registries:
-    urls:
-      - 192.168.122.20:5000
+    - uri: 192.168.122.20:5000
+      authentication:
+        username: hauler
+        password: hauler
 EOF
 
 podman run --rm --privileged \
@@ -442,36 +489,50 @@ This image boots and comes up as a running single-node RKE2 cluster, no registra
 rm -f /home/eib-config/network/*.yaml
 cp /home/eib-config/network-configs/edge3.yaml /home/eib-config/network/
 
-# Hostname script, EIB embeds this as a combustion script, runs at first boot
-cat > /home/eib-config/scripts/10-hostname-edge3.sh << 'EOF'
+# Hostname script — staged in scripts-available/, not written straight into
+# custom/scripts/, so it never accidentally carries over into another node's
+# build. 60- (not 10-): EIB reserves 00-49 for its own combustion scripts.
+cat > /home/eib-config/scripts-available/60-hostname-edge3.sh << 'EOF'
 #!/bin/bash
 hostnamectl set-hostname edge3
 EOF
-chmod +x /home/eib-config/scripts/10-hostname-edge3.sh
+chmod +x /home/eib-config/scripts-available/60-hostname-edge3.sh
+
+# Only edge3's own combustion scripts — not edge4's, and not each other's
+rm -rf /home/eib-config/custom/scripts
+mkdir -p /home/eib-config/custom/scripts
+cp /home/eib-config/scripts-available/60-hostname-edge3.sh \
+   /home/eib-config/scripts-available/99-k3s-registries.sh \
+   /home/eib-config/custom/scripts/
 
 cat > /home/eib-config/rke2-edge3-definition.yaml << 'EOF'
-apiVersion: 1.0
+apiVersion: 1.2
 
 image:
   imageType: raw
   arch: x86_64
-  baseImage: SL-Micro.x86_64-6.2-Default.raw
+  baseImage: leap-micro-default.raw
   outputImageName: rke2-edge3.raw
 
 operatingSystem:
   kernelArgs:
     - net.ifnames=0
-  scripts:
-    - 10-hostname-edge3.sh
-    - 99-k3s-registries.sh
+  rawConfiguration:
+    # Expands the base RAW disk before embedding content. Without this the
+    # image stays at the base OS's original size and the build fails with
+    # "insufficient available disk space" once RKE2 and its container images
+    # are added.
+    diskSize: 15G
 
 kubernetes:
   version: v1.35.3+rke2r3
 
-embeddedArtifacts:
+embeddedArtifactRegistry:
   registries:
-    urls:
-      - 192.168.122.20:5000
+    - uri: 192.168.122.20:5000
+      authentication:
+        username: hauler
+        password: hauler
 EOF
 ```
 
@@ -499,36 +560,44 @@ Same standalone pattern as edge3 but K3s instead of RKE2. Lighter footprint, fas
 rm -f /home/eib-config/network/*.yaml
 cp /home/eib-config/network-configs/edge4.yaml /home/eib-config/network/
 
-# Hostname script for edge4
-cat > /home/eib-config/scripts/10-hostname-edge4.sh << 'EOF'
+# Hostname script for edge4 — staged in scripts-available/, same as edge3
+cat > /home/eib-config/scripts-available/60-hostname-edge4.sh << 'EOF'
 #!/bin/bash
 hostnamectl set-hostname edge4
 EOF
-chmod +x /home/eib-config/scripts/10-hostname-edge4.sh
+chmod +x /home/eib-config/scripts-available/60-hostname-edge4.sh
+
+# Only edge4's own combustion scripts
+rm -rf /home/eib-config/custom/scripts
+mkdir -p /home/eib-config/custom/scripts
+cp /home/eib-config/scripts-available/60-hostname-edge4.sh \
+   /home/eib-config/scripts-available/99-k3s-registries.sh \
+   /home/eib-config/custom/scripts/
 
 cat > /home/eib-config/k3s-edge4-definition.yaml << 'EOF'
-apiVersion: 1.0
+apiVersion: 1.2
 
 image:
   imageType: raw
   arch: x86_64
-  baseImage: SL-Micro.x86_64-6.2-Default.raw
+  baseImage: leap-micro-default.raw
   outputImageName: k3s-edge4.raw
 
 operatingSystem:
   kernelArgs:
     - net.ifnames=0
-  scripts:
-    - 10-hostname-edge4.sh
-    - 99-k3s-registries.sh
+  rawConfiguration:
+    diskSize: 15G
 
 kubernetes:
-  version: v1.35.3+k3s1
+  version: v1.35.5+k3s1
 
-embeddedArtifacts:
+embeddedArtifactRegistry:
   registries:
-    urls:
-      - 192.168.122.20:5000
+    - uri: 192.168.122.20:5000
+      authentication:
+        username: hauler
+        password: hauler
 EOF
 
 podman run --rm --privileged \
@@ -580,7 +649,7 @@ You have four nodes, two image formats, and two different boot workflows. This e
 
 ### 4.1 Elemental nodes (edge1 and edge2): ISO workflow
 
-edge1 and edge2 each boot from their own ISO. The ISO contains a self-installer: it boots, writes SL Micro to the virtual disk with the static IP already configured, powers off, and the node reboots into the installed OS where `elemental-register` runs.
+edge1 and edge2 each boot from their own ISO. The ISO contains a self-installer: it boots, writes openSUSE Leap Micro to the virtual disk with the static IP already configured, powers off, and the node reboots into the installed OS where `elemental-register` runs.
 
 Pull each ISO from the eib VM and attach it as a virtual CDROM:
 
@@ -589,7 +658,6 @@ Pull each ISO from the eib VM and attach it as a virtual CDROM:
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-config/elemental-edge1.iso \
-  --local-from-eib \
   --nodes edge1 \
   --yes
 
@@ -597,7 +665,6 @@ rodeo pull-edge-image \
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-config/elemental-edge2.iso \
-  --local-from-eib \
   --nodes edge2 \
   --yes
 ```
@@ -611,13 +678,15 @@ virsh start edge1
 virsh start edge2
 ```
 
-Watch the boot on edge1's serial console (Ctrl+] to exit):
+The installer needs two keypresses per node before it runs unattended: the GRUB boot menu waits indefinitely rather than auto-selecting (by design, so install media never silently wipes a disk), and the partitioner asks you to confirm before it writes to `/dev/vda`. Watch each node's serial console in turn (Ctrl+] to exit) and press Enter at both points:
 
 ```bash
 virsh console edge1
+# Press Enter to select "Install openSUSE Leap Micro"
+# Press Enter again to confirm "Destroying ALL data on /dev/vda, continue?"
 ```
 
-You will see OVMF, then the SL Micro installer, then a text progress bar as the OS writes to disk. When you see `System is shutting down` the install is done. The node powers off.
+Do the same for edge2. Once both are past the confirmation, the rest of the install runs on its own — you will see a text progress bar as the OS writes to disk, then `System is shutting down` when the install is done. The node powers off.
 
 Wait for both to shut down:
 
@@ -638,7 +707,7 @@ virsh start edge1
 virsh start edge2
 ```
 
-From this point, the nodes are running SL Micro and `elemental-register` is starting up. Watch for DHCP leases:
+From this point, the nodes are running openSUSE Leap Micro and `elemental-register` is starting up. Watch for DHCP leases:
 
 ```bash
 watch virsh net-dhcp-leases default | grep -E "edge|0e:62:a"
@@ -655,7 +724,6 @@ Pull and thin-clone both images from the eib VM:
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-config/rke2-edge3.raw \
-  --local-from-eib \
   --nodes edge3 \
   --yes
 
@@ -663,7 +731,6 @@ rodeo pull-edge-image \
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-config/k3s-edge4.raw \
-  --local-from-eib \
   --nodes edge4 \
   --yes
 ```
@@ -705,7 +772,7 @@ You should see one node in Ready state with the RKE2 version. Do the same for ed
 
 ## Exercise 5: Provision a K3s cluster on an Elemental node
 
-edge1 and edge2 are now running SL Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes. That happens in this exercise.
+edge1 and edge2 are now running openSUSE Leap Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes. That happens in this exercise.
 
 ### 5.1 Check MachineInventory
 
@@ -887,7 +954,7 @@ Four nodes, three image types, two provisioning paths, one management plane. Let
 
 **The image-first model:** every node in this lab booted from a purpose-built disk image. No manual SSH config, no `apt install`, no Ansible playbook applied to a running system. The image IS the configuration. If a node breaks, you re-image it. If a new site opens, you ship the image. The management cluster tells nodes what cluster to join. It does not configure the OS.
 
-**Why two paths exist:** Elemental (edge1/edge2) is for sites where you do not know the node's final role at image-build time. You build one generic SL Micro image, ship it everywhere, and the management cluster decides what each node becomes after it registers. EIB standalone (edge3/edge4) is for sites where the role is known upfront: you bake K3s or RKE2 into the image and the node is a cluster the moment it boots.
+**Why two paths exist:** Elemental (edge1/edge2) is for sites where you do not know the node's final role at image-build time. You build one generic openSUSE Leap Micro image, ship it everywhere, and the management cluster decides what each node becomes after it registers. EIB standalone (edge3/edge4) is for sites where the role is known upfront: you bake K3s or RKE2 into the image and the node is a cluster the moment it boots.
 
 **Why TPM matters:** without TPM, a cloned disk can register as any node in your fleet. With `auth: tpm`, the registration token is derived from hardware. You can revoke a specific node's registration by deleting its `MachineInventory`. Physical theft of the hardware does not compromise other nodes.
 
@@ -977,8 +1044,9 @@ rodeo eject-iso --nodes edge1,edge2 --yes
 # Watch Elemental registration
 kubectl get machineinventory -n fleet-default -w
 
-# Get registration URL
-kubectl get machineregistration suse-edge-reg-1 \
+# Get registration URL (registration name varies by plan — discover it first)
+REGNAME=$(kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}')
+kubectl get machineregistration "$REGNAME" \
   -n fleet-default \
   -o jsonpath='{.status.registrationURL}'
 
@@ -999,7 +1067,7 @@ kubectl get bundle -n fleet-default
 | Elemental Operator | 1.9.0 |
 | Edge Image Builder | 1.3.3.1 |
 | Hauler | 1.2.2 |
-| SUSE Linux Micro | 6.2 |
+| openSUSE Leap Micro | 6.2 |
 
 ---
 
@@ -1007,20 +1075,9 @@ kubectl get bundle -n fleet-default
 
 **Before the lab starts:**
 
-1. Run `rodeo up --profile suse-edge` on the bare metal host to deploy the management stack and the four edge VM shells.
-2. Pre-stage SL Micro images in Hauler on the eib VM:
-   ```bash
-   ssh root@192.168.122.20
-   hauler store add file \
-     "https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso" \
-     --store /var/lib/hauler
-   hauler store add file \
-     "https://download.suse.com/SL-Micro/6.2/SL-Micro.x86_64-6.2-Default.raw" \
-     --store /var/lib/hauler
-   systemctl restart hauler-fileserver
-   ```
-3. Verify the Elemental Operator is running and the MachineRegistration exists.
-4. Share access credentials and host IP with students.
+1. From this repo's directory (it already ships its own `rodeo-plan.yaml`), run `rodeo up` on the bare metal host. It self-escalates with sudo, generates `~/.rodeo/secrets.yaml`, and runs the full pipeline including Hauler population, the Elemental Operator install, and staging the elemental-register/elemental-system-agent RPMs students side-load in Exercise 3 — no SUSE Customer Center entitlement or manual pre-staging needed.
+2. Verify the Elemental Operator is running and the MachineRegistration exists.
+3. Share access credentials and host IP with students.
 
 **Timing:** EIB builds for RAW images with embedded Kubernetes take 15-30 minutes each. Start the Elemental ISO build first (Exercise 3.1), then run through Exercise 2 details while it builds. Start the RKE2 and K3s builds at the end of Exercise 3. Exercises 4, 5, and 6 can begin once the Elemental ISO build completes.
 

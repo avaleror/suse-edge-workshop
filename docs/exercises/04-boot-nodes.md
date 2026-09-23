@@ -10,7 +10,7 @@ You have four nodes, two image formats, and two different boot workflows.
 
 ## 4.1 Elemental nodes (edge1 and edge2): ISO workflow
 
-edge1 and edge2 each boot from their own ISO. The ISO contains a self-installer: it boots, writes SL Micro to the virtual disk with the static IP already configured, powers off, and the node reboots into the installed OS where `elemental-register` runs.
+edge1 and edge2 each boot from their own ISO. The ISO contains a self-installer: it boots, writes openSUSE Leap Micro to the virtual disk with the static IP already configured, powers off, and the node reboots into the installed OS where `elemental-register` runs.
 
 Pull each ISO from the eib VM and attach it as a virtual CDROM:
 
@@ -19,7 +19,6 @@ Pull each ISO from the eib VM and attach it as a virtual CDROM:
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-workspace/elemental-edge1.iso \
-  --local-from-eib \
   --nodes edge1 \
   --yes
 
@@ -27,7 +26,6 @@ rodeo pull-edge-image \
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-workspace/elemental-edge2.iso \
-  --local-from-eib \
   --nodes edge2 \
   --yes
 ```
@@ -41,13 +39,15 @@ virsh start edge1
 virsh start edge2
 ```
 
-Watch the boot on edge1's serial console (Ctrl+] to exit):
+The installer needs two keypresses per node before it runs unattended: the GRUB boot menu waits indefinitely rather than auto-selecting (by design, so install media never silently wipes a disk), and the partitioner asks you to confirm before it writes to `/dev/vda`. Watch each node's serial console in turn (Ctrl+] to exit) and press Enter at both points:
 
 ```bash
 virsh console edge1
+# Press Enter to select "Install openSUSE Leap Micro"
+# Press Enter again to confirm "Destroying ALL data on /dev/vda, continue?"
 ```
 
-You will see OVMF, then the SL Micro installer, then a text progress bar as the OS writes to disk. When you see `System is shutting down` the install is done. The node powers off.
+Do the same for edge2. Once both are past the confirmation, the rest of the install runs on its own — you will see a text progress bar as the OS writes to disk, then `System is shutting down` when the install is done. The node powers off.
 
 Wait for both to shut down:
 
@@ -68,7 +68,7 @@ virsh start edge1
 virsh start edge2
 ```
 
-From this point, the nodes are running SL Micro and `elemental-register` is starting. Watch for DHCP leases:
+From this point, the nodes are running openSUSE Leap Micro and `elemental-register` is starting. Watch for DHCP leases:
 
 ```bash
 watch virsh net-dhcp-leases default | grep -E "edge|0e:62:a"
@@ -85,7 +85,6 @@ Pull and thin-clone each image from the eib VM:
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-workspace/rke2-edge3.raw \
-  --local-from-eib \
   --nodes edge3 \
   --yes
 
@@ -93,7 +92,6 @@ rodeo pull-edge-image \
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
   --image /home/eib-workspace/k3s-edge4.raw \
-  --local-from-eib \
   --nodes edge4 \
   --yes
 ```

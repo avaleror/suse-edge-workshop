@@ -9,7 +9,8 @@ Run through this before handing the lab to students. The deploy (`rodeo deploy`)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -n cattle-elemental-system"
 
-# 2. Elemental Operator is running, both pods
+# 2. Elemental Operator is running (some releases also run a separate
+#    elemental-operator-webhook pod — its absence alone is not a problem)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 
@@ -21,14 +22,18 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "hauler store info --store /var/lib/hauler 2>/dev/null | grep edge-image-builder"
 
-# 5. Hauler is running and both SL Micro base images are served
+# 5. Hauler is running and both openSUSE Leap Micro base images are served
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "systemctl is-active hauler-registry hauler-fileserver && \
-   curl -s http://localhost:8080/ | grep -c 'SL-Micro'"
+   curl -s http://localhost:8080/ | grep -c 'leap-micro'"
 
-# 6. SL Micro files staged in eib-config/base-images (used by EIB exercise)
+# 6. openSUSE Leap Micro files staged in eib-config/base-images (used by EIB exercise)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "ls -lh /home/eib-config/base-images/"
+
+# 6b. Elemental register/system-agent RPMs staged (side-loaded, no SCC code needed)
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+  "ls -lh /home/eib-config/rpms/"
 
 # 7. Gitea is running and both repos are present
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \

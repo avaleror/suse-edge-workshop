@@ -6,7 +6,7 @@
 
 ---
 
-edge1 and edge2 are now running SL Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes. That happens here.
+edge1 and edge2 are now running openSUSE Leap Micro. The `elemental-register` agent has phoned home and registered them with the Elemental Operator. But they are not yet Kubernetes nodes. That happens here.
 
 ## 5.1 Check MachineInventory
 

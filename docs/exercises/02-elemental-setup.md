@@ -33,27 +33,32 @@ spec:
       registration:
         auth: tpm                   # TPM-based identity, hardware-bound
       install:
-        powerOff: true              # Power off after install, before first-run reboot
+        device: /dev/vda            # Pre-selected so the install runs unattended
+        poweroff: true              # Power off after install, before first-run reboot
   machineInventoryLabels:
     manufacturer: "${System Information/Manufacturer}"
     productName: "${System Information/Product Name}"
-    locationID: ""                  # You will fill this in per node
+    registration: "<this-registration's-name>"
 ```
 
 `auth: tpm` means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. This matters for edge deployments: remote sites where you cannot guarantee physical security.
 
+`install.device: /dev/vda` pre-selects the install target so the self-installer never prompts for confirmation, and `install.poweroff: true` shuts the node down cleanly once the install finishes. Without both of these, the installer stops at an interactive "destroy all data" prompt and waits forever for a keypress nobody is there to give it.
+
 ## 2.3 Get the registration URL
 
-Note the registration name, then get the URL you will embed in the EIB image:
+The registration name is derived from your lab's plan name, so it varies by deployment. Discover it first, then use it to fetch the URL you will embed in the EIB image:
 
 ```bash
-# Check the registration name
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get machineregistration -n fleet-default"
+# Discover the registration name
+REGNAME=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}'")
+
+echo "Registration name: $REGNAME"
 
 # Capture the registration URL
 REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get machineregistration suse-edge-reg-1 \
+  "kubectl get machineregistration $REGNAME \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
 
@@ -64,7 +69,7 @@ echo "Registration URL: $REGURL"
 
 ## 2.4 Clone the EIB workspace and configure it
 
-The EIB image definitions, NMState network configs, and combustion scripts live in the `eib-config` Gitea repo on the EIB VM. Clone it to get a ready-made workspace, then replace the Elemental config placeholder with the live registration URL.
+The EIB image definitions, NMState network configs, and combustion scripts live in the `eib-config` Gitea repo on the EIB VM. Fetch it to get a ready-made workspace, then replace the Elemental config placeholder with the live registration URL.
 
 SSH to the EIB VM:
 
@@ -72,30 +77,34 @@ SSH to the EIB VM:
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
 ```
 
-Clone the workspace:
+The EIB VM does not have `git` installed — it stays a minimal build host. Fetch the workspace as an archive from Gitea instead, which gives you the exact same file layout:
 
 ```bash
-git clone http://192.168.122.20:3000/gitea/eib-config /home/eib-workspace
+mkdir -p /home/eib-workspace
+curl -sL http://192.168.122.20:3000/gitea/eib-config/archive/main.tar.gz \
+  | tar -xz --strip-components=1 -C /home/eib-workspace
 ls /home/eib-workspace/
 ```
 
-You should see four definition files, `network-configs/`, `scripts/`, and `elemental/` directories.
+You should see four definition files, `network-configs/`, `custom/scripts/`, and `os-files/oem/` directories.
 
 Now download the live registration config from the Elemental Operator and overwrite the placeholder:
 
 ```bash
-# If REGURL is not in the current shell, re-capture it
+# If REGNAME/REGURL are not in the current shell, re-capture them
+REGNAME=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}'")
 REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get machineregistration suse-edge-reg-1 \
+  "kubectl get machineregistration $REGNAME \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
 
-curl -k "$REGURL" -o /home/eib-workspace/elemental/elemental_config.yaml
+curl -k "$REGURL" -o /home/eib-workspace/os-files/oem/elemental.yaml
 
-cat /home/eib-workspace/elemental/elemental_config.yaml
+cat /home/eib-workspace/os-files/oem/elemental.yaml
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. EIB will embed it at `/oem/elemental.yaml` in the OS image. No network config required at the remote site.
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. Files under `os-files/` land at the same path on the built image, so this one lands at `/oem/elemental.yaml`. No network config required at the remote site.
 
 Exit back to the KVM host:
 
@@ -110,7 +119,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 ```
 
-Both `elemental-operator` and `elemental-operator-webhook` should be `Running`. If either is not, stop and flag it before building images. Nodes cannot register against a broken operator.
+`elemental-operator` should be `Running`. Some Elemental Operator releases also run a separate `elemental-operator-webhook` pod; its absence alone is not a problem, but if `elemental-operator` itself is not `Running`, stop and flag it before building images. Nodes cannot register against a broken operator.
 
 ## 2.6 Node network plan
 
@@ -132,7 +141,7 @@ exit
 
 EIB picks up any YAML file in the `network/` subdirectory of its config dir. Each build uses exactly one file, one node, one IP. In Exercise 3 you will copy the right file into `network/` before starting each build.
 
-The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `kernelArgs`. Without that kernel arg, SL Micro would name the first NIC something like `ens3` depending on PCI bus order. With the arg set, the old naming convention applies consistently across all four builds.
+The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `kernelArgs`. Without that kernel arg, openSUSE Leap Micro would name the first NIC something like `ens3` depending on PCI bus order. With the arg set, the old naming convention applies consistently across all four builds.
 
 ---
 

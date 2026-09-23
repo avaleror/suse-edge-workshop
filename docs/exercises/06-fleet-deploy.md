@@ -91,7 +91,7 @@ Four nodes, four images, two provisioning paths, one management plane.
 
 **The image-first model:** every node in this lab booted from a purpose-built disk image. No manual SSH config, no package installs, no configuration management applied to a running system. The image IS the configuration. If a node breaks, you re-image it. If a new site opens, you ship the image.
 
-**Why two paths exist:** Elemental (edge1/edge2) is for sites where you do not know the node's final role at image-build time. You build one generic SL Micro image, ship it everywhere, and the management cluster decides what each node becomes after it registers. EIB standalone (edge3/edge4) is for sites where the role is known upfront: you bake K3s or RKE2 into the image and the node is a cluster the moment it boots.
+**Why two paths exist:** Elemental (edge1/edge2) is for sites where you do not know the node's final role at image-build time. You build one generic openSUSE Leap Micro image, ship it everywhere, and the management cluster decides what each node becomes after it registers. EIB standalone (edge3/edge4) is for sites where the role is known upfront: you bake K3s or RKE2 into the image and the node is a cluster the moment it boots.
 
 **Why TPM matters:** without TPM, a cloned disk can register as any node in your fleet. With `auth: tpm`, the registration token is derived from hardware. You can revoke a specific node's registration by deleting its `MachineInventory`. Physical theft of the hardware does not compromise other nodes.
 

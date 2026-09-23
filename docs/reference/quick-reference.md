@@ -33,13 +33,13 @@ podman run --rm --privileged \
 
 # Seed an ISO to a specific edge node
 rodeo pull-edge-image --config-dir /root/rodeo-lab \
-  --image /home/eib-config/<image.iso> \
-  --local-from-eib --nodes <node> --yes
+  --image /home/eib-workspace/<image.iso> \
+  --nodes <node> --yes
 
 # Seed a RAW image to a specific edge node
 rodeo pull-edge-image --config-dir /root/rodeo-lab \
-  --image /home/eib-config/<image.raw> \
-  --local-from-eib --nodes <node> --yes
+  --image /home/eib-workspace/<image.raw> \
+  --nodes <node> --yes
 
 # Eject ISO after Elemental install, restore disk-first boot
 rodeo eject-iso --nodes edge1,edge2 --yes
@@ -47,8 +47,9 @@ rodeo eject-iso --nodes edge1,edge2 --yes
 # Watch Elemental node registration
 kubectl get machineinventory -n fleet-default -w
 
-# Get Elemental registration URL
-kubectl get machineregistration suse-edge-reg-1 \
+# Get Elemental registration URL (registration name varies by plan — discover it first)
+REGNAME=$(kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}')
+kubectl get machineregistration "$REGNAME" \
   -n fleet-default \
   -o jsonpath='{.status.registrationURL}'
 
@@ -69,4 +70,4 @@ kubectl get bundle -n fleet-default
 | Elemental Operator | 1.9.0 |
 | Edge Image Builder | 1.3.3.1 |
 | Hauler | 1.2.2 |
-| SUSE Linux Micro | 6.2 |
+| openSUSE Leap Micro | 6.2 |

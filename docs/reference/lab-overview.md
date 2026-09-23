@@ -50,10 +50,10 @@ flowchart TB
 |---|---|---|---|---|---|
 | rancher | 192.168.122.9 | 4 | 8 GiB | 60 GB | openSUSE Leap 15.6 (cloud) |
 | eib | 192.168.122.20 | 4 | 12 GiB | 100 GB | openSUSE Leap Micro 6.2 (cloud) |
-| edge1 | 192.168.122.31 | 2 | 4 GiB | 20 GB | SL Micro 6.2 (built by students) |
-| edge2 | 192.168.122.32 | 2 | 4 GiB | 20 GB | SL Micro 6.2 (built by students) |
-| edge3 | 192.168.122.33 | 2 | 4 GiB | 20 GB | SL Micro 6.2 (built by students) |
-| edge4 | 192.168.122.34 | 2 | 4 GiB | 20 GB | SL Micro 6.2 (built by students) |
+| edge1 | 192.168.122.31 | 2 | 4 GiB | 20 GB | openSUSE Leap Micro 6.2 (built by students) |
+| edge2 | 192.168.122.32 | 2 | 4 GiB | 20 GB | openSUSE Leap Micro 6.2 (built by students) |
+| edge3 | 192.168.122.33 | 2 | 4 GiB | 20 GB | openSUSE Leap Micro 6.2 (built by students) |
+| edge4 | 192.168.122.34 | 2 | 4 GiB | 20 GB | openSUSE Leap Micro 6.2 (built by students) |
 
 Edge nodes are defined and their UEFI firmware is prepared at deploy time, but they are **not started**. Students start them after building OS images in Exercise 3. The DHCP static lease is set so the node always gets its fixed IP once it does boot.
 
@@ -72,7 +72,7 @@ MAC addresses all use the `0E` prefix (Edge profile convention):
 Two approaches run in parallel through the lab, both valid production choices:
 
 **Elemental path (edge1, edge2)**
-EIB builds a minimal SL Micro ISO. The node boots from it, installs the OS to disk, and on first boot `elemental-register` contacts the Elemental Operator on the management cluster using its TPM identity. Rancher then provisions K3s remotely. The node never needs SSH access from an operator. It phones home and identifies itself.
+EIB builds a minimal openSUSE Leap Micro ISO. The node boots from it, installs the OS to disk, and on first boot `elemental-register` contacts the Elemental Operator on the management cluster using its TPM identity. Rancher then provisions K3s remotely. The node never needs SSH access from an operator. It phones home and identifies itself.
 
 **EIB standalone path (edge3, edge4)**
 EIB builds a RAW disk image with K3s or RKE2 and all required container images baked in. The node boots from the image and is a running Kubernetes cluster with no registration step. This model suits fixed-function sites where the node's role is known at build time.
@@ -192,9 +192,10 @@ Two `ClusterRepo` resources added to Rancher so the Elemental UI extension and p
 
 **5c. MachineRegistration**
 
-Creates `suse-edge-reg-1` in `fleet-default` namespace. Key settings:
+Creates `<plan-name>-reg-1` in `fleet-default` namespace (for this repo's own plan, `suse-edge-rodeo-reg-1`) — the exact name varies by deployment, so discover it with `kubectl get machineregistration -n fleet-default` rather than assuming it. Key settings:
 - `auth: tpm`: registration token is derived from the node's TPM, so a cloned disk on a different machine cannot re-register
-- `powerOff: true`: node powers off after the OS install step, before the first-run reboot (prevents accidental double-registration)
+- `install.device: /dev/vda`: pre-selects the install target so the self-installer runs unattended instead of stopping at a "destroy all data" confirmation prompt
+- `install.poweroff: true`: node powers off after the OS install step, before the first-run reboot (prevents accidental double-registration)
 - `machineInventoryLabels`: captures manufacturer and product name from DMI at registration time
 
 **5d. Hauler store population**
@@ -204,10 +205,11 @@ Runs on the eib VM over SSH. This is the only step that pulls significant data f
 | Artifact | Source | Size | Served as |
 |---|---|---|---|
 | `edge-image-builder:1.3.3.1` | `registry.suse.com` | ~800 MB | Hauler OCI :5000 |
-| `elemental-register:1.9.0` | `registry.suse.com` | ~50 MB | Hauler OCI :5000 |
+| `elemental-operator:1.9.0` (the `elemental-register` agent ships inside this image, not as a separate one) | `registry.suse.com` | ~50 MB | Hauler OCI :5000 |
 | `vertex-bank-app:latest` | `docker.io` | ~150 MB | Hauler OCI :5000 |
-| SL Micro 6.2 SelfInstall ISO | `download.suse.com` | ~900 MB | Hauler files :8080 + `/home/eib-config/base-images/` |
-| SL Micro 6.2 Default RAW | `download.suse.com` | ~2 GB | Hauler files :8080 + `/home/eib-config/base-images/` |
+| openSUSE Leap Micro 6.2 SelfInstall ISO | `download.opensuse.org` | ~900 MB | Hauler files :8080 + `/home/eib-config/base-images/` |
+| openSUSE Leap Micro 6.2 Default RAW | `download.opensuse.org` | ~2 GB | Hauler files :8080 + `/home/eib-config/base-images/` |
+| `elemental-register` / `elemental-system-agent` RPMs | `download.opensuse.org` (public, no SCC needed) | ~25 MB | Hauler files :8080 + `/home/eib-config/rpms/` |
 
 After storing the artifacts, `hauler-registry.service` and `hauler-fileserver.service` are enabled and started. The `99-k3s-registries.sh` combustion script is written to `/home/eib-config/scripts/`. This script will later be baked into every edge node image by EIB. It configures K3s to route all container pulls through Hauler.
 
@@ -220,10 +222,10 @@ A `gitea/gitea:1.22-rootless` Podman container is started on the eib VM at port 
 - **`gitea/eib-config`**: created locally and populated with git from templates generated by rodeo-cli. Contains:
   - Four node-specific EIB definition YAML files (one per edge node)
   - NMState network config templates for each node (pre-filled with fixed lab IPs)
-  - Combustion scripts (`99-k3s-registries.sh`, hostname scripts for edge3/edge4)
-  - An `elemental_config.yaml` placeholder that students overwrite in Exercise 2
+  - `custom/scripts/` combustion scripts (`99-k3s-registries.sh`, hostname scripts for edge3/edge4)
+  - An `os-files/oem/elemental.yaml` placeholder that students overwrite in Exercise 2 — EIB copies everything under `os-files/` onto the built image at the same path
 
-Students clone this repo in Exercise 2 to get a ready-made EIB workspace at `/home/eib-workspace/`.
+Students fetch this repo's content in Exercise 2 to get a ready-made EIB workspace at `/home/eib-workspace/`. The eib VM has no `git` binary by design, so this uses Gitea's archive-download API (`.../archive/main.tar.gz`) rather than `git clone` — the resulting file layout is identical.
 
 **5f. Fleet GitRepo**
 
@@ -263,11 +265,11 @@ By the time `rodeo deploy` returns, the host has:
 | cert-manager v1.20.1 | rancher VM | rancher phase |
 | Let's Encrypt TLS cert | rancher VM | rancher phase |
 | Elemental Operator 1.9.0 | rancher VM | elemental phase |
-| MachineRegistration `suse-edge-reg-1` | rancher VM (`fleet-default` ns) | elemental phase |
+| MachineRegistration `<plan-name>-reg-1` | rancher VM (`fleet-default` ns) | elemental phase |
 | Fleet GitRepo `vertex-bank-app` | rancher VM (`fleet-default` ns) | elemental phase |
 | Hauler store + services | eib VM (`/var/lib/hauler`) | elemental phase |
 | EIB container pre-pulled | eib VM (Hauler OCI :5000) | elemental phase |
-| SL Micro base images staged | eib VM (`/home/eib-config/base-images/`) | elemental phase |
+| openSUSE Leap Micro base images staged | eib VM (`/home/eib-config/base-images/`) | elemental phase |
 | Gitea container (running) | eib VM (:3000) | elemental phase |
 | Gitea repo `gitea/vertex-bank-app` | eib VM | elemental phase |
 | Gitea repo `gitea/eib-config` | eib VM | elemental phase |

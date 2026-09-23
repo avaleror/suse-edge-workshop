@@ -29,7 +29,7 @@ flowchart TB
         subgraph EIBVM["eib  ·  192.168.122.20"]
             subgraph HAULER["Hauler"]
                 HaulerOCI["OCI registry  :5000\nedge-image-builder\nelemental-register\nvertex-bank-app"]
-                HaulerFS["File server  :8080\nSL Micro SelfInstall ISO\nSL Micro Default RAW"]
+                HaulerFS["File server  :8080\nopenSUSE Leap Micro SelfInstall ISO\nopenSUSE Leap Micro Default RAW"]
             end
             Gitea["Gitea  :3000\ngitea/vertex-bank-app\ngitea/eib-config"]
             EIB["EIB\npodman run"]
@@ -61,7 +61,7 @@ flowchart TB
 | 1 | Fleet controller on rancher VM polls Gitea on eib VM for `vertex-bank-app` GitRepo changes. All traffic on 192.168.122.0/24. No GitHub access after deploy. |
 | 2 | Fleet pushes workload bundles from management cluster to downstream cluster agents on the edge nodes. |
 | 3 | EIB pulls container images to embed in OS images from the Hauler OCI registry at :5000. |
-| 4 | EIB pulls the SL Micro base OS (ISO or RAW) from the Hauler file server at :8080. |
+| 4 | EIB pulls the openSUSE Leap Micro base OS (ISO or RAW) from the Hauler file server at :8080. |
 | 5 | EIB clones the `eib-config` Gitea repo for definition files, NMState network configs, and combustion scripts. |
 | 6 | K3s on every edge node has `registries.yaml` baked in by EIB, routing docker.io, registry.suse.com, and ghcr.io through Hauler at :5000. |
 
@@ -110,15 +110,16 @@ Hauler runs on the EIB VM at two endpoints:
 | Image | Source | Used in |
 |---|---|---|
 | `registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1` | SUSE registry | Exercise 3: all EIB builds |
-| `registry.suse.com/rancher/elemental-register:1.9.0` | SUSE registry | Exercise 3: Elemental ISO builds |
+| `registry.suse.com/rancher/elemental-operator:1.9.0` (the `elemental-register` agent ships inside it, not as a separate image) | SUSE registry | Exercise 3: Elemental ISO builds |
 | `docker.io/avaleror/vertex-bank-app:latest` | Docker Hub | Exercise 6: Fleet deploy to edge clusters |
 
 **File server: port 8080**
 
 | File | Used in |
 |---|---|
-| `SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso` | Exercise 3.1, 3.2: EIB Elemental ISO base |
-| `SL-Micro.x86_64-6.2-Default.raw` | Exercise 3.3, 3.4: EIB standalone RAW base |
+| `leap-micro-selfinstall.iso` | Exercise 3.1, 3.2: EIB Elemental ISO base |
+| `leap-micro-default.raw` | Exercise 3.3, 3.4: EIB standalone RAW base |
+| `elemental-register.rpm` / `elemental-system-agent.rpm` | Exercise 3.1, 3.2: side-loaded into Elemental builds, no SCC code needed (public openSUSE source) |
 
 Verify everything is in place:
 
@@ -129,7 +130,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
 curl -s http://localhost:5000/v2/_catalog | python3 -m json.tool
 
 # File server
-curl -s http://localhost:8080/ | grep -E "SL-Micro|iso|raw"
+curl -s http://localhost:8080/ | grep -E "leap-micro|iso|raw"
 
 # Hauler store summary
 hauler store info --store /var/lib/hauler
@@ -142,36 +143,41 @@ hauler store info --store /var/lib/hauler
 EIB runs inside Podman on the EIB VM. It pulls from two local sources, one for binary content and one for configuration:
 
 **Hauler (images + base OS):**
-The `embeddedArtifacts.registries` section in every definition file points EIB at the local Hauler OCI registry:
+The `embeddedArtifactRegistry.registries` section in every definition file points EIB at the local Hauler OCI registry:
 
 ```yaml
-embeddedArtifacts:
+embeddedArtifactRegistry:
   registries:
-    urls:
-      - 192.168.122.20:5000
+    - uri: 192.168.122.20:5000
+      authentication:
+        username: hauler
+        password: hauler
 ```
 
-EIB queries Hauler for each container image it needs to embed. The SL Micro base OS images (ISO for Elemental nodes, RAW for standalone cluster nodes) are served from the Hauler file server and pre-staged at `/home/eib-config/base-images/`:
+EIB queries Hauler for each container image it needs to embed. The openSUSE Leap Micro base OS images (ISO for Elemental nodes, RAW for standalone cluster nodes) are served from the Hauler file server and pre-staged at `/home/eib-config/base-images/`:
 
 ```bash
 ls -lh /home/eib-config/base-images/
-# SL-Micro.x86_64-6.2-Base-SelfInstall-GM.install.iso  (~900 MB)
-# SL-Micro.x86_64-6.2-Default.raw                      (~2 GB)
+# leap-micro-selfinstall.iso  (~900 MB)
+# leap-micro-default.raw      (~2 GB)
 ```
 
 **Gitea (definitions + scripts):**
-Students clone the `eib-config` Gitea repo to get the EIB definition files, NMState network config templates, and combustion scripts:
+Students fetch the `eib-config` Gitea repo's content to get the EIB definition files, NMState network config templates, and combustion scripts. The eib VM has no `git` binary by design, so this uses Gitea's archive-download API instead of `git clone`:
 
 ```bash
-git clone http://192.168.122.20:3000/gitea/eib-config /home/eib-workspace
+mkdir -p /home/eib-workspace
+curl -sL http://192.168.122.20:3000/gitea/eib-config/archive/main.tar.gz \
+  | tar -xz --strip-components=1 -C /home/eib-workspace
 ```
 
 The EIB Podman run uses two volume mounts to combine both sources:
 
 ```bash
 podman run --rm --privileged \
-  -v /home/eib-workspace:/eib:z \              # definitions, scripts, elemental config, network
+  -v /home/eib-workspace:/eib:z \              # definitions, custom/scripts, os-files/oem, network
   -v /home/eib-config/base-images:/eib/base-images:ro \   # base OS from Hauler (read-only)
+  -v /home/eib-config/rpms:/eib/rpms:ro \      # side-loaded Elemental RPMs from Hauler (read-only)
   registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \
   build --definition-file elemental-edge1-definition.yaml
 ```

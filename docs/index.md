@@ -108,11 +108,11 @@ The full Kubernetes stack is baked into the disk image. Boot it, you have a runn
 
 ## Offline-first design
 
-`rodeo deploy` needs internet access once to pull everything (Rancher, K3s, Elemental, SL Micro images, Helm charts). After that, the lab runs completely offline.
+`rodeo deploy` needs internet access once to pull everything (Rancher, K3s, Elemental, openSUSE Leap Micro images, Helm charts). After that, the lab runs completely offline.
 
 The EIB VM hosts two services that together make the lab self-contained:
 
-- **[Hauler](https://docs.hauler.dev)**: OCI registry at `:5000` (EIB container, `elemental-register`, vertex-bank-app) and file server at `:8080` (SL Micro 6.2 ISO and RAW). EIB pulls container images to embed and the SL Micro base OS from here.
+- **[Hauler](https://docs.hauler.dev)**: OCI registry at `:5000` (EIB container, `elemental-register`, vertex-bank-app) and file server at `:8080` (openSUSE Leap Micro 6.2 ISO and RAW). EIB pulls container images to embed and the openSUSE Leap Micro base OS from here.
 - **[Gitea](https://gitea.io)**: local Git server at `:3000` with two repos: `gitea/vertex-bank-app` (Fleet GitRepo source, no GitHub access needed) and `gitea/eib-config` (EIB image definitions, NMState network configs, and combustion scripts that students clone in Exercise 2).
 
 Edge nodes boot with `registries.yaml` baked in by EIB, routing all container pulls through Hauler. Fleet syncs from local Gitea. EIB itself pulls its definitions and scripts from Gitea and its binary content from Hauler. The management cluster runs entirely offline after deploy. See the [Disconnected environment reference](reference/disconnected-environment.md) for the full architecture.
@@ -143,4 +143,4 @@ Edge nodes boot with `registries.yaml` baked in by EIB, routing all container pu
 | Edge Image Builder | 1.3.3.1 |
 | Hauler | 1.2.2 |
 | Gitea | 1.22 |
-| SUSE Linux Micro | 6.2 |
+| openSUSE Leap Micro | 6.2 |

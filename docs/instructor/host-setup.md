@@ -54,10 +54,11 @@ During the `elemental` phase, rodeo-cli automatically populates the Hauler store
 | Artifact | Served at | Used in |
 |---|---|---|
 | EIB container image (`edge-image-builder:1.3.3.1`) | Hauler OCI registry `:5000` | Exercise 3: EIB builds |
-| `elemental-register` image | Hauler OCI registry `:5000` | Exercise 3: Elemental ISO builds |
+| `elemental-operator` image (the `elemental-register` agent ships inside it) | Hauler OCI registry `:5000` | Exercise 3: Elemental ISO builds |
 | vertex-bank-app image | Hauler OCI registry `:5000` | Exercise 6: Fleet deploy |
-| SL Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3: EIB Elemental ISO base |
-| SL Micro 6.2 Default RAW | Hauler fileserver `:8080` | Exercise 3: EIB standalone RAW base |
+| openSUSE Leap Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3: EIB Elemental ISO base |
+| openSUSE Leap Micro 6.2 Default RAW | Hauler fileserver `:8080` | Exercise 3: EIB standalone RAW base |
+| `elemental-register` / `elemental-system-agent` RPMs | `/home/eib-config/rpms/` (side-loaded, public openSUSE source) | Exercise 3: EIB Elemental ISO base, no SCC code needed |
 | `gitea/vertex-bank-app` repo | Gitea `:3000` | Exercise 6: Fleet GitRepo source |
 | `gitea/eib-config` repo | Gitea `:3000` | Exercise 2: students clone this for EIB definitions + scripts |
 
@@ -72,14 +73,18 @@ See the [Disconnected environment reference](../reference/disconnected-environme
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -n cattle-elemental-system"
 
-# EIB VM + Hauler running, both SL Micro files in the store
+# EIB VM + Hauler running, both openSUSE Leap Micro files in the store
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "systemctl is-active hauler-registry hauler-fileserver && \
-   curl -s http://localhost:8080/ | grep -E 'SL-Micro.*iso|SL-Micro.*raw'"
+   curl -s http://localhost:8080/ | grep -E 'leap-micro.*iso|leap-micro.*raw'"
 
-# SL Micro base images staged for EIB
+# openSUSE Leap Micro base images staged for EIB
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
   "ls -lh /home/eib-config/base-images/"
+
+# Elemental RPMs staged for EIB (side-loaded, no SCC code needed)
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+  "ls -lh /home/eib-config/rpms/"
 
 # Gitea running and both repos present
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
