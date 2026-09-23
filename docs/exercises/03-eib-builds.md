@@ -26,7 +26,7 @@ Each node gets its own image with its own static IP baked in. Four builds, four 
 The definition files, staged scripts, and network configs come from the `eib-config` Gitea repo you cloned in Exercise 2 to `/home/eib-workspace/`. The openSUSE Leap Micro base images (ISO and RAW) were pre-staged by the lab deploy at `/home/eib-config/base-images/`. They come from the Hauler file server and are ready to use.
 
 EIB runs with three volume mounts:
-- `/home/eib-workspace` → definitions, `custom/scripts/`, `os-files/oem/` (elemental config), network config (from Gitea)
+- `/home/eib-workspace` → definitions, `custom/scripts/`, `elemental/` (registration config), network config (from Gitea)
 - `/home/eib-config/base-images` → read-only base OS images (from Hauler)
 - `/home/eib-config/rpms` → read-only elemental-register/elemental-system-agent RPMs (edge1/edge2 only, from Hauler)
 
@@ -73,7 +73,7 @@ cp /home/eib-workspace/network-configs/edge1.yaml /home/eib-workspace/network/
 rm -rf /home/eib-workspace/custom/scripts
 ```
 
-The Elemental registration config you downloaded in Exercise 2 lives at `os-files/oem/elemental.yaml` in the workspace; EIB copies everything under `os-files/` onto the built image at the same path, so it lands at `/oem/elemental.yaml` on the OS. When the node boots and `elemental-register` runs, it reads that file and knows where to call home. The NMState config in `network/` gives the node its static IP.
+The Elemental registration config you downloaded in Exercise 2 lives at `elemental/elemental_config.yaml` in the workspace — EIB's own dedicated, auto-discovered directory for this, which is what actually resolves and bundles the `elemental-register`/`elemental-system-agent` packages into the image and embeds the config for first boot (a plain `os-files/` drop-in does not trigger this). When the node boots and `elemental-register` runs, it reads that file and knows where to call home. The NMState config in `network/` gives the node its static IP.
 
 Start the build in the background:
 

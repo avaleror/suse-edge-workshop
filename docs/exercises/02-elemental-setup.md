@@ -86,7 +86,7 @@ curl -sL http://192.168.122.20:3000/gitea/eib-config/archive/main.tar.gz \
 ls /home/eib-workspace/
 ```
 
-You should see four definition files, `network-configs/`, `custom/scripts/`, and `os-files/oem/` directories.
+You should see four definition files, `network-configs/`, `custom/scripts/`, and `elemental/` directories.
 
 Now download the live registration config from the Elemental Operator and overwrite the placeholder:
 
@@ -99,12 +99,12 @@ REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
 
-curl -k "$REGURL" -o /home/eib-workspace/os-files/oem/elemental.yaml
+curl -k "$REGURL" -o /home/eib-workspace/elemental/elemental_config.yaml
 
-cat /home/eib-workspace/os-files/oem/elemental.yaml
+cat /home/eib-workspace/elemental/elemental_config.yaml
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. Files under `os-files/` land at the same path on the built image, so this one lands at `/oem/elemental.yaml`. No network config required at the remote site.
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. The `elemental/` directory is EIB's own dedicated, auto-discovered location for this — it is what actually triggers EIB to bundle the `elemental-register`/`elemental-system-agent` packages into the image and wire up registration on first boot. No network config required at the remote site.
 
 Exit back to the KVM host:
 

@@ -173,13 +173,13 @@ The registration URL does more than identify the endpoint. Fetching it returns a
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 "
-  mkdir -p /home/eib-config/os-files/oem
-  curl -k \"$REGURL\" -o /home/eib-config/os-files/oem/elemental.yaml
-  cat /home/eib-config/os-files/oem/elemental.yaml
+  mkdir -p /home/eib-config/elemental
+  curl -k \"$REGURL\" -o /home/eib-config/elemental/elemental_config.yaml
+  cat /home/eib-config/elemental/elemental_config.yaml
 "
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. Files under `os-files/` land at the same path on the built image, so EIB embeds this one at `/oem/elemental.yaml`, present at first boot. No network config required at the remote site.
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. The `elemental/` directory is EIB's own dedicated, auto-discovered location for this — it is what actually resolves and bundles the `elemental-register`/`elemental-system-agent` packages into the image (a plain `os-files/` drop-in does not trigger this) and embeds the config so it is present at first boot. No network config required at the remote site.
 
 ### 2.5 Verify Elemental Operator is healthy
 
@@ -338,7 +338,7 @@ curl -s http://localhost:8080/ | grep -E "iso|raw|qcow"
 
 mkdir -p /home/eib-config/base-images /home/eib-config/network \
          /home/eib-config/custom/scripts /home/eib-config/scripts-available \
-         /home/eib-config/os-files/oem
+         /home/eib-config/elemental
 
 # EIB auto-discovers and runs EVERYTHING under custom/scripts/, with no way to
 # select a subset. Stage scripts in scripts-available/ instead (same idea as
@@ -416,9 +416,9 @@ embeddedArtifactRegistry:
 EOF
 ```
 
-Files placed under `os-files/` in the workspace land at the same path on the built image — the Elemental registration config you downloaded to `os-files/oem/elemental.yaml` in Exercise 2 lands at `/oem/elemental.yaml` on the OS automatically, no reference needed in the definition. When the node boots and `elemental-register` runs, it reads that file and knows where to call home. The NMState config in `network/` is what gives the node its static IP.
+The `elemental/elemental_config.yaml` you downloaded in Exercise 2 needs no reference in the definition — `elemental/` is EIB's own dedicated, auto-discovered directory for Elemental registration, and it is what actually resolves and bundles the `elemental-register`/`elemental-system-agent` packages into the image, not just a plain file copy. When the node boots and `elemental-register` runs, it reads that config and knows where to call home. The NMState config in `network/` is what gives the node its static IP.
 
-The RPMs you downloaded earlier at `/home/eib-config/rpms/` are picked up automatically — EIB auto-discovers a `rpms/` directory the same way it does `os-files/` and `custom/scripts/`, no YAML reference needed.
+The RPMs you downloaded earlier at `/home/eib-config/rpms/` are picked up automatically — EIB auto-discovers a `rpms/` directory the same way it does `elemental/` and `custom/scripts/`, no YAML reference needed.
 
 Start the build in the background:
 

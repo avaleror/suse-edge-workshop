@@ -175,7 +175,7 @@ The EIB Podman run uses two volume mounts to combine both sources:
 
 ```bash
 podman run --rm --privileged \
-  -v /home/eib-workspace:/eib:z \              # definitions, custom/scripts, os-files/oem, network
+  -v /home/eib-workspace:/eib:z \              # definitions, custom/scripts, elemental/, network
   -v /home/eib-config/base-images:/eib/base-images:ro \   # base OS from Hauler (read-only)
   -v /home/eib-config/rpms:/eib/rpms:ro \      # side-loaded Elemental RPMs from Hauler (read-only)
   registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \

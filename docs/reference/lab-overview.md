@@ -223,7 +223,7 @@ A `gitea/gitea:1.22-rootless` Podman container is started on the eib VM at port 
   - Four node-specific EIB definition YAML files (one per edge node)
   - NMState network config templates for each node (pre-filled with fixed lab IPs)
   - `custom/scripts/` combustion scripts (`99-k3s-registries.sh`, hostname scripts for edge3/edge4)
-  - An `os-files/oem/elemental.yaml` placeholder that students overwrite in Exercise 2 — EIB copies everything under `os-files/` onto the built image at the same path
+  - An `elemental/elemental_config.yaml` placeholder that students overwrite in Exercise 2 — `elemental/` is EIB's own dedicated, auto-discovered directory for this, which is what actually resolves and bundles the `elemental-register`/`elemental-system-agent` packages into the image (a plain `os-files/` drop-in does not trigger this)
 
 Students fetch this repo's content in Exercise 2 to get a ready-made EIB workspace at `/home/eib-workspace/`. The eib VM has no `git` binary by design, so this uses Gitea's archive-download API (`.../archive/main.tar.gz`) rather than `git clone` — the resulting file layout is identical.
 
