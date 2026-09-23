@@ -26,17 +26,17 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 
 ## 6.1 Trigger Fleet deployment on vertex-hub-01
 
-edge1 already has the `demo=true` and `edge-type=x86-cluster` labels from the labeling step in Exercise 5. Once the cluster is active and imported into Rancher's fleet-default workspace, Fleet picks it up automatically.
-
-Check in Rancher UI: **Continuous Delivery > Git Repos > vertex-bank-app**. When `vertex-hub-01` appears in the target clusters section and status moves to `Active`, Fleet is deploying the app.
-
-If it does not appear automatically:
+edge1's `MachineInventory` has the `demo=true` and `edge-type=x86-cluster` labels from Exercise 5, but those do not propagate to the cluster Fleet actually watches — label it explicitly:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl label cluster vertex-hub-01 -n fleet-default \
+  "kubectl label clusters.fleet.cattle.io vertex-hub-01 -n fleet-default \
    demo=true edge-type=x86-cluster --overwrite"
 ```
+
+Confirmed live that `clusters.fleet.cattle.io` is not optional here: this Rancher/Fleet setup has at least three separate CRDs all named `Cluster`, and the bare `kubectl label cluster ...` resolves ambiguously to a different one — it succeeds with no error, but Fleet keeps showing 0/0 targeted clusters because the label never lands where Fleet is actually looking.
+
+Check in Rancher UI: **Continuous Delivery > Git Repos > vertex-bank-app**. When `vertex-hub-01` appears in the target clusters section and status moves to `Active`, Fleet is deploying the app — it should pick up the label within its normal 15-second poll cycle.
 
 ## 6.2 Import edge3 and edge4 into Rancher
 
@@ -58,9 +58,9 @@ Once imported, label them for Fleet:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
-  kubectl label cluster vertex-branch-rke2 -n fleet-default \
+  kubectl label clusters.fleet.cattle.io vertex-branch-rke2 -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
-  kubectl label cluster vertex-branch-k3s -n fleet-default \
+  kubectl label clusters.fleet.cattle.io vertex-branch-k3s -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
 "
 ```
