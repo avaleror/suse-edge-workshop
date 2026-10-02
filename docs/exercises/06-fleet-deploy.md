@@ -57,9 +57,14 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
   "curl --insecure -sfL <registration-manifest-url> | kubectl apply -f -"
 ```
 
-Each cluster turns `Active` in **Cluster Management** within a couple of minutes.
+Each cluster turns `Active` in **Cluster Management** within a couple of minutes. Fleet registers its own copy of each cluster a little after that, so check that both show up before you label them (labelling too early fails with `NotFound`):
 
-Once imported, label them for Fleet:
+```bash
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl get clusters.fleet.cattle.io -n fleet-default"
+```
+
+When `vertex-branch-rke2` and `vertex-branch-k3s` are listed, label them for Fleet:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
@@ -91,7 +96,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
 "
 ```
 
-The service publishes NodePort `30080`. Its `EXTERNAL-IP` stays `<pending>` because nothing in this lab hands out LoadBalancer IPs, so the bundle can also show `NotReady` in Rancher. That is expected; the NodePort is what you use. Open the app on each node:
+The service publishes NodePort `30080`, and that is what you use. On an older copy of vertex-bank-app the service may show up as a `LoadBalancer` with `EXTERNAL-IP` stuck at `<pending>`, and the bundle as `NotReady` in Rancher, because nothing in this lab hands out LoadBalancer IPs. The app still answers on the NodePort. Open it on each node:
 
 ```bash
 curl -s http://192.168.122.31:30080/ | grep -o "<title>.*</title>"   # vertex-hub-01 (edge1)
