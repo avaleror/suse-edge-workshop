@@ -26,7 +26,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 
 ## 6.1 Trigger Fleet deployment on vertex-hub-01
 
-edge1's `MachineInventory` has the `demo=true` and `edge-type=x86-cluster` labels from Exercise 5, but those do not propagate to the cluster Fleet actually watches — label it explicitly:
+edge1's `MachineInventory` has the `demo=true` and `edge-type=x86-cluster` labels from Exercise 5, but those do not propagate to the cluster Fleet actually watches. Label it explicitly:
 
 ```bash
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
@@ -34,25 +34,30 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
    demo=true edge-type=x86-cluster --overwrite"
 ```
 
-Confirmed live that `clusters.fleet.cattle.io` is not optional here: this Rancher/Fleet setup has at least three separate CRDs all named `Cluster`, and the bare `kubectl label cluster ...` resolves ambiguously to a different one — it succeeds with no error, but Fleet keeps showing 0/0 targeted clusters because the label never lands where Fleet is actually looking.
+Use the full `clusters.fleet.cattle.io` name. This Rancher/Fleet setup has at least three separate CRDs all called `Cluster`, and a bare `kubectl label cluster ...` resolves to a different one. It succeeds with no error, but Fleet keeps showing 0/0 targeted clusters because the label never lands where Fleet is looking.
 
-Check in Rancher UI: **Continuous Delivery > Git Repos > vertex-bank-app**. When `vertex-hub-01` appears in the target clusters section and status moves to `Active`, Fleet is deploying the app — it should pick up the label within its normal 15-second poll cycle.
+Check in Rancher UI: **Continuous Delivery > Git Repos > vertex-bank-app**. When `vertex-hub-01` appears in the target clusters section, Fleet is deploying the app. It picks up the label within its normal 15-second poll cycle.
 
 ## 6.2 Import edge3 and edge4 into Rancher
 
 edge3 and edge4 are running standalone clusters that Rancher does not know about yet. Import them:
 
-In Rancher UI: **Cluster Management > Import Existing**. Give each cluster a name (`vertex-branch-rke2`, `vertex-branch-k3s`). Rancher generates a `kubectl apply` command with a registration manifest. Run it on each node:
+In Rancher UI: **Cluster Management > Import Existing > Generic**. Give each cluster a name (`vertex-branch-rke2`, `vertex-branch-k3s`) and create it. Rancher then shows registration commands. This lab's Rancher uses a self-signed certificate, so copy the **second** one, the `curl --insecure ... | kubectl apply -f -` variant. The plain `kubectl apply -f <url>` command fails with `x509: certificate signed by unknown authority`.
+
+Run it on each node:
 
 ```bash
-# On edge3 (RKE2)
+# On edge3 (RKE2 keeps its kubectl under /var/lib/rancher/rke2/bin)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
-  "kubectl apply -f <paste-the-registration-manifest-url>"
+  "curl --insecure -sfL <registration-manifest-url> | \
+   /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml apply -f -"
 
 # On edge4 (K3s)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
-  "kubectl apply -f <paste-the-registration-manifest-url>"
+  "curl --insecure -sfL <registration-manifest-url> | kubectl apply -f -"
 ```
+
+Each cluster turns `Active` in **Cluster Management** within a couple of minutes.
 
 Once imported, label them for Fleet:
 
@@ -69,19 +74,32 @@ Fleet deploys vertex-bank-app to each cluster the moment the labels match. Go to
 
 ## 6.3 Verify deployment
 
-vertex-bank-app is a Node.js web terminal that shows live Kubernetes cluster vitals. Once Fleet deploys it, find the NodePort and open it in a browser:
+vertex-bank-app is a web app that shows live Kubernetes cluster vitals. Check the bundle status from the management cluster:
 
 ```bash
-# Check fleet bundle status
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get bundle -n fleet-default | grep vertex-bank"
-
-# Find the NodePort on edge1
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
-  "kubectl get svc -A | grep vertex-bank"
 ```
 
-Open `http://192.168.122.31:<nodeport>` for the edge1 deployment.
+The app itself runs on the edge clusters, not on the management cluster, so query vertex-hub-01 through the kubeconfig Rancher stores for it:
+
+```bash
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
+  kubectl get secret vertex-hub-01-kubeconfig -n fleet-default \
+    -o jsonpath='{.data.value}' | base64 -d > /tmp/vertex-hub-01.yaml
+  kubectl --kubeconfig /tmp/vertex-hub-01.yaml get pods,svc -n vertex-bank
+"
+```
+
+The service publishes NodePort `30080`. Its `EXTERNAL-IP` stays `<pending>` because nothing in this lab hands out LoadBalancer IPs, so the bundle can also show `NotReady` in Rancher. That is expected; the NodePort is what you use. Open the app on each node:
+
+```bash
+curl -s http://192.168.122.31:30080/ | grep -o "<title>.*</title>"   # vertex-hub-01 (edge1)
+curl -s http://192.168.122.33:30080/ | grep -o "<title>.*</title>"   # vertex-branch-rke2 (edge3)
+curl -s http://192.168.122.34:30080/ | grep -o "<title>.*</title>"   # vertex-branch-k3s (edge4)
+```
+
+Or open `http://192.168.122.31:30080` in a browser.
 
 ---
 

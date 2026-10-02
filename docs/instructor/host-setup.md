@@ -1,4 +1,4 @@
-# Host Setup: SUSE Edge 3.6 Workshop
+# Host Setup: SUSE Edge 3.7 Workshop
 
 This workshop deploys on a bare metal Linux host with KVM. These steps cover host prep and initial deploy.
 
@@ -34,7 +34,7 @@ cd suse-edge-workshop
 rodeo up
 ```
 
-Because you are inside a directory that already contains `rodeo-plan.yaml`, `rodeo up` auto-detects the lab — no separate `rodeo init` step needed. It self-escalates with sudo, silently generates `~/.rodeo/secrets.yaml` (the `rodeo-plan.yaml` in this repo references the passwords via `??placeholder` notation), wraps the deploy in tmux so a dropped SSH doesn't kill it, and runs the pipeline: `kvm_host → vms → boot → rancher → elemental → apply → finalise → custom_scripts`. Total time is 30-60 minutes depending on internet speed (Hauler pulls several GB of images). See [Lab overview](../reference/lab-overview.md) for a detailed breakdown of what each phase does.
+Because you are inside a directory that already contains `rodeo-plan.yaml`, `rodeo up` auto-detects the lab, so no separate `rodeo init` step is needed. It self-escalates with sudo, silently generates `~/.rodeo/secrets.yaml` (the `rodeo-plan.yaml` in this repo references the passwords via `??placeholder` notation), wraps the deploy in tmux so a dropped SSH doesn't kill it, and runs the pipeline: `kvm_host → vms → boot → rancher → elemental → apply → finalise → custom_scripts`. Total time is 30-60 minutes depending on internet speed (Hauler pulls several GB of images). See [Lab overview](../reference/lab-overview.md) for a detailed breakdown of what each phase does.
 
 If your SSH session drops, re-attach with the session name `rodeo up` printed at the start (`tmux attach -t <name>`).
 
@@ -53,7 +53,7 @@ During the `elemental` phase, rodeo-cli automatically populates the Hauler store
 
 | Artifact | Served at | Used in |
 |---|---|---|
-| EIB container image (`edge-image-builder:1.3.3.1`) | Hauler OCI registry `:5000` | Exercise 3: EIB builds |
+| EIB container image (`edge-image-builder:1.3.4`) | Hauler OCI registry `:5000` | Exercise 3: EIB builds |
 | `elemental-operator` image (the `elemental-register` agent ships inside it) | Hauler OCI registry `:5000` | Exercise 3: Elemental ISO builds |
 | vertex-bank-app image | Hauler OCI registry `:5000` | Exercise 6: Fleet deploy |
 | openSUSE Leap Micro 6.2 SelfInstall ISO | Hauler fileserver `:8080` | Exercise 3: EIB Elemental ISO base |

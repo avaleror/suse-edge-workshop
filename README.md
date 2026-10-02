@@ -1,6 +1,6 @@
-# SUSE Edge 3.6 Rodeo: Workshop
+# SUSE Edge 3.7 Rodeo: Workshop
 
-Hands-on workshop covering the full SUSE Edge 3.6 lifecycle: image building with EIB, TPM-based edge node onboarding via Elemental, cluster provisioning from Rancher, and GitOps workload delivery via Fleet.
+Hands-on workshop covering the full SUSE Edge 3.7 lifecycle: image building with EIB, TPM-based edge node onboarding via Elemental, cluster provisioning from Rancher, and GitOps workload delivery via Fleet.
 
 **Workshop site:** https://avaleror.github.io/suse-edge-workshop/
 
@@ -33,7 +33,7 @@ rodeo doctor
 rodeo up
 ```
 
-`rodeo up` self-escalates with sudo, generates `~/.rodeo/secrets.yaml`, wraps the deploy in tmux, and prints login URLs when finished — no separate `rodeo init`/`sudo rodeo deploy` steps needed, since this repo already ships its own `rodeo-plan.yaml`.
+`rodeo up` self-escalates with sudo, generates `~/.rodeo/secrets.yaml`, wraps the deploy in tmux, and prints login URLs when finished. No separate `rodeo init`/`sudo rodeo deploy` steps are needed, since this repo already ships its own `rodeo-plan.yaml`.
 
 Then follow the lab guide at https://avaleror.github.io/suse-edge-workshop/
 

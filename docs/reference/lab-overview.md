@@ -14,15 +14,15 @@ flowchart TB
         direction TB
 
         subgraph RANCHER["  rancher  ·  192.168.122.9  ·  4 vCPU / 8 GiB / 60 GB  "]
-            R1["K3s v1.35.5+k3s1"]
-            R2["Rancher Prime 2.14.1"]
+            R1["K3s v1.36.3+k3s1"]
+            R2["Rancher Prime 2.15.1"]
             R3["cert-manager v1.20.1"]
-            R4["Elemental Operator 1.9.0"]
+            R4["Elemental Operator 1.9.2"]
             R5["Fleet (bundled with Rancher)"]
         end
 
         subgraph EIBVM["  eib  ·  192.168.122.20  ·  4 vCPU / 12 GiB / 100 GB  "]
-            E1["EIB 1.3.3.1  (podman container)"]
+            E1["EIB 1.3.4  (podman container)"]
             E2["Hauler 1.2.2  OCI :5000 / files :8080"]
             E3["Gitea 1.22  :3000"]
         end
@@ -164,11 +164,11 @@ Installs the full management stack on the rancher VM over SSH.
 | Step | What happens |
 |---|---|
 | SSH wait | Polls until `root@192.168.122.9` is reachable (up to 5 min) |
-| K3s install | Runs the K3s installer script for `v1.35.5+k3s1`; waits for the node to reach `Ready` |
+| K3s install | Runs the K3s installer script for `v1.36.3+k3s1`; waits for the node to reach `Ready` |
 | Helm install | Downloads and installs Helm 3 |
 | cert-manager | `helm install` from the Jetstack OCI chart, version `v1.20.1`; waits for webhook pod |
 | sslip.io hostname | Detects the host's external IP, sets `RANCHER_HOSTNAME=rancher.<ext-ip>.sslip.io` |
-| Rancher Prime | `helm install` from SUSE OCI registry, version `2.14.1`, with `useBundledSystemChart=true` (keeps Rancher offline after deploy) and `ingress.tls.source=letsEncrypt`; waits for all Rancher pods |
+| Rancher Prime | `helm install` from SUSE OCI registry, version `2.15.1`, with `useBundledSystemChart=true` (keeps Rancher offline after deploy) and `ingress.tls.source=letsEncrypt`; waits for all Rancher pods |
 | Rancher /ping wait | Polls `https://rancher.<ext-ip>.sslip.io/ping` until HTTP 200 (up to 10 min) |
 | API config | Sets admin password from `~/.rodeo/secrets.yaml`, sets `server-url`, clears must-change-password flag |
 
@@ -183,8 +183,8 @@ Installs Elemental, sets up Fleet GitOps, and populates the offline artifact sto
 **5a. Elemental Operator**
 
 Two Helm charts installed on the management cluster:
-- `elemental-operator-crds-chart` v1.9.0: the CRD definitions (`MachineRegistration`, `MachineInventory`, `ManagedOSImage`, etc.)
-- `elemental-operator-chart` v1.9.0: the operator pod in `cattle-elemental-system`
+- `elemental-operator-crds-chart` v1.9.2: the CRD definitions (`MachineRegistration`, `MachineInventory`, `ManagedOSImage`, etc.)
+- `elemental-operator-chart` v1.9.2: the operator pod in `cattle-elemental-system`
 
 **5b. UI extension repos**
 
@@ -192,10 +192,9 @@ Two `ClusterRepo` resources added to Rancher so the Elemental UI extension and p
 
 **5c. MachineRegistration**
 
-Creates `<plan-name>-reg-1` in `fleet-default` namespace (for this repo's own plan, `suse-edge-rodeo-reg-1`) — the exact name varies by deployment, so discover it with `kubectl get machineregistration -n fleet-default` rather than assuming it. Key settings:
+Creates `<plan-name>-reg-1` in `fleet-default` namespace (for this repo's own plan, `suse-edge-rodeo-reg-1`). The exact name varies by deployment, so discover it with `kubectl get machineregistration -n fleet-default` rather than assuming it. Key settings:
 - `auth: tpm`: registration token is derived from the node's TPM, so a cloned disk on a different machine cannot re-register
-- `install.device: /dev/vda`: pre-selects the install target so the self-installer runs unattended instead of stopping at a "destroy all data" confirmation prompt
-- `install.poweroff: true`: node powers off after the OS install step, before the first-run reboot (prevents accidental double-registration)
+- `install.device: /dev/vda` and `install.poweroff: true`: settings for Elemental's own installer. They do not reach the openSUSE Leap Micro SelfInstall ISO built in this lab, whose installer asks for two confirmations (see Exercise 4)
 - `machineInventoryLabels`: captures manufacturer and product name from DMI at registration time
 
 **5d. Hauler store population**
@@ -204,8 +203,8 @@ Runs on the eib VM over SSH. This is the only step that pulls significant data f
 
 | Artifact | Source | Size | Served as |
 |---|---|---|---|
-| `edge-image-builder:1.3.3.1` | `registry.suse.com` | ~800 MB | Hauler OCI :5000 |
-| `elemental-operator:1.9.0` (the `elemental-register` agent ships inside this image, not as a separate one) | `registry.suse.com` | ~50 MB | Hauler OCI :5000 |
+| `edge-image-builder:1.3.4` | `registry.suse.com` | ~800 MB | Hauler OCI :5000 |
+| `elemental-operator:1.9.2` (the `elemental-register` agent ships inside this image, not as a separate one) | `registry.suse.com` | ~50 MB | Hauler OCI :5000 |
 | `vertex-bank-app:latest` | `docker.io` | ~150 MB | Hauler OCI :5000 |
 | openSUSE Leap Micro 6.2 SelfInstall ISO | `download.opensuse.org` | ~900 MB | Hauler files :8080 + `/home/eib-config/base-images/` |
 | openSUSE Leap Micro 6.2 Default RAW | `download.opensuse.org` | ~2 GB | Hauler files :8080 + `/home/eib-config/base-images/` |
@@ -222,10 +221,11 @@ A `gitea/gitea:1.22-rootless` Podman container is started on the eib VM at port 
 - **`gitea/eib-config`**: created locally and populated with git from templates generated by rodeo-cli. Contains:
   - Four node-specific EIB definition YAML files (one per edge node)
   - NMState network config templates for each node (pre-filled with fixed lab IPs)
-  - `custom/scripts/` combustion scripts (`99-k3s-registries.sh`, hostname scripts for edge3/edge4)
-  - An `elemental/elemental_config.yaml` placeholder that students overwrite in Exercise 2 — `elemental/` is EIB's own dedicated, auto-discovered directory for this, which is what actually resolves and bundles the `elemental-register`/`elemental-system-agent` packages into the image (a plain `os-files/` drop-in does not trigger this)
+  - `scripts-available/` combustion scripts (`99-k3s-registries.sh` for the K3s and RKE2 registry mirror, hostname scripts for edge3/edge4), copied into `custom/scripts/` per build
+  - The KVM host's SSH key for root in the edge3/edge4 definitions, so you can SSH to the standalone nodes
+  - An `elemental/elemental_config.yaml` placeholder that students overwrite in Exercise 2. `elemental/` is EIB's own auto-discovered directory for this, and it is what bundles the `elemental-register`/`elemental-system-agent` packages into the image (a plain `os-files/` drop-in does not trigger this)
 
-Students fetch this repo's content in Exercise 2 to get a ready-made EIB workspace at `/home/eib-workspace/`. The eib VM has no `git` binary by design, so this uses Gitea's archive-download API (`.../archive/main.tar.gz`) rather than `git clone` — the resulting file layout is identical.
+Students fetch this repo's content in Exercise 2 to get a ready-made EIB workspace at `/home/eib-workspace/`, and again in Exercise 3 into `/home/eib-standalone/` (without `elemental/`) for the standalone builds. The eib VM has no `git` binary by design, so this uses Gitea's archive-download API (`.../archive/main.tar.gz`) rather than `git clone`. The resulting file layout is identical.
 
 **5f. Fleet GitRepo**
 
@@ -261,10 +261,10 @@ By the time `rodeo deploy` returns, the host has:
 | Host SSH key | `/root/.ssh/id_ed25519` | vms phase |
 | DNAT rules (:80/:443 to rancher) | libvirt hook + firewalld | kvm_host / boot phases |
 | K3s cluster | rancher VM | rancher phase |
-| Rancher Prime 2.14.1 | rancher VM | rancher phase |
+| Rancher Prime 2.15.1 | rancher VM | rancher phase |
 | cert-manager v1.20.1 | rancher VM | rancher phase |
 | Let's Encrypt TLS cert | rancher VM | rancher phase |
-| Elemental Operator 1.9.0 | rancher VM | elemental phase |
+| Elemental Operator 1.9.2 | rancher VM | elemental phase |
 | MachineRegistration `<plan-name>-reg-1` | rancher VM (`fleet-default` ns) | elemental phase |
 | Fleet GitRepo `vertex-bank-app` | rancher VM (`fleet-default` ns) | elemental phase |
 | Hauler store + services | eib VM (`/var/lib/hauler`) | elemental phase |

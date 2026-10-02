@@ -1,11 +1,11 @@
-# rodeo-plan.yaml: SUSE Edge 3.6 workshop deployment plan.
+# rodeo-plan.yaml: SUSE Edge 3.7 workshop deployment plan.
 #
 # Deploys on a bare metal Linux host with KVM.
 # Run: rodeo deploy --config-dir .
 #
 # What this deploys:
-#   rancher  192.168.122.9   Rancher Prime 2.14.1 + Elemental Operator 1.9.0 + Fleet
-#   eib      192.168.122.20  Edge Image Builder 1.3.3.1 + Hauler 1.2.2
+#   rancher  192.168.122.9   Rancher Prime 2.15.1 + Elemental Operator 1.9.2 + Fleet
+#   eib      192.168.122.20  Edge Image Builder 1.3.4 + Hauler 1.2.2
 #   edge1    192.168.122.31  Blank disk + vTPM 2.0 (started as lab exercise)
 #   edge2    192.168.122.32  Blank disk + vTPM 2.0 (started as lab exercise)
 #   edge3    192.168.122.33  Blank disk + UEFI (started as lab exercise)
@@ -13,11 +13,11 @@
 #
 # Requirements:
 #   ~40 GiB RAM, ~16 vCPU, ~250 GiB disk
-#   KVM + libvirt + qemu-img + swtpm + rodeo-cli v0.10.x
+#   KVM + libvirt + qemu-img + swtpm + rodeo-cli (latest main)
 #
-# Versions: SUSE Edge 3.6
-#   Rancher Prime 2.14.1 / K3s v1.35.3+k3s1 / cert-manager v1.20.1
-#   Elemental Operator 1.9.0 / EIB 1.3.3.1 / openSUSE Leap Micro 6.2
+# Versions: SUSE Edge 3.7
+#   Rancher Prime 2.15.1 / K3s v1.36.3+k3s1 / cert-manager v1.20.1
+#   Elemental Operator 1.9.2 / EIB 1.3.4 / openSUSE Leap Micro 6.2
 
 name: suse-edge-rodeo
 type: suse-edge
@@ -45,13 +45,13 @@ resources:
     disk_gb: 20
 
 versions:
-  rancher: "2.14.1"
-  k3s: "v1.35.3+k3s1"
+  rancher: "2.15.1"
+  k3s: "v1.36.3+k3s1"
   cert_manager: "v1.20.1"
-  elemental_operator_crds: "1.9.0"
-  elemental_operator: "1.9.0"
-  elemental_ui_extension: "3.0.2"
-  eib: "1.3.3.1"
+  elemental_operator_crds: "1.9.2"
+  elemental_operator: "1.9.2"
+  elemental_ui_extension: "3.0.3"
+  eib: "1.3.4"
 
 storage:
   image_dir: /var/lib/libvirt/images

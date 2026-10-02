@@ -91,7 +91,7 @@ Charts are stored as OCI artifacts using the `application/vnd.cncf.helm.config.v
 ```bash
 # Add any file by URL, Hauler downloads and stores it
 hauler store add file \
-  "https://github.com/k3s-io/k3s/releases/download/v1.35.5%2Bk3s1/k3s" \
+  "https://github.com/k3s-io/k3s/releases/download/v1.36.3%2Bk3s1/k3s" \
   --name k3s-binary \
   --store $SCRATCH
 
@@ -306,7 +306,7 @@ The live Hauler instance for the lab runs at `192.168.122.20:5000` (registry) an
 curl -s http://localhost:5000/v2/_catalog | python3 -m json.tool
 
 # Tags for a specific image
-curl -s http://localhost:5000/v2/edge/3.6/edge-image-builder/tags/list | python3 -m json.tool
+curl -s http://localhost:5000/v2/edge/3.7/edge-image-builder/tags/list | python3 -m json.tool
 
 # What files are available
 curl -s http://localhost:8080/

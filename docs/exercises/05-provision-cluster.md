@@ -74,7 +74,7 @@ metadata:
   name: vertex-hub-01
   namespace: fleet-default
 spec:
-  kubernetesVersion: v1.35.3+k3s1
+  kubernetesVersion: v1.36.3+k3s1
   rkeConfig:
     machinePools:
       - name: hub-nodes

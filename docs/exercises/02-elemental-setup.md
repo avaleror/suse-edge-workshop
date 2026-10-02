@@ -33,8 +33,8 @@ spec:
       registration:
         auth: tpm                   # TPM-based identity, hardware-bound
       install:
-        device: /dev/vda            # Pre-selected so the install runs unattended
-        poweroff: true              # Power off after install, before first-run reboot
+        device: /dev/vda            # Install target for Elemental's own installer
+        poweroff: true              # Power off after an Elemental-driven install
   machineInventoryLabels:
     manufacturer: "${System Information/Manufacturer}"
     productName: "${System Information/Product Name}"
@@ -43,7 +43,7 @@ spec:
 
 `auth: tpm` means the node's registration token is derived from its TPM. A cloned disk on a different machine will fail to register because the TPM identity will not match. This matters for edge deployments: remote sites where you cannot guarantee physical security.
 
-`install.device: /dev/vda` pre-selects the install target so the self-installer never prompts for confirmation, and `install.poweroff: true` shuts the node down cleanly once the install finishes. Without both of these, the installer stops at an interactive "destroy all data" prompt and waits forever for a keypress nobody is there to give it.
+The `install` block configures Elemental's own installer: which disk to use and whether to power off afterwards. It does not reach the openSUSE Leap Micro SelfInstall ISO you build in this lab, which has its own installer. That one asks for two keypresses before it writes the disk, and Exercise 4 walks you through them.
 
 ## 2.3 Get the registration URL
 
@@ -77,7 +77,7 @@ SSH to the EIB VM:
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
 ```
 
-The EIB VM does not have `git` installed — it stays a minimal build host. Fetch the workspace as an archive from Gitea instead, which gives you the exact same file layout:
+The EIB VM does not have `git` installed, because it stays a minimal build host. Fetch the workspace as an archive from Gitea instead, which gives you the exact same file layout:
 
 ```bash
 mkdir -p /home/eib-workspace
@@ -86,7 +86,7 @@ curl -sL http://192.168.122.20:3000/gitea/eib-config/archive/main.tar.gz \
 ls /home/eib-workspace/
 ```
 
-You should see four definition files, `network-configs/`, `custom/scripts/`, and `elemental/` directories.
+You should see four definition files and the `elemental/`, `network-configs/` and `scripts-available/` directories.
 
 Now download the live registration config from the Elemental Operator and overwrite the placeholder:
 
@@ -104,7 +104,7 @@ curl -k "$REGURL" -o /home/eib-workspace/elemental/elemental_config.yaml
 cat /home/eib-workspace/elemental/elemental_config.yaml
 ```
 
-This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. The `elemental/` directory is EIB's own dedicated, auto-discovered location for this — it is what actually triggers EIB to bundle the `elemental-register`/`elemental-system-agent` packages into the image and wire up registration on first boot. No network config required at the remote site.
+This file contains the registration URL, the CA certificate for the management cluster's TLS, and the config that `elemental-register` needs to authenticate via TPM. The `elemental/` directory is EIB's own auto-discovered location for this, and it is what makes EIB bundle the `elemental-register`/`elemental-system-agent` packages into the image and wire up registration on first boot. No network config required at the remote site.
 
 Exit back to the KVM host:
 
@@ -141,7 +141,7 @@ exit
 
 EIB picks up any YAML file in the `network/` subdirectory of its config dir. Each build uses exactly one file, one node, one IP. In Exercise 3 you will copy the right file into `network/` before starting each build.
 
-The interface name `eth0` comes from `net.ifnames=0` in the EIB definition's `kernelArgs`. Without that kernel arg, openSUSE Leap Micro would name the first NIC something like `ens3` depending on PCI bus order. With the arg set, the old naming convention applies consistently across all four builds.
+The configs call the interface `eth0`, but that is only a logical name. EIB's network tool matches each config to the real NIC by its MAC address at first boot, so the node keeps its predictable kernel name (`enp1s0` on these VMs) and still gets the right IP. Don't add `net.ifnames=0` to the definitions: the SelfInstall ISO boots into the installed system once without that kernel argument, so the NIC would change name on the next reboot and lose its static IP.
 
 ---
 

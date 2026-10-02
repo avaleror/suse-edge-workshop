@@ -39,7 +39,7 @@ virsh start edge1
 virsh start edge2
 ```
 
-The installer needs two keypresses per node before it runs unattended: the GRUB boot menu waits indefinitely rather than auto-selecting (by design, so install media never silently wipes a disk), and the partitioner asks you to confirm before it writes to `/dev/vda`. Watch each node's serial console in turn (Ctrl+] to exit) and press Enter at both points:
+The installer needs two keypresses per node before it runs unattended. The GRUB boot menu waits indefinitely instead of auto-selecting (by design, so install media never silently wipes a disk), and the partitioner asks you to confirm before it writes to `/dev/vda`. Watch each node's console in turn (Ctrl+] to exit) and press Enter at both points:
 
 ```bash
 virsh console edge1
@@ -47,31 +47,39 @@ virsh console edge1
 # Press Enter again to confirm "Destroying ALL data on /dev/vda, continue?"
 ```
 
-Do the same for edge2. Once both are past the confirmation, the rest of the install runs on its own — you will see a text progress bar as the OS writes to disk, then `System is shutting down` when the install is done. The node powers off.
-
-Wait for both to shut down:
+If the console shows nothing, send the keys straight from the KVM host instead. Wait about 30 seconds after the first one, until the confirmation dialog is on screen:
 
 ```bash
-watch virsh list --all | grep edge
+virsh send-key edge1 KEY_ENTER     # GRUB: "Install openSUSE Leap Micro"
+virsh send-key edge1 KEY_ENTER     # "Destroying ALL data on /dev/vda, continue?" -> Yes
 ```
 
-When both show `shut off`, eject the ISOs and restore disk-first boot:
+Do the same for edge2. Once both are past the confirmation, the rest runs on its own. You see a progress bar while the OS writes to disk, then the node reboots straight into the installed system and `elemental-register` phones home. After a few minutes the console shows a login prompt with the node's static IP (`enp1s0: 192.168.122.31` for edge1).
+
+Check that both nodes registered with the management cluster:
 
 ```bash
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+  "kubectl get machineinventory -n fleet-default"
+```
+
+When both appear, shut the nodes down cleanly, eject the ISOs and restore disk-first boot. The ISO is still attached at this point, so without this step the next reboot would land on the installer's GRUB menu again:
+
+```bash
+virsh shutdown edge1
+virsh shutdown edge2
+watch "virsh list --all | grep edge"     # wait until both show "shut off"
+
 rodeo eject-iso --nodes edge1,edge2 --yes
-```
-
-Start them again, this time they boot from the installed disk:
-
-```bash
 virsh start edge1
 virsh start edge2
 ```
 
-From this point, the nodes are running openSUSE Leap Micro and `elemental-register` is starting. Watch for DHCP leases:
+They now boot from the installed disk and keep their static IPs:
 
 ```bash
-watch virsh net-dhcp-leases default | grep -E "edge|0e:62:a"
+ping -c3 192.168.122.31
+ping -c3 192.168.122.32
 ```
 
 ## 4.2 Standalone nodes (edge3 and edge4): RAW workflow
@@ -84,14 +92,14 @@ Pull and thin-clone each image from the eib VM:
 # edge3 gets the RKE2 image
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
-  --image /home/eib-workspace/rke2-edge3.raw \
+  --image /home/eib-standalone/rke2-edge3.raw \
   --nodes edge3 \
   --yes
 
 # edge4 gets the K3s image
 rodeo pull-edge-image \
   --config-dir /root/rodeo-lab \
-  --image /home/eib-workspace/k3s-edge4.raw \
+  --image /home/eib-standalone/k3s-edge4.raw \
   --nodes edge4 \
   --yes
 ```
@@ -116,18 +124,19 @@ virsh start edge4
 
 These nodes take 3-5 minutes to come up fully. RKE2 and K3s do their first-run initialization: generating TLS certificates, starting the control plane, and marking the node Ready.
 
-Check from edge3:
+Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and check Kubernetes. The RAW images authorize the KVM host's key for root, and RKE2 keeps its own `kubectl` and kubeconfig under its install paths:
 
 ```bash
-# Get edge3 IP
-virsh net-dhcp-leases default | grep "0e:62:a3"
-
-# SSH in and check Kubernetes
+# edge3 (RKE2)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+  "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes"
+
+# edge4 (K3s)
+ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
   "kubectl get nodes"
 ```
 
-You should see one node in Ready state with the RKE2 version. Do the same for edge4 at 192.168.122.34 and confirm K3s is running there.
+Each shows one node in `Ready` state: `v1.36.3+rke2r1` on edge3 and `v1.36.3+k3s1` on edge4.
 
 ---
 

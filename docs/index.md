@@ -4,7 +4,7 @@ hide:
 ---
 
 <div class="hero">
-  <div class="subtitle">SUSE Edge 3.6: Hands-on Workshop</div>
+  <div class="subtitle">SUSE Edge 3.7: Hands-on Workshop</div>
   <h1>The Edge Rodeo</h1>
   <div class="tagline">Rancher Prime &bull; Elemental &bull; Edge Image Builder &bull; Fleet &bull; Hauler</div>
 
@@ -29,8 +29,8 @@ This workshop deploys the Vertex Trust Bank management stack and walks you throu
 <pre>
 KVM host (bare metal)
 │
-├── rancher   192.168.122.9    Rancher Prime 2.14.1 + Elemental Operator 1.9.0 + Fleet
-├── eib       192.168.122.20   EIB 1.3.3.1 + Hauler 1.2.2 + Gitea 1.22
+├── rancher   192.168.122.9    Rancher Prime 2.15.1 + Elemental Operator 1.9.2 + Fleet
+├── eib       192.168.122.20   EIB 1.3.4 + Hauler 1.2.2 + Gitea 1.22
 │
 ├── edge1     192.168.122.31   vTPM 2.0  ──► Elemental onboarding  ──► K3s cluster
 ├── edge2     192.168.122.32   vTPM 2.0  ──► Elemental onboarding  ──► standalone
@@ -136,11 +136,11 @@ Edge nodes boot with `registries.yaml` baked in by EIB, routing all container pu
 
 | Component | Version |
 |---|---|
-| Rancher Prime | 2.14.1 |
-| K3s (management cluster) | v1.35.5+k3s1 |
+| Rancher Prime | 2.15.1 |
+| K3s (management cluster) | v1.36.3+k3s1 |
 | cert-manager | v1.20.1 |
-| Elemental Operator | 1.9.0 |
-| Edge Image Builder | 1.3.3.1 |
+| Elemental Operator | 1.9.2 |
+| Edge Image Builder | 1.3.4 |
 | Hauler | 1.2.2 |
 | Gitea | 1.22 |
 | openSUSE Leap Micro | 6.2 |

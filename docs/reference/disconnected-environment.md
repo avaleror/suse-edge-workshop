@@ -23,7 +23,7 @@ flowchart TB
 
     subgraph HOST["KVM Host  ·  192.168.122.1"]
         subgraph RANCHER["rancher  ·  192.168.122.9"]
-            Fleet["Fleet controller\nK3s + Rancher Prime 2.14.1\nElemental Op 1.9.0"]
+            Fleet["Fleet controller\nK3s + Rancher Prime 2.15.1\nElemental Op 1.9.2"]
         end
 
         subgraph EIBVM["eib  ·  192.168.122.20"]
@@ -109,8 +109,8 @@ Hauler runs on the EIB VM at two endpoints:
 
 | Image | Source | Used in |
 |---|---|---|
-| `registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1` | SUSE registry | Exercise 3: all EIB builds |
-| `registry.suse.com/rancher/elemental-operator:1.9.0` (the `elemental-register` agent ships inside it, not as a separate image) | SUSE registry | Exercise 3: Elemental ISO builds |
+| `registry.suse.com/edge/3.7/edge-image-builder:1.3.4` | SUSE registry | Exercise 3: all EIB builds |
+| `registry.suse.com/rancher/elemental-operator:1.9.2` (the `elemental-register` agent ships inside it, not as a separate image) | SUSE registry | Exercise 3: Elemental ISO builds |
 | `docker.io/avaleror/vertex-bank-app:latest` | Docker Hub | Exercise 6: Fleet deploy to edge clusters |
 
 **File server: port 8080**
@@ -178,9 +178,11 @@ podman run --rm --privileged \
   -v /home/eib-workspace:/eib:z \              # definitions, custom/scripts, elemental/, network
   -v /home/eib-config/base-images:/eib/base-images:ro \   # base OS from Hauler (read-only)
   -v /home/eib-config/rpms:/eib/rpms:ro \      # side-loaded Elemental RPMs from Hauler (read-only)
-  registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \
+  registry.suse.com/edge/3.7/edge-image-builder:1.3.4 \
   build --definition-file elemental-edge1-definition.yaml
 ```
+
+The standalone RAW builds (edge3/edge4) use the same command against `/home/eib-standalone`, a second copy of the repo without `elemental/`, and skip the RPM mount. EIB treats any config directory that contains `elemental/` as an Elemental build.
 
 The result: EIB gets its definition files and scripts from Gitea (version-controlled, repeatable) and its binary content from Hauler (portable artifact store). Neither source requires internet access after deploy.
 
@@ -346,10 +348,10 @@ The lab is fully disconnected after deploy. No exercise step requires outbound i
 
 ## Further reading
 
-- [SUSE Edge 3.6: Air-gapped deployments with EIB](https://documentation.suse.com/suse-edge/3.5/html/edge/id-air-gapped-deployments-with-edge-image-builder.html)
+- [SUSE Edge 3.7: Air-gapped deployments with EIB](https://documentation.suse.com/suse-edge/3.7/html/edge/guides-airgap-eib-deployment.html)
 - [K3s: Air-gap install](https://docs.k3s.io/installation/airgap)
 - [K3s: Private registry configuration](https://docs.k3s.io/installation/private-registry)
-- [Rancher Prime 2.14: Air-gap HA install](https://documentation.suse.com/cloudnative/rancher-manager/v2.14/en/installation-and-upgrade/other-installation-methods/air-gapped/install-rancher-ha.html)
+- [Rancher Prime 2.15: Air-gap HA install](https://documentation.suse.com/cloudnative/rancher-manager/v2.15/en/installation-and-upgrade/other-installation-methods/air-gapped/install-rancher-ha.html)
 - [Elemental: Air-gap install](https://documentation.suse.com/cloudnative/os-manager/1.6/en/airgap.html)
 - [Hauler documentation](https://docs.hauler.dev/docs/intro)
 - [Gitea documentation](https://docs.gitea.com)

@@ -10,7 +10,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -n cattle-elemental-system"
 
 # 2. Elemental Operator is running (some releases also run a separate
-#    elemental-operator-webhook pod — its absence alone is not a problem)
+#    elemental-operator-webhook pod; its absence alone is not a problem)
 ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 

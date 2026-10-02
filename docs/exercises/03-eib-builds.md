@@ -12,27 +12,33 @@ Each node gets its own image with its own static IP baked in. Four builds, four 
 |---|---|---|---|---|---|
 | `elemental-edge1.iso` | edge1 | openSUSE Leap Micro 6.2 SelfInstall ISO | ISO | 192.168.122.31 | None (Elemental) |
 | `elemental-edge2.iso` | edge2 | openSUSE Leap Micro 6.2 SelfInstall ISO | ISO | 192.168.122.32 | None (Elemental) |
-| `rke2-edge3.raw` | edge3 | openSUSE Leap Micro 6.2 Default RAW | RAW | 192.168.122.33 | RKE2 v1.35.3+rke2r3 |
-| `k3s-edge4.raw` | edge4 | openSUSE Leap Micro 6.2 Default RAW | RAW | 192.168.122.34 | K3s v1.35.5+k3s1 |
+| `rke2-edge3.raw` | edge3 | openSUSE Leap Micro 6.2 Default RAW | RAW | 192.168.122.33 | RKE2 v1.36.3+rke2r1 |
+| `k3s-edge4.raw` | edge4 | openSUSE Leap Micro 6.2 Default RAW | RAW | 192.168.122.34 | K3s v1.36.3+k3s1 |
 
 **The build pattern for each node:**
 1. Clear the `network/` dir and drop only that node's NMState file there
-2. Clear `custom/scripts/` and drop in only the scripts that node actually needs (EIB auto-discovers and runs everything under `custom/scripts/`, with no way to select a subset — leftover scripts from another node's build get baked in and run too)
+2. Clear `custom/scripts/` and drop in only the scripts that node actually needs (EIB auto-discovers and runs everything under `custom/scripts/`, with no way to select a subset, so leftover scripts from another node's build would get baked in and run too)
 3. Start EIB in the background
 4. Move on to the next node
 
 **How the workspace is structured:**
 
-The definition files, staged scripts, and network configs come from the `eib-config` Gitea repo you cloned in Exercise 2 to `/home/eib-workspace/`. The openSUSE Leap Micro base images (ISO and RAW) were pre-staged by the lab deploy at `/home/eib-config/base-images/`. They come from the Hauler file server and are ready to use.
+The definition files, staged scripts, and network configs come from the `eib-config` Gitea repo you cloned in Exercise 2. The openSUSE Leap Micro base images (ISO and RAW) were pre-staged by the lab deploy at `/home/eib-config/base-images/`. They come from the Hauler file server and are ready to use.
 
-EIB runs with three volume mounts:
-- `/home/eib-workspace` → definitions, `custom/scripts/`, `elemental/` (registration config), network config (from Gitea)
+You use two copies of that repo:
+- `/home/eib-workspace` (from Exercise 2) holds `elemental/elemental_config.yaml`, so it builds the Elemental images for edge1 and edge2.
+- `/home/eib-standalone` (you create it in 3.3) is the same repo without `elemental/`, for the standalone RKE2 and K3s images.
+
+Why two? EIB treats any build whose config directory contains an `elemental/` directory as an Elemental build, and then refuses a standalone RAW build that doesn't side-load the Elemental RPMs. You can't just delete `elemental/` from the shared workspace either, because the edge1 and edge2 builds read it several minutes into their run.
+
+EIB runs with these volume mounts:
+- the workspace (`/home/eib-workspace` or `/home/eib-standalone`) → definitions, `custom/scripts/`, `network/`, and `elemental/` for the Elemental builds
 - `/home/eib-config/base-images` → read-only base OS images (from Hauler)
 - `/home/eib-config/rpms` → read-only elemental-register/elemental-system-agent RPMs (edge1/edge2 only, from Hauler)
 
-`custom/scripts/` starts empty. The actual combustion scripts live in `scripts-available/` (same idea as `network-configs/` for NMState files) — each build below copies in only the scripts it needs.
+`custom/scripts/` starts empty. The actual combustion scripts live in `scripts-available/` (same idea as `network-configs/` for NMState files), and each build below copies in only the scripts it needs.
 
-The Elemental builds (edge1/edge2) side-load the `elemental-register`/`elemental-system-agent` RPMs already staged at `/home/eib-config/rpms/` — no SUSE Customer Center registration code needed. The standalone `edge3`/`edge4` builds don't use Elemental at all and don't need this mount.
+The Elemental builds (edge1/edge2) side-load the `elemental-register`/`elemental-system-agent` RPMs already staged at `/home/eib-config/rpms/`, so no SUSE Customer Center registration code is needed. The standalone `edge3`/`edge4` builds don't use Elemental at all and don't need this mount.
 
 SSH to the eib VM and stay there for this entire exercise:
 
@@ -73,7 +79,7 @@ cp /home/eib-workspace/network-configs/edge1.yaml /home/eib-workspace/network/
 rm -rf /home/eib-workspace/custom/scripts
 ```
 
-The Elemental registration config you downloaded in Exercise 2 lives at `elemental/elemental_config.yaml` in the workspace — EIB's own dedicated, auto-discovered directory for this, which is what actually resolves and bundles the `elemental-register`/`elemental-system-agent` packages into the image and embeds the config for first boot (a plain `os-files/` drop-in does not trigger this). When the node boots and `elemental-register` runs, it reads that file and knows where to call home. The NMState config in `network/` gives the node its static IP.
+The Elemental registration config you downloaded in Exercise 2 lives at `elemental/elemental_config.yaml` in the workspace. That is EIB's own auto-discovered directory for Elemental: it makes EIB bundle the `elemental-register`/`elemental-system-agent` packages into the image and embed the config for first boot. A plain `os-files/` drop-in does not trigger this. When the node boots and `elemental-register` runs, it reads that file and knows where to call home. The NMState config in `network/` gives the node its static IP.
 
 Start the build in the background:
 
@@ -82,7 +88,7 @@ podman run --rm --privileged \
   -v /home/eib-workspace:/eib:z \
   -v /home/eib-config/base-images:/eib/base-images:ro \
   -v /home/eib-config/rpms:/eib/rpms:ro \
-  registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \
+  registry.suse.com/edge/3.7/edge-image-builder:1.3.4 \
   build --definition-file elemental-edge1-definition.yaml \
   > /tmp/eib-edge1.log 2>&1 &
 
@@ -105,7 +111,7 @@ podman run --rm --privileged \
   -v /home/eib-workspace:/eib:z \
   -v /home/eib-config/base-images:/eib/base-images:ro \
   -v /home/eib-config/rpms:/eib/rpms:ro \
-  registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \
+  registry.suse.com/edge/3.7/edge-image-builder:1.3.4 \
   build --definition-file elemental-edge2-definition.yaml \
   > /tmp/eib-edge2.log 2>&1 &
 
@@ -116,16 +122,28 @@ echo "edge2 build PID: $!"
 
 This image boots as a running single-node RKE2 cluster. No phone-home, no registration. The full Kubernetes stack is embedded in the disk. Static IP 192.168.122.33, hostname `edge3` set at first boot via combustion script.
 
-```bash
-rm -f /home/eib-workspace/network/*.yaml
-cp /home/eib-workspace/network-configs/edge3.yaml /home/eib-workspace/network/
+Create the standalone workspace first: the same Gitea repo, without `elemental/`:
 
-# Only edge3's own combustion scripts — not edge4's, and not each other's
-rm -rf /home/eib-workspace/custom/scripts
-mkdir -p /home/eib-workspace/custom/scripts
-cp /home/eib-workspace/scripts-available/60-hostname-edge3.sh \
-   /home/eib-workspace/scripts-available/99-k3s-registries.sh \
-   /home/eib-workspace/custom/scripts/
+```bash
+mkdir -p /home/eib-standalone
+curl -sL http://192.168.122.20:3000/gitea/eib-config/archive/main.tar.gz \
+  | tar -xz --strip-components=1 -C /home/eib-standalone
+rm -rf /home/eib-standalone/elemental
+mkdir -p /home/eib-standalone/network
+```
+
+Then load edge3's network config and scripts:
+
+```bash
+rm -f /home/eib-standalone/network/*.yaml
+cp /home/eib-standalone/network-configs/edge3.yaml /home/eib-standalone/network/
+
+# Only edge3's own combustion scripts, not edge4's
+rm -rf /home/eib-standalone/custom/scripts
+mkdir -p /home/eib-standalone/custom/scripts
+cp /home/eib-standalone/scripts-available/60-hostname-edge3.sh \
+   /home/eib-standalone/scripts-available/99-k3s-registries.sh \
+   /home/eib-standalone/custom/scripts/
 ```
 
 The `kubernetes:` section in the definition is the key difference from the Elemental builds. EIB downloads the RKE2 binary, all required container images from the Hauler OCI registry, and configures CRI-O. Everything lands in the disk image. The node does not need internet access or a running management plane. It starts Kubernetes on its own at boot.
@@ -134,9 +152,9 @@ The `kubernetes:` section in the definition is the key difference from the Eleme
 tail -10 /tmp/eib-edge2.log
 
 podman run --rm --privileged \
-  -v /home/eib-workspace:/eib:z \
+  -v /home/eib-standalone:/eib:z \
   -v /home/eib-config/base-images:/eib/base-images:ro \
-  registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \
+  registry.suse.com/edge/3.7/edge-image-builder:1.3.4 \
   build --definition-file rke2-edge3-definition.yaml \
   > /tmp/eib-rke2.log 2>&1 &
 
@@ -148,19 +166,19 @@ echo "edge3 RKE2 build PID: $!"
 Same standalone pattern as edge3 but K3s instead of RKE2, lighter footprint, faster first-boot cluster start:
 
 ```bash
-rm -f /home/eib-workspace/network/*.yaml
-cp /home/eib-workspace/network-configs/edge4.yaml /home/eib-workspace/network/
+rm -f /home/eib-standalone/network/*.yaml
+cp /home/eib-standalone/network-configs/edge4.yaml /home/eib-standalone/network/
 
-rm -rf /home/eib-workspace/custom/scripts
-mkdir -p /home/eib-workspace/custom/scripts
-cp /home/eib-workspace/scripts-available/60-hostname-edge4.sh \
-   /home/eib-workspace/scripts-available/99-k3s-registries.sh \
-   /home/eib-workspace/custom/scripts/
+rm -rf /home/eib-standalone/custom/scripts
+mkdir -p /home/eib-standalone/custom/scripts
+cp /home/eib-standalone/scripts-available/60-hostname-edge4.sh \
+   /home/eib-standalone/scripts-available/99-k3s-registries.sh \
+   /home/eib-standalone/custom/scripts/
 
 podman run --rm --privileged \
-  -v /home/eib-workspace:/eib:z \
+  -v /home/eib-standalone:/eib:z \
   -v /home/eib-config/base-images:/eib/base-images:ro \
-  registry.suse.com/edge/3.6/edge-image-builder:1.3.3.1 \
+  registry.suse.com/edge/3.7/edge-image-builder:1.3.4 \
   build --definition-file k3s-edge4-definition.yaml \
   > /tmp/eib-k3s.log 2>&1 &
 
@@ -189,8 +207,8 @@ When all four builds are done, verify the output files:
 ```bash
 ls -lh /home/eib-workspace/elemental-edge1.iso \
         /home/eib-workspace/elemental-edge2.iso \
-        /home/eib-workspace/rke2-edge3.raw \
-        /home/eib-workspace/k3s-edge4.raw
+        /home/eib-standalone/rke2-edge3.raw \
+        /home/eib-standalone/k3s-edge4.raw
 ```
 
 Exit back to the KVM host:
