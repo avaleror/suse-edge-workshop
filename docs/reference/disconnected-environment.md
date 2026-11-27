@@ -83,7 +83,7 @@ Gitea runs on the EIB VM at `http://192.168.122.20:3000`. It holds two repositor
 Verify it is running:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 
 # Container status
 podman ps --filter name=gitea --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
@@ -124,7 +124,7 @@ Hauler runs on the EIB VM at two endpoints:
 Verify everything is in place:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 
 # Registry catalog
 curl -s http://localhost:5000/v2/_catalog | python3 -m json.tool
@@ -209,7 +209,7 @@ mirrors:
 Verify on a running edge node:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.31   # edge1
+ssh root@192.168.122.31   # edge1
 
 cat /etc/rancher/k3s/registries.yaml
 journalctl -u k3s | grep -i "pulling image" | head -10
@@ -232,7 +232,7 @@ Fleet's controller on the rancher VM polls this URL every 15 seconds. When stude
 Verify the GitRepo is using local Gitea:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9
+ssh root@192.168.122.9
 
 kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
   get gitrepo vertex-bank-app -n fleet-default \
@@ -250,7 +250,7 @@ Rancher was installed with `useBundledSystemChart=true`. Without this flag, Ranc
 Verify:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9
+ssh root@192.168.122.9
 
 kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
   get deployment rancher -n cattle-system \
@@ -267,7 +267,7 @@ Elemental Operator images are pulled from `registry.suse.com` during the `elemen
 **1. Is Gitea running?**
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 podman ps --filter name=gitea
 ```
 
@@ -280,14 +280,14 @@ podman restart gitea
 Verify Fleet can reach it from the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9
+ssh root@192.168.122.9
 curl -s http://192.168.122.20:3000/api/v1/version
 ```
 
 **2. Is Hauler running?**
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 systemctl is-active hauler-registry hauler-fileserver
 ```
 

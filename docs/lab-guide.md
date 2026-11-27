@@ -11,7 +11,7 @@ This is a hands-on lab. You will build OS images, boot edge nodes, register them
 
 Your environment is already partially running. A bare metal host is running five KVM virtual machines: a management cluster, an image-builder VM, and four edge nodes that are currently off. You will turn them on one group at a time, after building the right OS image for each.
 
-**Access credentials** are in `~/.rodeo/secrets.yaml` on the host.
+**Access credentials**: in a workshop, open **Credentials** in the lab page. If you deployed the lab yourself, they are in `~/.rodeo/secrets.yaml` on the host.
 
 ---
 
@@ -74,7 +74,7 @@ Get your bearings before touching anything. From the KVM host:
 virsh list --all
 
 # Check the management cluster
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -A | grep -E 'rancher|elemental|cert-manager|fleet'"
 ```
 
@@ -83,7 +83,7 @@ You should see one K3s node (the rancher VM itself) with pods for Rancher Prime,
 Now check the eib VM, your image factory:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "podman images | grep edge-image-builder && \
    systemctl is-active hauler-registry hauler-fileserver && \
    ls /home/eib-config/"
@@ -94,7 +94,7 @@ Hauler is running two services: an OCI registry on port 5000 (container images) 
 Check what is in the Hauler store:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "hauler store info --store /var/lib/hauler 2>/dev/null | head -40"
 ```
 
@@ -119,7 +119,7 @@ You do not SSH into the node. You do not run scripts on it. The node phones home
 A `MachineRegistration` defines who is allowed to register and what labels the node gets when it does. One has already been created for this lab:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default -o yaml"
 ```
 
@@ -151,13 +151,13 @@ The registration name is derived from your lab's plan name, so it varies by depl
 
 ```bash
 # Discover the registration name
-REGNAME=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGNAME=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}'")
 
 echo "Registration name: $REGNAME"
 
 # Capture the registration URL
-REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGURL=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration $REGNAME \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
@@ -174,7 +174,7 @@ The EIB image definitions, NMState network configs, and combustion scripts live 
 SSH to the EIB VM:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 ```
 
 The EIB VM does not have `git` installed, because it stays a minimal build host. Fetch the workspace as an archive from Gitea instead, which gives you the exact same file layout:
@@ -192,9 +192,9 @@ Now download the live registration config from the Elemental Operator and overwr
 
 ```bash
 # If REGNAME/REGURL are not in the current shell, re-capture them
-REGNAME=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGNAME=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}'")
-REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGURL=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration $REGNAME \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
@@ -215,7 +215,7 @@ exit
 ### 2.5 Verify the Elemental Operator is healthy
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 ```
 
@@ -226,7 +226,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 Each node gets a static IP baked into its disk image by EIB. The network configs are pre-populated in the workspace you just cloned from Gitea:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 ls /home/eib-workspace/network-configs/
 cat /home/eib-workspace/network-configs/edge1.yaml
 exit
@@ -286,7 +286,7 @@ The Elemental builds (edge1/edge2) side-load the `elemental-register`/`elemental
 SSH to the eib VM and stay there for this entire exercise:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 ```
 
 Verify the workspace and base images are in place:
@@ -519,7 +519,7 @@ Do the same for edge2. Once both are past the confirmation, the rest runs on its
 Check that both nodes registered with the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default"
 ```
 
@@ -588,11 +588,11 @@ Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and 
 
 ```bash
 # edge3 (RKE2)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes"
 
 # edge4 (K3s)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
+ssh root@192.168.122.34 \
   "kubectl get nodes"
 ```
 
@@ -611,7 +611,7 @@ edge1 and edge2 are now running openSUSE Leap Micro. The `elemental-register` ag
 Watch for the registered nodes on the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default -w"
 ```
 
@@ -624,7 +624,7 @@ In the Rancher UI: go to **OS Management > MachineInventory**. The same records 
 This resource links a label selector to a machine pool. Any `MachineInventory` that matches the selector becomes a candidate node for a cluster:
 
 ```bash
-cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f -"
+cat << 'EOF' | ssh root@192.168.122.9 "kubectl apply -f -"
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineInventorySelectorTemplate
 metadata:
@@ -645,14 +645,14 @@ Right now neither node matches `site-role: hub`. Label edge1 to trigger the matc
 
 ```bash
 # Get edge1's MachineInventory name
-EDGE1=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+EDGE1=$(ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default \
    -o jsonpath='{.items[0].metadata.name}'")
 
 echo "edge1 MachineInventory: $EDGE1"
 
 # Label it
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl label machineinventory $EDGE1 \
    -n fleet-default \
    site-role=hub \
@@ -665,7 +665,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 Create a `Cluster` resource that uses the selector template as its machine pool:
 
 ```bash
-cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f -"
+cat << 'EOF' | ssh root@192.168.122.9 "kubectl apply -f -"
 apiVersion: provisioning.cattle.io/v1
 kind: Cluster
 metadata:
@@ -694,7 +694,7 @@ In Rancher UI: go to **Cluster Management**. You will see `vertex-hub-01` appear
 From the terminal:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get cluster -n fleet-default -w"
 ```
 
@@ -721,7 +721,7 @@ The `vertex-bank-app` GitRepo points at the local Gitea instance on the EIB VM, 
 
 ```bash
 # Confirm the GitRepo source
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
    get gitrepo vertex-bank-app -n fleet-default \
    -o jsonpath='{.spec.repo}'"
@@ -732,7 +732,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 edge1's `MachineInventory` has the `demo=true` and `edge-type=x86-cluster` labels from Exercise 5, but those do not propagate to the cluster Fleet actually watches. Label it explicitly:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl label clusters.fleet.cattle.io vertex-hub-01 -n fleet-default \
    demo=true edge-type=x86-cluster --overwrite"
 ```
@@ -751,26 +751,26 @@ Run it on each node:
 
 ```bash
 # On edge3 (RKE2 keeps its kubectl under /var/lib/rancher/rke2/bin)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "curl --insecure -sfL <registration-manifest-url> | \
    /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml apply -f -"
 
 # On edge4 (K3s)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
+ssh root@192.168.122.34 \
   "curl --insecure -sfL <registration-manifest-url> | kubectl apply -f -"
 ```
 
 Each cluster turns `Active` in **Cluster Management** within a couple of minutes. Fleet registers its own copy of each cluster a little after that, so check that both show up before you label them (labelling too early fails with `NotFound`):
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get clusters.fleet.cattle.io -n fleet-default"
 ```
 
 When `vertex-branch-rke2` and `vertex-branch-k3s` are listed, label them for Fleet:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
+ssh root@192.168.122.9 "
   kubectl label clusters.fleet.cattle.io vertex-branch-rke2 -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
   kubectl label clusters.fleet.cattle.io vertex-branch-k3s -n fleet-default \
@@ -785,14 +785,14 @@ Fleet deploys vertex-bank-app to each cluster the moment the labels match. Go to
 vertex-bank-app is a web app that shows live Kubernetes cluster vitals. Check the bundle status from the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get bundle -n fleet-default | grep vertex-bank"
 ```
 
 The app itself runs on the edge clusters, not on the management cluster, so query vertex-hub-01 through the kubeconfig Rancher stores for it:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
+ssh root@192.168.122.9 "
   kubectl get secret vertex-hub-01-kubeconfig -n fleet-default \
     -o jsonpath='{.data.value}' | base64 -d > /tmp/vertex-hub-01.yaml
   kubectl --kubeconfig /tmp/vertex-hub-01.yaml get pods,svc -n vertex-bank
@@ -857,7 +857,7 @@ virsh start edge1
 Watch the Elemental logs on the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl logs -n cattle-elemental-system -l app=elemental-operator -f"
 ```
 
@@ -874,9 +874,9 @@ The registration attempt will be rejected because the TPM identity changed. The 
 | KVM host IP | 192.168.1.241 (or lab-assigned) |
 | Rancher UI | `https://<host-ip>:30002` |
 | Rancher user | `admin` |
-| Rancher password | `cat ~/.rodeo/secrets.yaml` |
-| Management cluster SSH | `ssh -i /root/.ssh/id_ed25519 root@192.168.122.9` |
-| EIB VM SSH | `ssh -i /root/.ssh/id_ed25519 root@192.168.122.20` |
+| Rancher password | **Credentials** in the lab page, or `~/.rodeo/secrets.yaml` on a lab you deployed |
+| Management cluster SSH | `ssh root@192.168.122.9` |
+| EIB VM SSH | `ssh root@192.168.122.20` |
 | Hauler OCI registry | `http://192.168.122.20:5000` |
 | Hauler fileserver | `http://192.168.122.20:8080` |
 

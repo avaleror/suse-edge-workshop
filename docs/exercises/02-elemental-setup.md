@@ -19,7 +19,7 @@ You do not SSH into the node. You do not run scripts on it. The node phones home
 A `MachineRegistration` defines who is allowed to register and what labels the node gets when it does. One has already been created for this lab:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default -o yaml"
 ```
 
@@ -51,13 +51,13 @@ The registration name is derived from your lab's plan name, so it varies by depl
 
 ```bash
 # Discover the registration name
-REGNAME=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGNAME=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}'")
 
 echo "Registration name: $REGNAME"
 
 # Capture the registration URL
-REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGURL=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration $REGNAME \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
@@ -74,7 +74,7 @@ The EIB image definitions, NMState network configs, and combustion scripts live 
 SSH to the EIB VM:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 ```
 
 The EIB VM does not have `git` installed, because it stays a minimal build host. Fetch the workspace as an archive from Gitea instead, which gives you the exact same file layout:
@@ -92,9 +92,9 @@ Now download the live registration config from the Elemental Operator and overwr
 
 ```bash
 # If REGNAME/REGURL are not in the current shell, re-capture them
-REGNAME=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGNAME=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default -o jsonpath='{.items[0].metadata.name}'")
-REGURL=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+REGURL=$(ssh root@192.168.122.9 \
   "kubectl get machineregistration $REGNAME \
    -n fleet-default \
    -o jsonpath='{.status.registrationURL}'")
@@ -115,7 +115,7 @@ exit
 ## 2.5 Verify the Elemental Operator is healthy
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 ```
 
@@ -126,7 +126,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 Each node gets a static IP baked into its disk image by EIB. The network configs are pre-populated in the workspace you just cloned from Gitea:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 ls /home/eib-workspace/network-configs/
 cat /home/eib-workspace/network-configs/edge1.yaml
 exit

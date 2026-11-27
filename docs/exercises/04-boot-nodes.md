@@ -59,7 +59,7 @@ Do the same for edge2. Once both are past the confirmation, the rest runs on its
 Check that both nodes registered with the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default"
 ```
 
@@ -128,11 +128,11 @@ Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and 
 
 ```bash
 # edge3 (RKE2)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes"
 
 # edge4 (K3s)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
+ssh root@192.168.122.34 \
   "kubectl get nodes"
 ```
 

@@ -18,7 +18,7 @@ The `vertex-bank-app` GitRepo points at the local Gitea instance on the EIB VM, 
 
 ```bash
 # Confirm the GitRepo source
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
    get gitrepo vertex-bank-app -n fleet-default \
    -o jsonpath='{.spec.repo}'"
@@ -29,7 +29,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 edge1's `MachineInventory` has the `demo=true` and `edge-type=x86-cluster` labels from Exercise 5, but those do not propagate to the cluster Fleet actually watches. Label it explicitly:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl label clusters.fleet.cattle.io vertex-hub-01 -n fleet-default \
    demo=true edge-type=x86-cluster --overwrite"
 ```
@@ -48,26 +48,26 @@ Run it on each node:
 
 ```bash
 # On edge3 (RKE2 keeps its kubectl under /var/lib/rancher/rke2/bin)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "curl --insecure -sfL <registration-manifest-url> | \
    /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml apply -f -"
 
 # On edge4 (K3s)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
+ssh root@192.168.122.34 \
   "curl --insecure -sfL <registration-manifest-url> | kubectl apply -f -"
 ```
 
 Each cluster turns `Active` in **Cluster Management** within a couple of minutes. Fleet registers its own copy of each cluster a little after that, so check that both show up before you label them (labelling too early fails with `NotFound`):
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get clusters.fleet.cattle.io -n fleet-default"
 ```
 
 When `vertex-branch-rke2` and `vertex-branch-k3s` are listed, label them for Fleet:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
+ssh root@192.168.122.9 "
   kubectl label clusters.fleet.cattle.io vertex-branch-rke2 -n fleet-default \
     demo=true edge-type=x86-cluster --overwrite
   kubectl label clusters.fleet.cattle.io vertex-branch-k3s -n fleet-default \
@@ -82,14 +82,14 @@ Fleet deploys vertex-bank-app to each cluster the moment the labels match. Go to
 vertex-bank-app is a web app that shows live Kubernetes cluster vitals. Check the bundle status from the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get bundle -n fleet-default | grep vertex-bank"
 ```
 
 The app itself runs on the edge clusters, not on the management cluster, so query vertex-hub-01 through the kubeconfig Rancher stores for it:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "
+ssh root@192.168.122.9 "
   kubectl get secret vertex-hub-01-kubeconfig -n fleet-default \
     -o jsonpath='{.data.value}' | base64 -d > /tmp/vertex-hub-01.yaml
   kubectl --kubeconfig /tmp/vertex-hub-01.yaml get pods,svc -n vertex-bank

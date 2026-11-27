@@ -42,7 +42,7 @@ The "store" is a local directory (default `/var/lib/hauler`). Content is stored 
 SSH to the EIB VM. Hauler is already installed here from the lab deploy.
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 hauler version
 ```
 

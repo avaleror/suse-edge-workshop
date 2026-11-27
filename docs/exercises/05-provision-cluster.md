@@ -13,7 +13,7 @@ edge1 and edge2 are now running openSUSE Leap Micro. The `elemental-register` ag
 Watch for the registered nodes on the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default -w"
 ```
 
@@ -26,7 +26,7 @@ In the Rancher UI: go to **OS Management > MachineInventory**. The same records 
 This resource links a label selector to a machine pool. Any `MachineInventory` that matches the selector becomes a candidate node for a cluster:
 
 ```bash
-cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f -"
+cat << 'EOF' | ssh root@192.168.122.9 "kubectl apply -f -"
 apiVersion: elemental.cattle.io/v1beta1
 kind: MachineInventorySelectorTemplate
 metadata:
@@ -47,14 +47,14 @@ Right now neither node matches `site-role: hub`. Label edge1 to trigger the matc
 
 ```bash
 # Get edge1's MachineInventory name
-EDGE1=$(ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+EDGE1=$(ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default \
    -o jsonpath='{.items[0].metadata.name}'")
 
 echo "edge1 MachineInventory: $EDGE1"
 
 # Label it
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl label machineinventory $EDGE1 \
    -n fleet-default \
    site-role=hub \
@@ -67,7 +67,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
 Create a `Cluster` resource that uses the selector template as its machine pool:
 
 ```bash
-cat << 'EOF' | ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 "kubectl apply -f -"
+cat << 'EOF' | ssh root@192.168.122.9 "kubectl apply -f -"
 apiVersion: provisioning.cattle.io/v1
 kind: Cluster
 metadata:
@@ -96,7 +96,7 @@ In Rancher UI: go to **Cluster Management**. You will see `vertex-hub-01` appear
 From the terminal:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get cluster -n fleet-default -w"
 ```
 

@@ -22,7 +22,7 @@ virsh start edge1
 Watch the Elemental logs on the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl logs -n cattle-elemental-system -l app=elemental-operator -f"
 ```
 
