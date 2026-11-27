@@ -5,11 +5,11 @@
 | Resource | Value |
 |---|---|
 | KVM host IP | 192.168.1.241 (or lab-assigned) |
-| Rancher UI | `https://<host-ip>:30002` |
+| Rancher UI | The **SUSE Rancher Prime** tab in the lab player, or `https://<host-ip>:30002` on your own host |
 | Rancher user | `admin` |
-| Rancher password | `cat ~/.rodeo/secrets.yaml` |
-| Management cluster SSH | `ssh -i /root/.ssh/id_ed25519 root@192.168.122.9` |
-| EIB VM SSH | `ssh -i /root/.ssh/id_ed25519 root@192.168.122.20` |
+| Rancher password | **Credentials** in the lab player, or `cat ~/.rodeo/secrets.yaml` on your own host |
+| Management cluster SSH | `ssh root@192.168.122.9` |
+| EIB VM SSH | `ssh root@192.168.122.20` |
 | Hauler OCI registry | `http://192.168.122.20:5000` |
 | Hauler fileserver | `http://192.168.122.20:8080` |
 
@@ -35,12 +35,12 @@ podman run --rm --privileged \
   build --definition-file <definition-file.yaml>
 
 # Seed an ISO to a specific edge node
-rodeo pull-edge-image --config-dir /root/rodeo-lab \
+rodeo pull-edge-image \
   --image /home/eib-workspace/<image.iso> \
   --nodes <node> --yes
 
 # Seed a RAW image to a specific edge node
-rodeo pull-edge-image --config-dir /root/rodeo-lab \
+rodeo pull-edge-image \
   --image /home/eib-standalone/<image.raw> \
   --nodes <node> --yes
 
@@ -50,9 +50,9 @@ rodeo eject-iso --nodes edge1,edge2 --yes
 virsh start edge1; virsh start edge2
 
 # kubectl on the standalone nodes (RKE2 keeps its own binary and kubeconfig)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes"
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 "kubectl get nodes"
+ssh root@192.168.122.34 "kubectl get nodes"
 
 # Watch Elemental node registration
 kubectl get machineinventory -n fleet-default -w

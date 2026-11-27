@@ -17,14 +17,12 @@ Pull each ISO from the eib VM and attach it as a virtual CDROM:
 ```bash
 # edge1 gets its specific ISO (192.168.122.31 baked in)
 rodeo pull-edge-image \
-  --config-dir /root/rodeo-lab \
   --image /home/eib-workspace/elemental-edge1.iso \
   --nodes edge1 \
   --yes
 
 # edge2 gets its specific ISO (192.168.122.32 baked in)
 rodeo pull-edge-image \
-  --config-dir /root/rodeo-lab \
   --image /home/eib-workspace/elemental-edge2.iso \
   --nodes edge2 \
   --yes
@@ -59,7 +57,7 @@ Do the same for edge2. Once both are past the confirmation, the rest runs on its
 Check that both nodes registered with the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default"
 ```
 
@@ -91,14 +89,12 @@ Pull and thin-clone each image from the eib VM:
 ```bash
 # edge3 gets the RKE2 image
 rodeo pull-edge-image \
-  --config-dir /root/rodeo-lab \
   --image /home/eib-standalone/rke2-edge3.raw \
   --nodes edge3 \
   --yes
 
 # edge4 gets the K3s image
 rodeo pull-edge-image \
-  --config-dir /root/rodeo-lab \
   --image /home/eib-standalone/k3s-edge4.raw \
   --nodes edge4 \
   --yes
@@ -128,11 +124,11 @@ Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and 
 
 ```bash
 # edge3 (RKE2)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes"
 
 # edge4 (K3s)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
+ssh root@192.168.122.34 \
   "kubectl get nodes"
 ```
 

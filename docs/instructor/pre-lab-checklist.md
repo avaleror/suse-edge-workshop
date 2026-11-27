@@ -6,37 +6,37 @@ Run through this before handing the lab to students. The deploy (`rodeo deploy`)
 
 ```bash
 # 1. Management cluster is healthy
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -n cattle-elemental-system"
 
 # 2. Elemental Operator is running (some releases also run a separate
 #    elemental-operator-webhook pod; its absence alone is not a problem)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get pods -n cattle-elemental-system"
 
 # 3. MachineRegistration exists
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default"
 
 # 4. EIB VM is reachable and EIB container is in Hauler
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "hauler store info --store /var/lib/hauler 2>/dev/null | grep edge-image-builder"
 
 # 5. Hauler is running and both openSUSE Leap Micro base images are served
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "systemctl is-active hauler-registry hauler-fileserver && \
    curl -s http://localhost:8080/ | grep -c 'leap-micro'"
 
 # 6. openSUSE Leap Micro files staged in eib-config/base-images (used by EIB exercise)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "ls -lh /home/eib-config/base-images/"
 
 # 6b. Elemental register/system-agent RPMs staged (side-loaded, no SCC code needed)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "ls -lh /home/eib-config/rpms/"
 
 # 7. Gitea is running and both repos are present
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "podman ps --filter name=gitea --format '{{.Status}}' && \
    curl -s http://localhost:3000/api/v1/repos/gitea/vertex-bank-app \
    | python3 -c \"import sys,json; r=json.load(sys.stdin); print('vertex-bank-app:', r['full_name'])\" && \
@@ -44,7 +44,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
    | python3 -c \"import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'])\""
 
 # 8. Fleet GitRepo points at local Gitea (not GitHub)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml \
    get gitrepo vertex-bank-app -n fleet-default \
    -o jsonpath='{.spec.repo}'"

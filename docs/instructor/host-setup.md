@@ -70,24 +70,24 @@ See the [Disconnected environment reference](../reference/disconnected-environme
 
 ```bash
 # Management cluster healthy
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -n cattle-elemental-system"
 
 # EIB VM + Hauler running, both openSUSE Leap Micro files in the store
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "systemctl is-active hauler-registry hauler-fileserver && \
    curl -s http://localhost:8080/ | grep -E 'leap-micro.*iso|leap-micro.*raw'"
 
 # openSUSE Leap Micro base images staged for EIB
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "ls -lh /home/eib-config/base-images/"
 
 # Elemental RPMs staged for EIB (side-loaded, no SCC code needed)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "ls -lh /home/eib-config/rpms/"
 
 # Gitea running and both repos present
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "podman ps --filter name=gitea --format '{{.Status}}' && \
    curl -s http://localhost:3000/api/v1/repos/gitea/vertex-bank-app \
    | python3 -c \"import sys,json; r=json.load(sys.stdin); print('vertex-bank-app:', r['full_name'])\" && \
@@ -95,7 +95,7 @@ ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
    | python3 -c \"import sys,json; r=json.load(sys.stdin); print('eib-config:', r['full_name'])\""
 
 # MachineRegistration exists
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineregistration -n fleet-default"
 
 # Edge VMs are defined but off
