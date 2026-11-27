@@ -43,7 +43,7 @@ The Elemental builds (edge1/edge2) side-load the `elemental-register`/`elemental
 SSH to the eib VM and stay there for this entire exercise:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20
+ssh root@192.168.122.20
 ```
 
 Verify the workspace and base images are in place:

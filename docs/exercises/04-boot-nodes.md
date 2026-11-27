@@ -59,7 +59,7 @@ Do the same for edge2. Once both are past the confirmation, the rest runs on its
 Check that both nodes registered with the management cluster:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get machineinventory -n fleet-default"
 ```
 
@@ -124,15 +124,15 @@ virsh start edge4
 
 These nodes take 3-5 minutes to come up fully. RKE2 and K3s do their first-run initialization: generating TLS certificates, starting the control plane, and marking the node Ready.
 
-Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and check Kubernetes. The RAW images authorize the KVM host's key for root, and RKE2 keeps its own `kubectl` and kubeconfig under its install paths:
+Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and check Kubernetes. The RAW images authorize the KVM host's key for root (and, in a workshop, your own key), and RKE2 keeps its own `kubectl` and kubeconfig under its install paths:
 
 ```bash
 # edge3 (RKE2)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes"
 
 # edge4 (K3s)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 \
+ssh root@192.168.122.34 \
   "kubectl get nodes"
 ```
 

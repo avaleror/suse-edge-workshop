@@ -7,12 +7,14 @@
 
 Get your bearings before touching anything. From the KVM host:
 
+> **In a workshop** the KVM host is the **Terminal** tab of your lab page. You are `student`, not root: `virsh` works, `ssh root@<vm>` logs in with your own key, and the `rodeo` commands in Exercise 4 run as root on their own. On a lab you deployed yourself, run everything as root.
+
 ```bash
 # What VMs are running, what is off
 virsh list --all
 
 # Check the management cluster
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.9 \
+ssh root@192.168.122.9 \
   "kubectl get nodes && kubectl get pods -A | grep -E 'rancher|elemental|cert-manager|fleet'"
 ```
 
@@ -21,7 +23,7 @@ You should see one K3s node (the rancher VM itself) with pods for Rancher Prime,
 Now check the eib VM, your image factory:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "podman images | grep edge-image-builder && \
    systemctl is-active hauler-registry hauler-fileserver && \
    ls /home/eib-config/"
@@ -32,7 +34,7 @@ Hauler is running two services: an OCI registry on port 5000 (container images) 
 Check what is in the Hauler store:
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.20 \
+ssh root@192.168.122.20 \
   "hauler store info --store /var/lib/hauler 2>/dev/null | head -40"
 ```
 

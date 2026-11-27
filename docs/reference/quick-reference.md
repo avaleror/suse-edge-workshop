@@ -7,9 +7,9 @@
 | KVM host IP | 192.168.1.241 (or lab-assigned) |
 | Rancher UI | `https://<host-ip>:30002` |
 | Rancher user | `admin` |
-| Rancher password | `cat ~/.rodeo/secrets.yaml` |
-| Management cluster SSH | `ssh -i /root/.ssh/id_ed25519 root@192.168.122.9` |
-| EIB VM SSH | `ssh -i /root/.ssh/id_ed25519 root@192.168.122.20` |
+| Rancher password | **Credentials** in the lab page, or `~/.rodeo/secrets.yaml` on a lab you deployed |
+| Management cluster SSH | `ssh root@192.168.122.9` |
+| EIB VM SSH | `ssh root@192.168.122.20` |
 | Hauler OCI registry | `http://192.168.122.20:5000` |
 | Hauler fileserver | `http://192.168.122.20:8080` |
 
@@ -50,9 +50,9 @@ rodeo eject-iso --nodes edge1,edge2 --yes
 virsh start edge1; virsh start edge2
 
 # kubectl on the standalone nodes (RKE2 keeps its own binary and kubeconfig)
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.33 \
+ssh root@192.168.122.33 \
   "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes"
-ssh -i /root/.ssh/id_ed25519 root@192.168.122.34 "kubectl get nodes"
+ssh root@192.168.122.34 "kubectl get nodes"
 
 # Watch Elemental node registration
 kubectl get machineinventory -n fleet-default -w
