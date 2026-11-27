@@ -584,7 +584,7 @@ virsh start edge4
 
 These nodes take 3-5 minutes to come up fully. RKE2 and K3s do their first-run initialization: generating TLS certificates, starting the control plane, and marking the node Ready.
 
-Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and check Kubernetes. The RAW images authorize the KVM host's key for root, and RKE2 keeps its own `kubectl` and kubeconfig under its install paths:
+Both nodes have static IPs, so there are no DHCP leases to look for. SSH in and check Kubernetes. The RAW images authorize the KVM host's key for root (and, in a workshop, your own key), and RKE2 keeps its own `kubectl` and kubeconfig under its install paths:
 
 ```bash
 # edge3 (RKE2)
